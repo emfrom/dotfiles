@@ -1,27 +1,33 @@
 #+TITLE: Readme for dotfiles config
 #+AUTOR: E.M. From
 
-These are my attempts at getting my configs organised. I'm using emacs orgmode throughout.
+These are my attempts at getting my configs organised. I'm using [[https://www.gnu.org/software/emacs/][Emacs]] and [[https://orgmode.org][Org mode]] throughout.
+
+* For the uninitiated
+There are no config files in this dotfiles repo, (almost) only org files. Org mode is markdown on steroids, Arnold Schwarzenegger amounts of steroids.
+
+"Tangle" is emacs org-mode lingo for exporting source code from org files, be it emacs lisp, shell script, dotfiles or whatnot. The .org files that make up this dotfiles repo tangle to the config files that are used. A script is included for convenience and for git hooks.
+
+I highly recommend the youtube playlist [[https://www.youtube.com/watch?v=74zOY-vgkyw&list=PLEoMzSkcN8oPH1au7H6B7bBJ4ZO7BXjSZ][Emacs from scratch]], a very good starting point for Emacs and org mode.
+
+My live config lives in ~/etc (tradition)
 
 Big thanks:
 - David Wilson/Systemcrafters
-  His [[https://www.youtube.com/watch?v=74zOY-vgkyw&list=PLEoMzSkcN8oPH1au7H6B7bBJ4ZO7BXjSZ][emacs from scratch]] series got me back into using Emacs.
-
-For the uninitiated:
-org mode is markdown on steroids. (Schwarzenegger amounts of steroids) "Tangle" is emacs org-mode lingo for exporting source code from org files, be it emacs lisp, shell script or whatnot. The .org files that make up this dotfiles repo tangle to the config files that are used. A script is included for convenience or for 
+  Maker of the Emacs from scratch series that got me back into using emacs.
 
 * Emacs
 
-Everthing of import if in the file [[file:emacs/Emacs.org][Emacs.org]] that generates, i.e. tangles to, [[file:emacs/init.el][init.el]], [[file:emacs/early-init.el][early-init.el]] and [[file:emacs/desktop.el][desktop.el]]
+Everthing of import is in the file [[file:emacs/Emacs.org][Emacs.org]] that tangles to, [[file:emacs/init.el][init.el]], [[file:emacs/early-init.el][early-init.el]] and [[file:emacs/desktop.el][desktop.el]].
 
 * Bash
 
-The whole config is in [[file:bash/Bash.org][Bash.org]] it tangles to the bashrc bash-profile etc. Short stub scripts are used in the home directory so it's easier to see when/how they've been modified.
+The whole config is in [[file:bash/Bash.org][Bash.org]] it tangles to the bashrc bash-profile etc. Short stub scripts are used in the home directory so it's easier to see when/how they've been modified by programs.
 
 
 * Tangle Script
 
-This section creates the bash script, =tangle-all.sh=, that uses emacs to create all the actual dotfiles
+This section creates the bash script, =tangle-all.sh=, that uses emacs to create all the actual dotfiles. Normally this is done from inside emacs, but a script is always useful.
 
 #+begin_src shell :tangle ./tangle-all.sh :mkdirp yes
   #!/usr/bin/env bash
@@ -32,37 +38,63 @@ This section creates the bash script, =tangle-all.sh=, that uses emacs to create
   #
   # Use for convenience or as a git hook
   #
-
+  # Questions or comments: <vertlaforet@protonmail.com>
+  #
 
   # Check for emacs
   if ! command -v emacs &> /dev/null ; then
       echo "Emacs needed for this script to run"
-      exit 0
+      exit 1
+  fi
+
+
+  # Check that org is installed
+  if [[ "nil" == $(emacs --batch --eval "(if (require 'org nil 'noerror) (princ t) (princ nil))" 2> /dev/null) ]] ; then
+      echo -e "Org mode is not installed\n"
+      echo "Try:"
+      echo " emacs README.org"
+      echo " Hit ALT-x"
+      echo " Type: org-babel-tangle-file"
+      echo -e " Hit Enter\n"
+      echo " If that doesnt work, click on the link for the video series in the README" 
+      exit 1
+  fi
+
+
+  # Check that org is high enough version
+  #
+  # Note: There is no specific reason for 9.6.15, it just happened to be the oldest I had laying around
+  version_target="9.6.15"
+  version=$(emacs --batch --eval "(progn (require 'org) (print (org-version)))" 2> /dev/null)
+  version=$(echo $version | awk -F'"' '{gsub(/"/, "", $2); print $2}')
+
+  if [[ ! "$(echo -e "${version}\n${version_target}" | sort -V | awk 'NF {print; exit}')" == "$version_target" ]]; then
+      echo "Version ${version_target} or higher of org mode is known to work (but we try anyway)"
   fi
 
 
   # Check for git
   if ! command -v git &> /dev/null ; then
       echo "git needed for this script to run"
-      exit 0
+      exit 1
   fi
 
 
   # Check if in a Git repository
   if ! git rev-parse --is-inside-work-tree &> /dev/null ; then
       echo "Not in a git repository"
-      exit 0
+      exit 1
   fi
 
-  
+
   # Find all org files in the repo
   org_files=$(git ls-files '*.org')
 
 
   # Check if any org files were found
   if [ -z "$org_files" ]; then
-      echo "No .org files found in the repo"
-      exit 0
+      echo "No org files found in the repo"
+      exit 1
   fi
 
 
@@ -75,13 +107,15 @@ This section creates the bash script, =tangle-all.sh=, that uses emacs to create
 
 
   # Run the code snippet in emacs
-  # Note: Doing this without user init files as that seems to screw up the process
-  if ! emacs --batch --eval "$elisp_code" 2>&1 | grep "Tangled" ; then
+  # Note: Doing this without user init files as doing so ends badly more often than not
+  if ! emacs --batch --eval "$elisp_code" 2>&1 | grep "Tangled"; then
       echo -e "\nSomething went wrong"
-      echo "In all probability org-mode is not installed properly in emacs"
-  else
-      echo -e "\nAll done"
+      echo "In all probability org-mode is not installed properly or too old a version"
+      exit 1
   fi
+
+
+  echo -e "\nAll done"
 
 #+end_src
 
