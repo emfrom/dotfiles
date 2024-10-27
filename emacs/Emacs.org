@@ -442,23 +442,55 @@ Dont check for os as it does no harm on linux
 
 *** Automatic Package Updates
 
+
 The auto-package-update package helps us keep our Emacs packages up to date! It will prompt you after a certain number of days either at startup or at a specific time of day to remind you to update your packages.
 
 You can also use =M-x auto-package-update-now= to update right now!
 
+Note: I've disabled this as it keeps downgrading stuff all the time
+
 #+begin_src emacs-lisp
 
+  ;; ;;
+  ;; ;; Update packages automagically
+  ;; ;;
+  ;; (use-package auto-package-update
+  ;;   :custom
+  ;;   (auto-package-update-interval 7)
+  ;;   (auto-package-update-prompt-before-update t)
+  ;;   (auto-package-update-hide-results t)
+  ;;   :config
+  ;;   (auto-package-update-maybe)
+  ;;   (auto-package-update-at-time "13:00"))
+
+#+end_src
+
+*** Git repos
+Load packages from the git-install directory first
+
+#+begin_src emacs-lisp
   ;;
-  ;; Update packages automagically
+  ;; This prepends repos from the git-install dir to the load path
   ;;
-  (use-package auto-package-update
-    :custom
-    (auto-package-update-interval 7)
-    (auto-package-update-prompt-before-update t)
-    (auto-package-update-hide-results t)
-    :config
-    (auto-package-update-maybe)
-    (auto-package-update-at-time "13:00"))
+  (defun emfrom/prepend-git-directories-to-load-path ()
+    "Prepend directories in ~/etc/emacs/git and their lisp subdirectories to `load-path`."
+    (let ((git-dir "~/etc/emacs/git-install"))
+      (when (file-directory-p git-dir)
+        (dolist (dir (directory-files git-dir t "^[^.]")) 
+          (when (file-directory-p dir)
+            ;; Add the main directory
+            (add-to-list 'load-path dir)
+            ;; Add the `lisp` subdirectory if it exists
+            (let ((lisp-dir (expand-file-name "lisp" dir)))
+              (when (file-directory-p lisp-dir)
+                (add-to-list 'load-path lisp-dir)))
+            ;; Add the `contrib/lisp` subdirectory if it exists
+            (let ((contrib-dir (expand-file-name "contrib/lisp" dir)))
+              (when (file-directory-p contrib-dir)
+                (add-to-list 'load-path contrib-dir))))))))
+
+  (emfrom/prepend-git-directories-to-load-path)
+
 
 #+end_src
 
@@ -476,10 +508,12 @@ I've decided to just load exwm config unless I'm in a terminal
   ;;    (message "In terminal, skipping desktop.el")
   ;;    (load "~/etc/emacs/desktop.el"))
 
-  ;; I give up on this
+  ;; I give up on this for the time being
   (load "~/etc/emacs/desktop.el")
+  (exwm-init)
   
 #+end_src
+*** TODO Fix loading EXWM
 
 ** Themes and eye-candy
 Here goes stuff that has to do with look 
