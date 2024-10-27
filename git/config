@@ -1,0 +1,15 @@
+[init]
+	defaultBranch = main
+[user]
+	email = vertlaforet@protonmail.com
+	name = emfrom
+[github]
+	user = emfrom
+[credential]
+	helper = store
+[core]
+	autocrlf = false
+[filter "tabs-and-crlf"]
+    clean = "sed -e 's/\\t/  /g' -e 's/\\r$//'"
+    smudge = "sed -e 's/\\t/  /g' -e 's/\\r$//'"
+
