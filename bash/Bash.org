@@ -131,7 +131,7 @@ Not doing this since motd contains actual info on some systems
 #+begin_src shell :tangle ./bash_profile :mkdirp yes
   if command -v "figlet" &> /dev/null  ; then
       if command -v "lolcat" &> /dev/null  ; then
-  	figlet -lt "$HOSTNAME at your service" | lolcat -b
+  	figlet -lt "$HOSTNAME at your service" | lolcat -b -F 0.3
       else
   	figlet -lt "$HOSTNAME at your service"
       fi
@@ -533,7 +533,7 @@ Prompt command function adds more glam
   PS1=$PS1'\[\e[01;33m\]\A '
 
   # Hostname in rainbow colours
-  PS1=$PS1$( colorise_string_escaped $HOSTNAME)
+  PS1=$PS1$(colourise_string_escaped $HOSTNAME)
 
   # go up one line and back $COLUMNS steps
   #PS1=$PS1'\e[A\e[${COLUMNS}D\e[0m'
@@ -890,7 +890,7 @@ export ROOTPID=$BASHPID
 #+end_src
 *** lolcows
 #+begin_src shell :tangle ./functions :mkdirp yes
-  if command -v cowsay &> /dev/null ; then
+  if command -v cowsay &> /dev/null  && command -v lolcat &> /dev/null ; then
       function create_lolcow ()
       {
   	local lolcow_file="$TMP/$USER.lolcow.$ROOTPID"
@@ -899,11 +899,7 @@ export ROOTPID=$BASHPID
   	if [[ 0 = `shuf -i 0-24 -n 1` ]] ; then
               ansi_heart > $lolcow_file
   	else
-  	    if command -v lolcat &> /dev/null ; then
-  		affirmation | cowsay | lolcat -f -F 0.2 > $lolcow_file
-  	    else
-  		affirmation | cowsay > $lolcow_file
-  	    fi
+  	    affirmation | cowsay | lolcat -f -F 0.2 > $lolcow_file
   	fi
 
       }
@@ -1119,21 +1115,22 @@ Outputs a repeating pattern that will work on all but the dumbest of terminals
 Suitable for use in the prompt
 
 #+begin_src shell :tangle ./functions :mkdirp yes
-  colorise_string_escaped() {
+  colourise_string_escaped() {
       local input="$1"
-      local colors=("\[\e[00;31m\]" "\[\e[00;32m\]" "\[\e[01;33m\]" "\[\e[00;33m\]" "\[\e[01;34m\]" "\[\e[00;34m\]" "\[\e[00;35m\]")
-      local reset="\[\e[0m\]"
+      local ansi_colours=("\[\e[00;31m\]" "\[\e[00;32m\]" "\[\e[01;33m\]" "\[\e[00;33m\]" "\[\e[01;34m\]" "\[\e[00;34m\]" "\[\e[00;35m\]")
+      local ansi_reset="\[\e[0m\]"
       local output=""
       local i=0
 
       if [[ $TERM = "dumb" || $COLOUR = "none" ]] ; then
-  	echo -e $input
+  	echo $input
+  	return
       fi
       
       for (( j=0; j<${#input}; j++ )); do
           letter="${input:j:1}"
-          output+="${colors[i]}$letter"
-          i=$(( (i + 1) % ${#colors[@]} ))  # Cycle through the color array
+          output+="${ansi_colours[i]}$letter"
+          i=$(( (i + 1) % ${#ansi_colours[@]} ))  # Cycle through the color array
       done
 
       output+="$reset"
@@ -1141,16 +1138,7 @@ Suitable for use in the prompt
   }
 #+end_src 
 
-** lolcat
-A wrapper for lolcat as it is rarely installed
-#+begin_src shell :tangle ./functions :mkdirp yes
 
-  if ! command -v lolcat &> /dev/null ; then
-      alias lolcat=$(command -v cat)
-  fi
-
-
-#+end_src
 * Aliases
 Aliases are for simple command conversion and adding basic options to invoked programs as well as some shortcuts for common usecases and typos
 
