@@ -4,6 +4,7 @@
 #+STARTUP: overview
 
 *Init files for bash*
+
 This file generates all the bash files, even the empty ones. It creates wrappers for the real files in the HOME directory. I dont know if this is a smart move but it works and minimizes clutter
 
 Main target is [[file:bashrc][bashrc]]
@@ -11,12 +12,11 @@ bashrc is called from inside [[file:bash_profile][bash_profile]] for a login she
 
 [[file:bash_logout][bash_logout]] is called when a login shell exits
 
-There are several main files that reside in the etc/bash directory
-They are called by bashrc directly
+There are several main files that reside in the etc/bash directory, that are called by bashrc directly
 They are (in order) [[file:options][options]], [[file:aliases][aliases]], [[file:functions][functions]] & [[file:completions][completions]]
 
 Data to setup colours for ls, via the variable LS_COLORS, is contained in the file dircolours
-It is also tangled as a shell script file from [[Dircolours][dircolours]]
+It is also tangled as a file from [[Dircolours][dircolours]]
 
 * Bash profile
 ** Wrapper in HOME

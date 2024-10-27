@@ -10,7 +10,7 @@
 [[file:init.el][init.el]] is the rest of the file starting with the [[Init][Init]] section
 
 
-Credit is given here and there.
+Credit is given throughout the file
  and thanks to all who have forged the way! Onwards into the breach!
 
 * Early init

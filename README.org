@@ -6,10 +6,9 @@ These are my attempts at getting my configs organised. I'm using emacs orgmode t
 Big thanks:
 - David Wilson/Systemcrafters
   His [[https://www.youtube.com/watch?v=74zOY-vgkyw&list=PLEoMzSkcN8oPH1au7H6B7bBJ4ZO7BXjSZ][emacs from scratch]] series got me back into using Emacs.
-  
-org mode is markdown on steroids (Schwarzenegger amounts of steroids)
 
-"Tangle" is emacs org-mode lingo for exporting source code from org files, be it emacs lisp, shell script or whatnot. The .org files that make up this dotfiles repo tangle to the config files that are used. 
+For the uninitiated:
+org mode is markdown on steroids. (Schwarzenegger amounts of steroids) "Tangle" is emacs org-mode lingo for exporting source code from org files, be it emacs lisp, shell script or whatnot. The .org files that make up this dotfiles repo tangle to the config files that are used. A script is included for convenience or for 
 
 * Emacs
 
