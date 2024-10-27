@@ -218,6 +218,16 @@ This quits if the shell is not interactive
   fi
 
 #+end_src
+*** .config symlink
+
+#+begin_src shell
+  #
+  # Make a .config symlink if it doesnt exist
+  #
+  if [[ ! -L $HOME/.config ]] ; then
+      ln -s $HOME/etc $HOME/.config
+  fi
+#+end_src
 *** Debug Echo
 For debugging purposes
 Just knowing which file is sourced and when is usually all that is needed to debug bash startup and finish stuff
