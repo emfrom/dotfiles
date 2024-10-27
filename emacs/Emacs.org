@@ -11,10 +11,7 @@
 
 
 Credit is given here and there.
-
-Very bit thanks to David Wilson that got me back into using emacs, almost feels like it's the 90s again.
-
-and thanks to all others who have forged the way! Onwards into the breach!
+ and thanks to all who have forged the way! Onwards into the breach!
 
 * Early init
 This stuff goes into [[file:early-init.el][early-init.el]]
@@ -431,12 +428,14 @@ Setup the use-package manager
 This bug makes emacs under msys2 use a windows style path instead of an msys2 one
 It will cause package verification to not work
 
+Dont check for os as it does no harm on linux
+
 #+begin_src emacs-lisp
 
   ;;
   ;; Trying to fix the bug
   ;;
-  (setq package-gnupghome-dir "~/emacs/elpa/gnupg")
+  (setq package-gnupghome-dir "~/etc/emacs/elpa/gnupg")
   (setq epg-gpg-program "gpg --homedir ~/etc/emacs/elpa/gnupg")
 
 #+end_src
@@ -1031,13 +1030,15 @@ My config is based on this great intro: [[https://www.youtube.com/watch?v=AyhPmy
 This snippet adds a hook to =org-mode= buffers so that =emfrom/org-babel-tangle-config= gets executed each time such a buffer gets saved.  This function checks to see if the file being saved is in an auto tangle directory or not. If it is, it's automatically tangled by 'after-save-hook
 
 I use a list of directories so I can change it by addint the following to =.dir-locals.el=
-  ((org-mode . ((eval . (add-to-list 'emfrom/org-babel-tangle-dirs (file-name-directory (or load-file-name buffer-file-name)))))))
+  ((org-mode . ((eval . (add-to-list 'emfrom/org-babel-autotangle-dirs (file-name-directory (or load-file-name buffer-file-name)))))))
 
+The default auto-tangle are my dotfiles directory and emacs directory
+  
 #+begin_src emacs-lisp
 
   ;; Define a customizable list for directories to tangle automatically
   (defvar emfrom/org-babel-autotangle-dirs
-    (mapcar #'expand-file-name '("~/etc/emacs/" "~/etc/bash/"))
+    (mapcar #'expand-file-name '("~/etc/emacs/" "~/etc/"))
     "List of directories where org-babel-tangle should auto-tangle on save.")
 
   ;; Function to use the customizable list

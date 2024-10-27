@@ -535,16 +535,13 @@ Prompt command function adds more glam
   # Hostname in rainbow colours
   PS1=$PS1$(colourise_string_escaped $HOSTNAME)
 
-  # go up one line and back $COLUMNS steps
-  #PS1=$PS1'\e[A\e[${COLUMNS}D\e[0m'
-
   # Working directory"
   PS1=$PS1' \[\e[33m\]\w\[\e[0m\]'
 
   #Use __git_ps1 if we have it
   if [[ -f /usr/lib/git-core/git-sh-prompt ]] ; then
       source /usr/lib/git-core/git-sh-prompt
-      PS1=$PS1'\n\[\e[00;34m\]$(__git_ps1 "(%s)")\[\e[0m\]> '
+      PS1=$PS1'\n\[\e[00;31m\]$(__git_ps1 "(%s)")\[\e[0m\]> '
   else
       # A stylish > for the actual prompt, on a new line
       PS1=$PS1'\n> '
@@ -1659,4 +1656,11 @@ EXEC 01;32
 #+end_src
 
 
+
+* Tangle on save
+Lastly, setup org babel to auto-tangle in this directory
+
+#+begin_src emacs-lisp :tangle ./.dir-locals.el :mkdirp yes
+((org-mode . ((eval . (add-to-list 'emfrom/org-babel-autotangle-dirs (file-name-directory (or load-file-name buffer-file-name)))))))
+#+end_src
 
