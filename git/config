@@ -1,17 +1,12 @@
-# Your's truly
+[init]
+	defaultBranch = main
 [user]
 	email = vertlaforet@protonmail.com
 	name = emfrom
 [github]
 	user = emfrom
-# Reasonable config
-[init]
-	defaultBranch = main
 [credential]
 	helper = store
-
-# Hard remove CRLF's
-# Needed as I've just "moved out" a bunch of stuff from windows
 [core]
 	autocrlf = false
 [filter "tabs-and-crlf"]

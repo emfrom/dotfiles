@@ -112,15 +112,13 @@ Both .profile and .bash_profile should do nothing other than call .bashrc
 
 ** Last things
 **** clear
+Not doing this since motd contains actual info on some systems
+
 #+begin_src shell :tangle ./bash_profile :mkdirp yes
   #
   # Some breathing room
   #
-  cls
-  
-
-
-
+  #cls
 
 #+end_src
 **** ansi_heart
@@ -131,8 +129,11 @@ Both .profile and .bash_profile should do nothing other than call .bashrc
 
 **** figlet
 #+begin_src shell :tangle ./bash_profile :mkdirp yes
-    figlet -lt "$HOSTNAME at your service" | lolcat -f -b
-
+  if [[ command -v "figlet" &> /dev/null ]] ; then
+      figlet -lt "$HOSTNAME at your service" | lolcat -b
+  else
+      echo "Install figlet!"
+  fi
 
 #+end_src
 * Bashrc
@@ -271,6 +272,29 @@ The reason for this is so that we can save things with preexisting commands and 
 
 
 #+end_src
+*** tmp directory
+This creates some problems under both termux and guix
+#+begin_src shell
+
+  touch /tmp/$BASHPID &> /dev/null
+  chmod 755 /tmp/$BASHPID &> /dev/null
+
+  if [[ -x /tmp/$BASHPID ]] ; then
+      export TMP=/tmp
+      rm -f /tmp/$BASHPID
+  else
+      export TMP=$HOME/opt/tmp
+  fi
+  export TEMP=$TMP
+#+end_src
+*** Termux hostname
+#+begin_src shell
+
+  if [[ $HOSTNAME = "localhost" ]] ; then
+      export HOSTNAME="Android"
+  fi
+  
+#+end_src
 ** Path
 Set the path
 
@@ -383,9 +407,9 @@ Emacs shell needs some help in not being braindead
 
 #+begin_src shell :tangle ./bashrc :mkdirp yes
   #
-  # Deal with emacs sometimes being stupid with colours
+  # Deal with emacs shell sometimes being stupid with colours
   #
-  if [[ $TERM == "emacs" ]] ; then
+  if [ -n "$INSIDE_EMACS" ] && [ -z "$ESHELL" ]; then
       #
       # Setting TERM to vt100 seems to remove most of the problems
       #
@@ -410,7 +434,7 @@ Emacs shell needs some help in not being braindead
   #
   export CARGO_HOME="$HOME/opt/rust/cargo"
   export RUSTUP_HOME="$HOME/opt/rust/rustup"
-  export CARGO_BUILD_JOBS=7
+  export CARGO_BUILD_JOBS=8
   export CARGO_TARGET_DIR="$HOME/opt/rust/cargo/target"
   export RUST_BACKTRACE=1
   # export RUSTC_WRAPPER='sccache cargo install {package}'
@@ -419,13 +443,13 @@ Emacs shell needs some help in not being braindead
 #+end_src
 *** less
 #+begin_src shell :tangle ./bashrc :mkdirp yes
+  
+    #
+    # I dont need history in less
+    #  Setting the histfile to /dev/null fixes this
+    #
 
-  #
-  # I dont need history in less
-  #  Setting the histfile to /dev/null fixes this
-  #
-
-  export LESSHISTFILE=/dev/null
+    export LESSHISTFILE=/dev/null
 
 #+end_src
 
@@ -479,17 +503,6 @@ Emacs shell needs some help in not being braindead
 #+end_src
 
 ** Prompt
-** CD Path
-#+begin_src shell :tangle ./bashrc :mkdirp yes
-
-  #
-  # This makes cd look for places to cd to in . and ~
-  # Surprisingly useful
-  #
-  export CDPATH=.:~
-
-#+end_src
-  
 *** Static prompt
 This is the static part of setting the prompt
 Prompt command function adds more glam
@@ -515,7 +528,7 @@ Prompt command function adds more glam
    # HH:MM bright yellow 
    PS1=$PS1'\[\e[01;33m\]\A '
 
-   # RAINBOW in rainbow colours
+   # Hostname in rainbow colours
    PS1=$PS1'\[\e[00;31m\]R\[\e[00;32m\]A\[\e[01;33m\]I\[\e[00;33m\]N\[\e[01;34m\]B\[\e[00;34m\]O\[\e[00;35m\]W\[\e[0m\]'
 
    # go up one line and back $COLUMNS steps
@@ -524,7 +537,7 @@ Prompt command function adds more glam
    # Working directory"
    PS1=$PS1' \[\e[33m\]\w\[\e[0m\]'
 
-   #Make sure we have the __git_ps1 function
+   #Use __git_ps1 if we have it
    if [[ -f /usr/lib/git-core/git-sh-prompt ]] ; then
        source /usr/lib/git-core/git-sh-prompt
        PS1=$PS1'\n\[\e[00;34m\]$(__git_ps1 "(%s)")\[\e[0m\]> '
@@ -552,6 +565,17 @@ This removes all the glitter printed after the prompt
   trap 'preexec' DEBUG
 
 #+end_src
+** CD Path
+#+begin_src shell :tangle ./bashrc :mkdirp yes
+
+  #
+  # This makes cd look for places to cd to in . and ~
+  # Surprisingly useful
+  #
+  export CDPATH=.:~
+
+#+end_src
+  
 ** LD
 #+begin_src shell :tangle ./bashrc :mkdirp yes
 
@@ -868,20 +892,20 @@ export ROOTPID=$BASHPID
 
   function create_lolcow ()
   {
-      local lolcow_file="/tmp/${USER}.lolcow.${ROOTPID}"
+      local lolcow_file="$TMP/$USER.lolcow.$ROOTPID"
 
       # Print an affirmation in a lolcow or sometimes a heart
       if [[ 0 = `shuf -i 0-24 -n 1` ]] ; then
           ansi_heart > $lolcow_file
       else
-          affirmation | cowsay | lolcat -f > $lolcow_file
+          affirmation | cowsay | lolcat > $lolcow_file
       fi
 
   }
 
   function display_lolcow () {
       #stuff
-      local lolcow_file="/tmp/${USER}.lolcow.${ROOTPID}"
+      local lolcow_file="$TMP/$USER.lolcow.$ROOTPID"
 
       echo -en "\e[J\n\n\n\n" 
 
@@ -1166,6 +1190,9 @@ Mainly because it's the only ruby thing I use
 #+begin_src shell :tangle ./aliases :mkdirp yes
   if ! command -v lolcat $> /dev/null ; then
       alias lolcat=$(command -v cat)
+  else
+      
+      alias lolcat=$(command -v lolcat)" -f -F 0.2"
   fi
 #+end_src
 *** bat
@@ -1218,7 +1245,7 @@ For the cd_func definition see [[CD Function]]
   #
   #alias clear='/usr/bin/clear.exe && affirmation | cowsay | lolcat -t -F 0.25 && NOAFFIRMATIONS=noaffirmations'
   alias cls='export clear_set="clear_set" && echo -ne "\e[H\e[J"'
-  alias clear='cls  && figlet -lt "Youve got this!!!" | lolcat -fx' 
+  alias clear='cls  && figlet -lt "Youve got this!!!" | lolcat' 
 
 
 
