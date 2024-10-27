@@ -1,0 +1,18 @@
+#+TITLE: Readme for dotfiles config
+#+AUTOR: E.M. From
+
+These are my attempts at getting my configs organised. I'm trying to use emacs orgmode throughout.
+
+
+* Emacs
+
+Everthing of import if in the file [[file:emacs/Emacs.org][Emacs.org]] that generates, i.e. tangles to, [[file:emacs/init.el][init.el]], [[file:emacs/early-init.el][early-init.el]] and [[file:emacs/desktop.el][desktop.el]]
+
+
+
+* Bash
+
+The whole config is in [[file:bash/Bash.org][Bash.org]] it tangles to the rc, profile and logout file as well as a bunch more for clarity. 
+
+
+

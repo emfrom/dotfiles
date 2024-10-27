@@ -1,0 +1,14 @@
+set runtimepath+=~/.config/vim,~/.config/vim/after
+set viminfofile=~/.config/vim/viminfo
+set directory=~/.config/vim/swap//,.,~/tmp,/var/tmp,/tmp
+set backupdir=~/.config/vim/backup//,.,~/tmp
+set undodir=~/.config/vim/undo//,.
+
+inoremap jk <ESC>
+let mapleader="'"
+syntax on
+set number
+set hlsearch
+set ignorecase
+set incsearch
+

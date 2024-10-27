@@ -1,0 +1,1676 @@
+#+TITLE: Emacs config for emfrom
+#+AUTOR: E.M. From
+#+PROPERTY: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
+#+STARTUP: overview
+
+*Init files for emacs*
+
+[[file:early-init.el][early-init.el]] comes from [[Early init]] section
+[[file:desktop.el][desktop.el]] is loaded for EXWM sessions
+[[file:init.el][init.el]] is the rest of the file starting with the [[Init][Init]] section
+
+
+Credit is given here and there.
+
+Very bit thanks to David Wilson that got me back into using emacs, almost feels like it's the 90s again.
+
+and thanks to all others who have forged the way! Onwards into the breach!
+
+* Early init
+This stuff goes into [[file:early-init.el][early-init.el]]
+(I've completely forotten why)
+
+Each emacs-lisp section in here needs to tangle to that target
+ =
+ :tangle ./early-init.el :mkdirp yes
+ =
+ 
+** Reminder to edit this file
+
+#+begin_src emacs-lisp :tangle ./early-init.el :mkdirp yes
+  ;;; -*- lexical-binding: t -*-
+  ;;
+  ;; OBS!!!!
+  ;;
+  ;; Dont edit this file, edit Emacs.org
+  ;;
+  ;;
+  
+#+end_src
+
+** Debug during startup
+
+From https://github.com/opsnull/emacs/blob/master/early-init.el
+
+#+begin_src emacs-lisp :tangle ./early-init.el :mkdirp yes
+
+  ;;
+  ;; Go to debug if there is an error
+  ;;
+  (setq debug-on-error t)
+  (add-hook 'emacs-startup-hook (lambda () (setq debug-on-error nil)))
+
+#+end_src
+
+
+** Disable GC
+Disable the GC so we wont have any during bootup
+
+From https://www.reddit.com/r/emacs/comments/qw52na/emacs_271_earlyinit_file/
+
+#+begin_src emacs-lisp :tangle ./early-init.el :mkdirp yes
+
+  ;;
+  ;; A big contributor to startup times is garbage collection. We up the gc
+  ;; threshold to temporarily prevent it from running, then reset it later
+  ;;
+  (setq gc-cons-threshold most-positive-fixnum)
+  (add-hook 'after-init-hook
+            (lambda ()
+              (setq gc-cons-threshold 8000000)))
+
+#+end_src
+
+** Edited EL over ELC
+ensure edited .el files are preferred over .elc
+
+#+begin_src emacs-lisp :tangle ./early-init.el :mkdirp yes
+
+  ;;
+  ;; ensure edited .el files are preferred over .elc
+  ;;
+  (setq load-prefer-newer t)
+
+
+#+end_src
+
+** Package managment
+Dont start package system to early
+
+NOTE: This does not make any sense, what am I missing
+
+#+begin_src emacs-lisp :tangle ./early-init.el :mkdirp yes
+
+  ;;
+  ;; In Emacs 27+, package initialization occurs before `user-init-file' is
+  ;; loaded, but after `early-init-file'.
+  ;; We handle package initialization explicitly,
+  ;; so we must prevent Emacs from doing it early!
+  (setq package-enable-at-startup nil)
+  (setq package-quickstart t)
+
+#+end_src
+** Frame stuff
+These are in several early-init.el I have seen
+They stop the recalculation of framesize, something that will never really happen
+when all gui elements are invisible and we are always in fullscreen
+
+#+begin_src emacs-lisp :tangle ./early-init.el :mkdirp yes
+
+  ;;
+  ;; Frame stuff
+  ;;
+  (setq frame-inhibit-implied-resize t)
+  (setq frame-resize-pixelwise t)
+
+
+#+end_src
+
+** UTF-8 coding
+
+Use UTF-8 as default
+
+NOTE: This might break some of my old files
+
+From https://github.com/frobware/emacs.d/blob/master/early-init.el
+
+#+begin_src emacs-lisp :tangle ./early-init.el :mkdirp yes
+
+  ;;
+  ;; Contrary to what many Emacs users have in their configs, you don't
+  ;; need more than this to make UTF-8 the default coding system:
+  (set-language-environment "UTF-8")
+
+  ;; set-language-enviornment sets default-input-method, which is
+  ;; unwanted.
+  (setq default-input-method nil)
+
+
+#+end_src
+
+** Identity
+Set name and such
+
+#+begin_src emacs-lisp :tangle ./early-init.el :mkdirp yes
+
+  ;;
+  ;; Set name and email
+  ;;
+  (setq user-full-name "emfrom")
+  (setq user-mail-address "vertlaforet@protonmail.com")
+
+#+end_src
+
+** Customize package
+
+Moved from normal init, still not sure it is necessary
+
+The custom package will add unintelligble gunk to the emacs.el file if we dont tell it where to put it's crap
+
+#+begin_src emacs-lisp :tangle ./early-init.el :mkdirp yes
+
+  ;;
+  ;; Custom adds these, might as well be in the beginning
+  ;;
+  (setq custom-file (expand-file-name "~/etc/emacs/custom.el"))
+  (add-hook 'after-init-hook (lambda () (when (file-exists-p custom-file) (load custom-file))))
+
+#+end_src
+
+** Start Fullscreen
+
+Is this what this does, really?
+
+Maximised only makes it maximised, of course
+Fullscreen is what we want
+Actually, we want both
+
+#+begin_src emacs-lisp :tangle ./early-init.el :mkdirp yes
+
+  ;;
+  ;; Start fullscreen
+  ;;
+  ;;(add-hook 'emacs-startup-hook 'toggle-frame-maximized)
+  (add-hook 'window-setup-hook 'toggle-frame-maximized t)
+  (add-hook 'window-setup-hook 'toggle-frame-fullscreen t)
+
+
+#+end_src
+
+
+* Init 
+The rest of this file generates [[file:init.el][init.el]]
+
+This is basically my versions of David Wilsons Emacs from scratch
+https://github.com/daviwil/emacs-from-scratch
+
+** Intro
+*** Reminder to edit this file
+TO EDIT, OR NOT TO EDIT
+
+#+begin_src emacs-lisp
+  ;;; -*- lexical-binding: t -*-
+  ;;
+  ;; OBS!!!!
+  ;;
+  ;; Dont edit this file, edit Emacs.org
+  ;;
+  ;;
+#+end_src
+
+*** Startup time
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Say how long emacs took to start
+  ;;
+  (defun emfrom/display-startup-time ()
+    (message "Emacs loaded in %s with %d garbage collections."
+             (format "%.2f seconds"
+                     (float-time
+                      (time-subtract after-init-time before-init-time)))
+             gcs-done))
+
+  (add-hook 'emacs-startup-hook #'emfrom/display-startup-time)
+
+#+end_src
+
+*** Emacs directory
+Is needed for no littering and also nice to do
+
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Tell emacs where it lives
+  ;;
+  (setq user-emacs-directory "~/etc/emacs")
+
+#+end_src
+
+*** GUI stuff
+This that only matter if we are not in a terminal
+
+**** Disable gui elements
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Disable GUI elements
+  ;; 
+  (when (display-graphic-p)
+    (set-fringe-mode 10)       ; Give some breathing room
+    (tooltip-mode -1)           ; Disable tooltips
+    ) 
+
+  (scroll-bar-mode -1)        ; Disable visible scrollbar
+  (tool-bar-mode -1)          ; Disable the toolbar
+  (menu-bar-mode -1)        ; Disable the menu bar
+
+#+end_src
+
+*** Visible bell
+Stop emacs from beeping at us all the time
+
+Flashes top and bottom of screen instead
+
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Set up the visible bell
+  ;;
+  (setq visible-bell t)
+
+#+end_src
+
+*** Inhibit startup message
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Turn off the pointless startup message
+  ;;
+  (setq inhibit-startup-message t)
+
+
+#+end_src
+
+*** Key mapping and remapping
+**** Modifiers
+This remaps:
+Caps-lock -> Control
+Win-key -> Super
+Menu-key -> Hyper
+
+Note that this will remap the keys regardless if exwm is active or not
+
+#+begin_src shell :tangle ./exwm/Xmodmap :mkdirp yes
+  clear lock
+  keycode 66 = Control_L
+  add control = Control_L
+
+  clear Mod4
+  keycode 133 = Super_L
+  add Mod4 = Super_L
+
+  clear Mod3
+  keycode 135 = NoSymbol
+  keycode 135 = Hyper_L
+  add Mod3 = Hyper_L
+#+end_src
+
+***** Call Xmodmap
+#+begin_src emacs-lisp
+
+  ;; Remap keys as per exwm/Xmodmap
+  (start-process-shell-command "xmodmap" nil "xmodmap ~/etc/emacs/exwm/Xmodmap")
+
+  ;; Make sure emacs recognises Hyper properly
+  ;;
+  ;; I really dont understand enough of these keymaps
+  ;; but if I dont do this after startup it just does not regognise the hyper key
+  ;;  (defun emfrom/set-hyper-key ()
+  ;;    (setq x-hyper-keysym 'hyper))
+  ;;
+  ;;(add-hook 'emacs-startup-hook #'emfrom/set-hyper-key)
+
+
+
+
+#+end_src
+
+***** TODO Fix Hyper key
+For some reason this does not work under EXWM while working fine under Xcfe
+
+**** PAUSE to C-c
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Remap pause to C-c for some dumb terminals (like mintty)
+  ;;
+
+  (define-key key-translation-map (kbd "<pause>") (kbd "C-c"))
+#+end_src
+**** ESC always quits
+This is useful for other modes like evil mode
+
+It's also useful in termux because the ESC key is visible at all times
+
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Make ESC quit prompts
+  ;;
+  (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
+
+#+end_src
+**** Alt-TAB to switch buffer
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Somewhat windowsy
+  ;;
+  (bind-key "M-<tab>" 'switch-to-next-buffer global-map)
+  (bind-key "M-<iso-lefttab>" 'switch-to-prev-buffer global-map)
+
+#+end_src
+*** Line numbers
+Turn on linenumbers globally but disable for listed modes
+
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Line numbers
+  ;;
+  (column-number-mode)
+  (global-display-line-numbers-mode t)
+
+  ;; Disable line numbers for some modes
+  (dolist (mode '(org-mode-hook
+                  term-mode-hook
+                  shell-mode-hook
+                  eshell-mode-hook))
+    (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+#+end_src
+** Package managers
+Setup the package managers for emacs and more repositories
+
+*** Initialize package sources
+
+Note: I think this takes forever
+
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Initialize package sources
+  ;;
+  (require 'package)
+
+  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                           ("org" . "https://orgmode.org/elpa/")
+                           ("elpa" . "https://elpa.gnu.org/packages/")))
+
+  (package-initialize)
+
+  ;; Reload package archives
+  ;; Is this what takes forever on startup?
+  (unless package-archive-contents
+    (package-refresh-contents))
+
+
+#+end_src
+
+*** Use-package
+
+Setup the use-package manager
+
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Initialize use-package on non-Linux platforms
+  ;;
+  (unless (package-installed-p 'use-package)
+    (package-install 'use-package))
+
+  (require 'use-package)
+  (setq use-package-always-ensure t)
+  (setq use-package-always-defer t)
+
+#+end_src
+
+*** Fix gpg bug
+This bug makes emacs under msys2 use a windows style path instead of an msys2 one
+It will cause package verification to not work
+
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Trying to fix the bug
+  ;;
+  (setq package-gnupghome-dir "~/emacs/elpa/gnupg")
+  (setq epg-gpg-program "gpg --homedir ~/etc/emacs/elpa/gnupg")
+
+#+end_src
+
+*** Automatic Package Updates
+
+The auto-package-update package helps us keep our Emacs packages up to date! It will prompt you after a certain number of days either at startup or at a specific time of day to remind you to update your packages.
+
+You can also use =M-x auto-package-update-now= to update right now!
+
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Update packages automagically
+  ;;
+  (use-package auto-package-update
+    :custom
+    (auto-package-update-interval 7)
+    (auto-package-update-prompt-before-update t)
+    (auto-package-update-hide-results t)
+    :config
+    (auto-package-update-maybe)
+    (auto-package-update-at-time "13:00"))
+
+#+end_src
+
+** EXWM
+Emacs Window Manager
+
+The guix configuration is really making me shit bricks over this
+I've decided to just load exwm config unless I'm in a terminal
+
+#+begin_src emacs-lisp
+  ;;
+  ;; Load EXWM and settings from desktop.el
+  ;;
+  ;;(unless (display-graphic-p)
+  ;;    (message "In terminal, skipping desktop.el")
+  ;;    (load "~/etc/emacs/desktop.el"))
+
+  ;; I give up on this
+  (load "~/etc/emacs/desktop.el")
+  
+#+end_src
+
+** Themes and eye-candy
+Here goes stuff that has to do with look 
+
+*** All the icons
+#+begin_src emacs-lisp
+
+  ;;
+  ;; More icons
+  ;;
+  (use-package all-the-icons)
+
+#+end_src
+*** Doom modeline
+Use a pretty modeline instead of the default one
+
+#+begin_src emacs-lisp
+
+  ;;
+  ;; doom modeline
+  ;;
+  (use-package doom-modeline
+    :ensure t
+    :init (doom-modeline-mode 1)
+    :custom ((doom-modeline-height 8)))
+
+#+end_src
+
+*** Theme (Doom)
+Use a doom theme instead of a normal emacs theme since it covers more modes
+
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Use doom themes and load Acario dark
+  ;;
+  (use-package doom-themes
+    :init (load-theme 'doom-acario-dark t))
+
+#+end_src
+
+** Helpers
+Modes and mini modes that help getting stuff done
+
+*** Completion framework
+Completion frameworks are the packages that help navigate named entities in emacs
+Mostly in the minibuffer (i think)
+
+So far I have IVY, which comes with swiper and Counsel
+Swiper is the search document function bound to C-s
+
+[[https://oremacs.com/swiper/][IVY manual]]
+
+**** IVY
+
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Better context stuff with IVY
+  ;;
+  (use-package ivy
+    :diminish
+    :bind (("C-s" . swiper)
+           :map ivy-minibuffer-map
+           ("TAB" . ivy-alt-done)	
+           ("C-l" . ivy-alt-done)
+           ("C-j" . ivy-next-line)
+
+           ("C-k" . ivy-previous-line)
+           :map ivy-switch-buffer-map
+           ("C-k" . ivy-previous-line)
+           ("C-l" . ivy-done)
+           ("C-d" . ivy-switch-buffer-kill)
+           :map ivy-reverse-i-search-map
+           ("C-k" . ivy-previous-line)
+           ("C-d" . ivy-reverse-i-search-kill))
+    :config
+    (ivy-mode 1))
+
+  ;; for some reason above dont work
+  (ivy-mode)
+
+  ;;
+  ;; Different interface for Ivy's switch buffer
+  ;;
+  (use-package ivy-rich
+    :init
+    (ivy-rich-mode 1)
+    :after ivy)
+
+
+#+end_src
+
+
+**** Counsel
+
+Uses ivy to provide better buffer switching, file finding and M-x functionality
+
+Note: Both C-x b and C-x C-b are bound to counsel ibuffer to clutter less
+
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Counsel to change completion in M-x and some other core emacs functionality
+  ;;
+    (use-package counsel
+      :ensure t
+      :bind (("M-x" . counsel-M-x)
+             ("C-x b" . counsel-ibuffer)
+             ("C-x C-b" . counsel-ibuffer)
+             ("C-x C-f" . counsel-find-file)
+             :map minibuffer-local-map
+             ("C-r" . 'counsel-minibuffer-history))
+      :custom
+      (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
+      )
+
+#+end_src
+
+*** Helpful
+Helpful is an alternative to the built-in Emacs help that provides much more contextual information. [[https://github.com/Wilfred/helpful][Helpful at github]]
+
+Note: Map some keys to counsel functions though
+WHY?
+
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Helpful, better emacs help
+  ;;
+  (use-package helpful
+    :custom
+    (counsel-describe-function-function #'helpful-callable)
+    (counsel-describe-variable-function #'helpful-variable)
+    :bind
+    ([remap describe-function] . counsel-describe-function)
+    ([remap describe-command] . helpful-command)
+    ([remap describe-variable] . counsel-describe-variable)
+    ([remap describe-key] . helpful-key))
+
+#+end_src
+
+*** Which key
+Show possible completions in minibuffer whenever a key has been hit
+
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Completion popup for key presses
+  ;;
+  (use-package which-key
+    :init (which-key-mode)
+    :diminish which-key-mode
+    :config
+
+    ;; Time before popup	 
+    (setq which-key-idle-delay 0.5))
+
+#+end_src
+
+*** Leader keys
+Access to key trees from a leader
+
+NOTE: I dont really use this, why do I keep it?
+
+**** General for keybinding
+General presents a unified interface for keybinding
+
+NOTE: Do I really use this?
+
+[[https://github.com/noctuid/general.el][General on github w manual]]
+
+#+begin_src emacs-lisp
+
+;; ;;
+;; ;; General to bind a leader key
+;; ;;
+;; (use-package general
+;;   :config
+;;   (general-create-definer emfrom/leader-keys
+;;     :keymaps '(normal insert visual emacs)
+;;     :prefix "RET"
+;;     :global-prefix "C-RET"))  
+
+
+#+end_src
+
+
+**** Hydra for key tree
+This is a package for GNU Emacs that can be used to tie related commands into a family of short bindings with a common prefix - a Hydra.
+
+[[https://github.com/abo-abo/hydra][Hydra @ github]]
+
+NOTE: I'm not really using this either
+
+#+begin_src emacs-lisp
+
+  ;; ;;
+  ;; ;; Hydra for leader key maps
+  ;; ;;
+  ;; (use-package hydra)
+
+  ;; (defhydra hydra-text-scale (:timeout 4)
+  ;;   "scale text"
+  ;;   ("j" text-scale-increase "in")
+  ;;   ("k" text-scale-decrease "out")
+  ;;   ("f" nil "finished" :exit t))
+
+  ;; (emfrom/leader-keys
+  ;;   "t" '(counsel-load-theme :which-key "choose theme")
+  ;;   "s" '(hydra-text-scale/body :which-key "scale text"))
+
+#+end_src
+
+*** Word counts
+Counting of words
+Binding it to C-c w globally since it something I might do a lot
+
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Word count mode
+  ;;
+  (use-package wc-mode
+    :defer)
+  (global-set-key (kbd "C-c w") 'wc-count)
+
+  #+end_src
+**** TODO Why does :bind for the key not work
+
+The key does not work because the mode is not loaded. I tried writing a function that sets wc-mode true but it just threw a bunch of errors
+
+*** Better undo-redo
+
+Replaces the built in undo package with a new one. This one has an undo redo that makes more sense to me. I've also added a snippet from Emacs news 22-10-17 that creates a simple go back to last edit using said undo/redo package.
+
+Cant find the package
+
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Undo/Redo and jump to last edit
+  ;;
+  ;; (use-package undo-fu)
+
+  ;; (global-unset-key (kbd "C-z"))
+  ;; (global-unset-key (kbd "C-S-z"))
+  ;; (global-unset-key (kbd "M-z"))
+  ;; (global-unset-key (kbd "C-x u"))
+
+  ;; (defun emfrom-back-to-last-edit ()
+  ;;   "Jump back to the last change in the current buffer.
+  ;;    Rewrite of Manuel Oberti to use the undo-fo package"
+  ;;   (interactive)
+  ;;   (ignore-errors
+  ;;     (let ((inhibit-message t))
+  ;;       (undo-fu-only-undo)
+  ;;       (undo-fu-only-redo))))
+
+  ;; (global-set-key (kbd "C-z")   'undo-fu-only-undo)
+  ;; (global-set-key (kbd "C-S-z") 'undo-fu-only-redo)
+  ;; (global-set-key (kbd "M-z") #'emfrom-back-to-last-edit)
+
+#+end_src
+
+*** Display time
+#+begin_src emacs-lisp
+
+  (display-time-mode 1)
+  (setq display-time-24hr-format t)
+  (setq display-time-day-and-date nil)
+
+#+end_src
+** ORG Mode 
+The almighty org mode life, stuff and everything organizer
+https://orgmode.org/
+*** Debugging org mode
+#+begin_src emacs-lisp
+  (setq org-element--cache-self-verify 'backtrace)
+  (message "You have org-mode debugging on!")
+#+end_src
+
+*** ORG Mode
+Life organiser
+
+Lots of stuff to change and do,
+conf still feels clunky
+
+#+begin_src emacs-lisp
+
+  ;;
+   ;; ORG mode
+   ;;
+   (defun emfrom/org-mode-setup ()
+       (org-indent-mode)
+       (variable-pitch-mode 0)
+       (visual-line-mode 1))
+
+  (use-package org
+    :ensure t
+    :hook (org-mode . emfrom/org-mode-setup)
+    :config
+    (setq org-ellipsis " ▾")
+
+      (setq org-return-follows-link t)
+
+      (setq org-agenda-start-with-log-mode t)
+      (setq org-log-done 'time)
+      (setq org-log-into-drawer t)
+
+      (setq org-directory
+            "~/opt/org-mode")
+
+      (setq org-agenda-files
+            '("~/opt/org-mode/GTD/GTD.org"
+              "~/opt/org-mode/GTD/Someday.org"
+              "~/opt/org-mode/GTD/Habits.org"))
+
+
+      (require 'org-habit)
+      (add-to-list 'org-modules 'org-habit)
+      (setq org-habit-graph-column 60)
+
+      (setq org-refile-targets
+        '(("~/opt/org-mode/GTD/Archive.org" :maxlevel . 1)
+          ("~/opt/org-mode/GTD/Someday.org" :maxlevel . 1)
+          ("~/opt/org-mode/GTD/GTD.org" :maxlevel . 1)))
+
+      ;; Save Org buffers after refiling!
+      (advice-add 'org-refile :after 'org-save-all-org-buffers)
+
+
+      (setq org-todo-keywords
+        '((sequence "TODO(t)" "NEXT(n)" "WAIT(w@/!)" "|" "DONE(d!)")
+          (sequence "PLAN(p)" "ACTIVE(a)" "SOMEDAY(s)" "TICKLER(i)" "|" "COMPLETED(c)" "CANC(k@)")))
+
+        (setq org-tag-alist
+        '((:startgroup)
+           ; Put mutually exclusive tags here
+           (:endgroup)
+           ("@computer" . ?C)
+           ("@phone" . ?P)
+           ("@town" . ?T)
+           ("@bigtown" . ?B)
+           ("@home" . ?H)
+           ("zoe" . ?z)
+           ("christine" . ?c)
+           ("doctor" . ?d)
+           ("buy" . ?b)
+           ("read" . ?r)
+           ))
+
+        ;;
+        ;; ORG Agenda shows only one day
+        ;;
+        (setq org-agenda-span 1)
+
+        ;;
+        ;; Configure custom agenda views
+        ;;
+        (setq org-agenda-custom-commands
+              '(("z" "Talks to Zoe" tags-todo "zoe"
+                 ((org-agenda-overriding-header "Zoe talk")))
+
+                ("n" "Next Tasks"
+                 ((todo "NEXT"
+                        ((org-agenda-overriding-header "Next Tasks")
+                         (org-agenda-max-todos 5)))))
+                ;; Low-effort next actions
+                ("e" tags-todo "+TODO=\"NEXT\"++Effort==1"
+                 ((org-agenda-overriding-header "Low Effort Tasks")
+                  (org-agenda-max-todos 10)
+                  (org-agenda-files org-agenda-files)))
+
+                ("w" "Workflow Status"
+                 ((todo "ACTIVE"
+                        ((org-agenda-overriding-header "Active Projects")
+                         (org-agenda-files org-agenda-files)))
+                  (todo "WAIT"
+                        ((org-agenda-overriding-header "Waiting on External")
+                         (org-agenda-files org-agenda-files)))
+                  (todo "PLAN"
+                        ((org-agenda-overriding-header "In Planning")
+                         (org-agenda-todo-list-sublevels nil)
+                         (org-agenda-files org-agenda-files)))
+                  (todo "COMPLETED"
+                        ((org-agenda-overriding-header "Completed Projects")
+                         (org-agenda-files org-agenda-files)))
+                  (todo "CANC"
+                        ((org-agenda-overriding-header "Cancelled Projects")
+                         (org-agenda-files org-agenda-files)))))))
+
+      ;;
+      ;; Capture templates
+        ;;
+        (setq org-capture-templates
+              `(("t" "Task" entry (file+olp "~/opt/org-mode/GTD/Inbox.org" "Inbox")
+                 "* TODO %?\n:PROPERTIES:\n:CREATED:  %U\n:END:\n  %i" :empty-lines 1)
+
+                ("a" "Task w/ Annotation" entry (file+olp "~/opt/org-mode/GTD/Inbox.org" "Inbox")
+                 "* TODO %?\n:PROPERTIES:\n:CREATED:  %U\n:END:\n  %a\n  %i" :empty-lines 1)
+
+                ("y" "Youtube video idea" entry (file+olp "~/opt/org-mode/doc/Youtube.org" "Ideas")
+                 "* %?\n  %U\n  %a\n  %i" :empty-lines 1)
+
+                ("j" "Journal Entries")
+                ("jj" "Journal" entry
+                 (file+olp+datetree "~/opt/org-mode/Journal.org")
+                 "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
+                 :empty-lines 1)
+
+                ("jm" "Morning Journal" entry
+                 (file+olp+datetree "~/opt/org-mode/Journal.org")
+                 "\n* %<%I:%M %p> - Journal :journal:\n\n%?%[~/opt/org-mode/GTD/Templates/5minMorning.template]\n\n"
+                 :empty-lines 1)
+
+                ("je" "Evening Journal" entry
+                 (file+olp+datetree "~/opt/org-mode/Journal.org")
+                 "\n* %<%I:%M %p> - Journal :journal:\n\n%?%[~/opt/org-mode/GTD/Templates/5minEvening.template]\n\n"
+                 :empty-lines 1)
+
+                ("js" "Morning 750 words" entry
+                 (file+olp+datetree "~/opt/org-mode/Journal.org")
+                 "\n* %<%I:%M %p> - Journal :journal:\n\n%[~/opt/org-mode/GTD/Templates/Morning750.template]%?\n\n"
+                 :empty-lines 1)
+                ))
+
+        (define-key global-map (kbd "C-c c")
+          (lambda () (interactive) (org-capture)))
+
+        (global-set-key (kbd "C-c a") #'org-agenda)
+        (global-set-key (kbd "C-c e") #'org-set-effort)
+
+        )
+
+#+end_src
+
+
+*** Bullets
+Change how the * and ** looks
+#+begin_src emacs-lisp
+
+  ;;
+  ;; ORG Bullets, change the look of the header bullets in org mode
+  ;;
+  (use-package org-bullets
+    :ensure t
+    :after org
+    :hook (org-mode . org-bullets-mode)
+    :custom
+    (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+#+end_src
+
+*** Visual fill mode
+Change where org mode displays text
+
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Visual fill for org mode
+  ;;
+  (defun emfrom/org-mode-visual-fill ()
+    (setq visual-fill-column-width 185
+          visual-fill-column-center-text t)
+    (visual-fill-column-mode 1))
+
+  (use-package visual-fill-column
+    :ensure t
+    :hook (org-mode . emfrom/org-mode-visual-fill))
+
+#+end_src
+
+*** Tempo for code blocks
+Enables templeate expansion of <el TAB to an emacs-lisp code section
+
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Adding source code block templates
+  ;; 
+
+  (require 'org-tempo)
+  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+  (add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
+
+
+#+end_src
+
+*** Indentation in code blocks
+Make tab in code blocks behave like it's respective major mode 
+
+#+begin_src emacs-lisp
+
+  ;;
+  ;; same effect for `tab' as in the language major mode buffer
+  ;;
+  (setq org-src-tab-acts-natively t)
+
+#+end_src
+
+*** ORG Roam
+This is the ORG Roam zettlekasten implementation
+
+It is a database that fills with interdependacy links between org tiles with an id property in the specified org roam directory.
+
+My config is based on this great intro: [[https://www.youtube.com/watch?v=AyhPmypHDEw&list=PLEoMzSkcN8oN3x3XaZQ-AXFKv52LZzjqD]]
+
+#+begin_src emacs-lisp
+
+
+  ;;
+  ;; ORG Roam, database of files
+  ;;
+  (use-package org-roam
+      :ensure t
+      :init
+      (setq org-roam-v2-ack t)
+      :custom
+      (org-roam-directory "~/opt/org-mode/roam")
+      (org-roam-completion-everywhere t)
+
+      :bind (("C-c n l" . org-roam-buffer-toggle)
+             ("C-c n f" . org-roam-node-find)
+             ("C-c n i" . org-roam-node-insert)
+             :map org-mode-map
+             ("C-M-i" . completion-at-point))
+      :config
+      (setq org-roam-capture-templates
+            '(("d" "default" plain
+               "\n%?\n\n\n\n\n\n* Links\n** External\n** Internal"
+               :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+author: E.M. From\n#+startup: overview\n#+date: %U\n#+title: ${title}")
+               :unnarrowed t)
+              ))
+
+
+
+      (org-roam-setup)
+      (org-roam-db-autosync-mode))
+
+
+#+end_src
+
+*** Auto-tangle
+**** This file
+
+This snippet adds a hook to =org-mode= buffers so that =emfrom/org-babel-tangle-config= gets executed each time such a buffer gets saved.  This function checks to see if the file being saved is in an auto tangle directory or not. If it is, it's automatically tangled by 'after-save-hook
+
+I use a list of directories so I can change it by addint the following to =.dir-locals.el=
+  ((org-mode . ((eval . (add-to-list 'emfrom/org-babel-tangle-dirs (file-name-directory (or load-file-name buffer-file-name)))))))
+
+#+begin_src emacs-lisp
+
+  ;; Define a customizable list for directories to tangle automatically
+  (defvar emfrom/org-babel-autotangle-dirs
+    (mapcar #'expand-file-name '("~/etc/emacs/" "~/etc/bash/"))
+    "List of directories where org-babel-tangle should auto-tangle on save.")
+
+  ;; Function to use the customizable list
+  (defun emfrom/org-babel-tangle-config ()
+    (when (member (file-name-directory (buffer-file-name))
+                  emfrom/org-babel-autotangle-dirs)
+      (let ((org-confirm-babel-evaluate nil))
+        (org-babel-tangle))))
+
+  ;;
+  ;; Automatically tangle our org-mode config files when we save them
+  ;; Lists the directories that are managed by org mode
+  ;;
+  (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'emfrom/org-babel-tangle-config)))
+
+
+  ;; These help with auto tangling in some cases 
+  ;; (setq org-babel-min-lines-for-block-output 0)
+  ;; (setq max-buffer-size (* 1024 1024 1024))
+  
+#+end_src
+
+
+** Development
+This that have to do with programming, version control etc and so forth (not the programing language)
+
+*** Magit
+The most awesomest git frontend (really)
+
+I actually understand this one
+
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Magit, git frontend
+  ;;
+
+  (use-package magit
+    :custom
+    (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
+  (bind-key "s-m" 'magit-status global-map)
+#+end_src
+
+*** Rainbow delimiters
+Make emacs lisp more readable by coloring the parenthesis
+
+Note: Not sure this helps me very much
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Rainbow delimiters for emacs lisp
+  ;;
+  (use-package rainbow-delimiters
+    :hook (prog-mode . rainbow-delimiters-mode))
+
+#+end_src
+**** TODO Maybe I can change the colors
+not high prio, but it would be nice if it could be done
+
+*** Commenting
+Better commenting
+
+M-; sort of comments at the end of line
+M-/ comments out the line
+
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Evil nerd commenting, bound to M-/
+  ;;
+  (use-package evil-nerd-commenter	
+    :bind ("M-/" . evilnc-comment-or-uncomment-lines))
+
+#+end_src
+
+*** Rust
+
+A mode for coding in rust
+
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Rust mode(the programming language)
+  ;;
+  (require 'rust-mode)
+
+  ;; No tabs in rust code
+  (add-hook 'rust-mode-hook
+            (lambda () (setq indent-tabs-mode nil)))
+
+  ;; Autoformat on save
+  (setq rust-format-on-save t)
+
+  ;; Make rust pretty
+  (add-hook 'rust-mode-hook
+          (lambda () (prettify-symbols-mode)))
+
+#+end_src
+
+*** LSP
+LSP Mode to connect to language servers like clangd
+
+#+begin_src emacs-lisp
+  (use-package lsp-mode
+    :commands (lsp lsp-deferred)
+    :init
+    (setq lsp-keymap-prefix "s-l")  ;; Or 'C-l', 's-l'
+    :config
+    (lsp-enable-which-key-integration t))
+
+  (defun efs/lsp-mode-setup ()
+    (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+    (lsp-headerline-breadcrumb-mode)
+    :hook (lsp-mode . efs/lsp-mode-setup))
+
+  (use-package lsp-ui
+    :hook (lsp-mode . lsp-ui-mode))
+
+  (setq lsp-ui-doc-position 'bottom)
+  (setq lsp-ui-sideline-enable nil)
+  (setq lsp-ui-sideline-show-hover nil)
+
+  (use-package lsp-treemacs
+    :after lsp)
+
+  (use-package lsp-ivy)
+
+  (add-hook 'c-mode 'lsp-deferred)
+
+
+
+#+end_src
+
+*** Geiser
+#+begin_src emacs-lisp
+  (use-package geiser)
+
+  ;; Set Geiser implementation
+  (setq geiser-active-implementations '(guile))
+
+  
+#+end_src
+
+*** Company
+#+begin_src emacs-lisp
+    (use-package company
+      :after lsp-mode
+      :hook (prog-mode . company-mode)
+      :bind
+      (:map company-active-map
+                 ("<tab>" . company-complete-selection))
+      (:map lsp-mode-map
+            ("<tab>" . company-indent-or-complete-common))
+      
+      :custom
+      (company-minimum-prefix-length 1)
+      (company-idle-delay 0.0))
+
+
+    (use-package company-box
+      :hook (company-mode . company-box-mode))
+  ;; Ensure the required packages are installed
+  
+  ;; Activate company mode globally
+  (add-hook 'after-init-hook 'global-company-mode)
+
+  ;; Enable company mode in scheme buffers
+  (add-hook 'scheme-mode-hook (lambda () (company-mode)))
+
+
+#+end_src
+
+*** Flycheck
+#+begin_src emacs-lisp
+
+  (add-hook 'after-init-hook #'global-flycheck-mode)
+#+end_src
+ 
+** Productivity tools
+Things that make life easier
+
+*** Pomidor
+A semi graphical pomodori technique time tracker
+
+NOTE: How to make it better at restoring a saved session
+
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Pomidor, pomodoro time tracker
+  ;;
+  (use-package pomidor
+    :config
+    (setq pomidor-sound-tick nil)
+    (setq pomidor-seconds 1800)
+    (setq pomido-break-seconds 600)
+    (setq pomidor-long-break 1200)
+         
+    :bind
+        :bind ("<f12>" . pomidor))
+    
+
+  (add-hook 'kill-emacs-hook 'pomidor-save-session)
+  ;; how to remove interactive, how to load the session
+
+#+end_src
+
+*** Projectile
+Projectile is currently only used in the src directory
+Maybe we want org too?
+Maybe .config??
+
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Projectile to keep track of git managed projects
+  ;;
+
+  (use-package projectile
+    :diminish projectile-mode
+    :config (projectile-mode)
+    :custom ((projectile-completion-system 'ivy))
+    :bind-keymap
+    ("H-p" . projectile-command-map)
+    :init
+    ;; NOTE: Set this to the folder where you keep your Git repos!
+    (when (file-directory-p "~/src")
+      (setq projectile-project-search-path '("~/src")))
+    (setq projectile-switch-project-action #'projectile-dired))
+
+
+  ;;
+  ;; Integrate projectile into counsel
+  ;;
+  (use-package counsel-projectile
+    :config (counsel-projectile-mode))
+
+#+end_src
+
+*** Abbrev me
+
+#+begin_src emacs-lisp
+  ;;
+  ;; Abbrev mode
+  ;;
+  ;;(global-set-key (kbd "C-x C-a") 'abbrev-mode)
+
+#+end_src
+
+**** TODO Can abbrevs eat up the space after
+**** TODO Can abbrevs use non alnum chars
+
+** File management
+*** Dired
+
+Dired is a built-in file manager for Emacs that does some pretty amazing things!  Here are some key bindings you should try out:
+
+**** Key Bindings
+
+*I am not sure these are correct since they are mostly for evil mode, maybe*
+
+***** Navigation
+
+*Emacs* / *Evil*
+- =n= / =j= - next line
+- =p= / =k= - previous line
+- =j= / =J= - jump to file in buffer
+- =RET= - select file or directory
+- =^= - go to parent directory
+- =S-RET= / =g O= - Open file in "other" window
+- =M-RET= - Show file in other window without focusing (previewing files)
+- =g o= (=dired-view-file=) - Open file but in a "preview" mode, close with =q=
+- =g= / =g r= Refresh the buffer with =revert-buffer= after changing configuration (and after filesystem changes!)
+
+***** Marking files
+
+- =m= - Marks a file
+- =u= - Unmarks a file
+- =U= - Unmarks all files in buffer
+- =* t= / =t= - Inverts marked files in buffer
+- =% m= - Mark files in buffer using regular expression
+- =*= - Lots of other auto-marking functions
+- =k= / =K= - "Kill" marked items (refresh buffer with =g= / =g r= to get them back)
+- Many operations can be done on a single file if there are no active marks!
+ 
+***** Copying and Renaming files
+
+- =C= - Copy marked files (or if no files are marked, the current file)
+- Copying single and multiple files
+- =U= - Unmark all files in buffer
+- =R= - Rename marked files, renaming multiple is a move!
+- =% R= - Rename based on regular expression: =^test= , =old-\&=
+
+*Power command*: =C-x C-q= (=dired-toggle-read-only=) - Makes all file names in the buffer editable directly to rename them!  Press =Z Z= to confirm renaming or =Z Q= to abort.
+
+***** Deleting files
+
+- =D= - Delete marked file
+- =d= - Mark file for deletion
+- =x= - Execute deletion for marks
+- =delete-by-moving-to-trash= - Move to trash instead of deleting permanently
+
+***** Creating and extracting archives
+
+- =Z= - Compress or uncompress a file or folder to (=.tar.gz=)
+- =c= - Compress selection to a specific file
+- =dired-compress-files-alist= - Bind compression commands to file extension
+
+***** Other common operations
+
+- =T= - Touch (change timestamp)
+- =M= - Change file mode
+- =O= - Change file owner
+- =G= - Change file group
+- =S= - Create a symbolic link to this file
+- =L= - Load an Emacs Lisp file into Emacs
+
+**** Configuration
+
+#+begin_src emacs-lisp
+
+  (use-package dired
+    :ensure nil
+    :commands (dired dired-jump)
+    :bind (("C-x C-j" . dired-jump))
+    :custom ((dired-listing-switches "-agoh")))
+
+  ;; Cant find for some reason
+  ;;(use-package dired-single)
+
+  (use-package all-the-icons-dired
+    :hook (dired-mode . all-the-icons-dired-mode))
+
+  (use-package dired-open
+    :config
+    ;; Doesn't work as expected!
+    ;;(add-to-list 'dired-open-functions #'dired-open-xdg t)
+    (setq dired-open-extensions '(("png" . "feh")
+                                  ("mkv" . "mpv"))))
+
+  (use-package dired-hide-dotfiles
+    :hook (dired-mode . dired-hide-dotfiles-mode))
+
+#+end_src
+
+#+RESULTS:
+| dired-hide-dotfiles-mode | dired-extra-startup | all-the-icons-dired-mode | doom-modeline-set-project-modeline |
+
+*** Keep Folders Clean
+
+Use the [[https://github.com/emacscollective/no-littering/blob/master/no-littering.el][no-littering]] package to keep folders where we edit files and the Emacs configuration folder clean! It knows about a wide variety of variables for built in Emacs features as well as those from community packages so it can be much easier than finding and setting these variables yourself.
+
+NOTE: If you want to move everything out of the ~/.emacs.d folder reliably, set `user-emacs-directory` before loading no-littering!
+;;(setq user-emacs-directory "~/etc/emacs")
+
+#+begin_src emacs-lisp
+
+  ;;
+  ;; No littering, i.e. no junk files all over the place
+  ;;
+  ;; NOTE: If you want to move everything out of the ~/.emacs.d folder
+  ;; reliably, set `user-emacs-directory` before loading no-littering!
+
+  (use-package no-littering)
+
+  ;; no-littering doesn't set this by default so we must place
+  ;; auto save files in the same path as it uses for sessions
+  (setq auto-save-file-name-transforms
+        `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
+
+#+end_src
+
+** Finishing touches
+Last things before firing the startup hook
+*** Toggle fullscreen
+#+begin_src emacs-lisp
+  ;;
+  ;; Toggle fullscreen with windows standard shortcut
+  ;;
+  (when (eq system-type 'windows-nt)
+    (global-set-key (kbd "M-RET") 'toggle-frame-fullscreen))
+
+#+end_src
+
+*** Switch windows
+Change between windows within emacs
+
+*DISABLED* I am disabling this because using TAB breaks stuff in org
+
+#+begin_src emacs-lisp
+  ;;
+  ;; Bind C-TAB to other window, I have no idea why only this way of writing it works
+  ;;
+  ;;(global-set-key [(control tab)] 'other-window)
+
+#+end_src
+
+*** Server 
+This is the client-server model for emacs.
+
+#+begin_src emacs-lisp
+
+  ;; Emacsclient server
+  (require 'server)
+
+  ;;
+  ;; Setting the tcp port for windows
+  ;; (Sorry IRC)
+  (when (eq system-type 'windows-nt)
+    (setq server-port 6667)
+    (setq server-host "localhost"))
+
+  ;;
+  ;; Start the server
+  ;;
+  (unless (server-running-p)
+    (server-start))
+
+#+end_src
+**** TODO Why does the terminal emacs mode break/crash if the server is run in the EXWM instance
+*** Show on startup
+What to show at startup 
+
+I dont know if this is a good thing
+Maybe I want the pomodoro
+Maybe the REMINDER is kinda stupid
+
+Show the reminders file in scratch as well as the org agenda
+
+This takes a long time, a very long time. About 5-10s, but it's worth it otherwise I would never look at the thing. The other views like todos take about the same time, it's the opening, collating and extracting info from the org files that takes time.
+
+#+begin_src emacs-lisp
+  ;;
+  ;; Global reminders
+  ;;
+
+  ;; DONT do any of these
+
+  ;; In the scratch buffer
+  ;;(insert-file "~/etc/emacs/REMINDER")
+
+  ;;
+  ;; Display the next to do things
+  ;;
+  ;;(add-hook 'after-init-hook (org-agenda-list))
+  ;;(org-agenda-list)
+  ;;(org-agenda-day-view)
+
+  (pomidor)
+
+#+end_src
+**** TODO Fix org mode agenda so it doesnt take to lone
+
+ 
+* Desktop
+Specific config for EXWM Sessions
+This stuff goes into [[desktop.el]]
+
+
+Each emacs-lisp section in here needs to tangle to that target
+ =
+ :tangle ./desktop.el :mkdirp yes
+ =
+** Init
+*** Reminder to edit the org file
+#+begin_src emacs-lisp :tangle ./desktop.el :mkdirp yes
+  ;;; -*- lexical-binding: t -*-
+  ;;
+  ;; OBS!!!!
+  ;;
+  ;; Dont edit this file, edit Emacs.org
+  ;;
+  ;;
+#+end_src
+*** Start compton before EXWM
+#+begin_src emacs-lisp :tangle ./desktop.el :mkdirp yes
+  ;;
+  (start-process-shell-command "compton" nil "compton")
+
+
+#+end_src
+** EXWM
+*** EXWM Support functions
+Helper functions for a better EXWM experience
+
+**** Run in backgroud
+Run things non-blocking in the background
+#+begin_src emacs-lisp :tangle ./desktop.el :mkdirp yes
+
+    (defun efs/run-in-background (command)
+      (let ((command-parts (split-string command "[ ]+")))
+        (apply #'call-process `(,(car command-parts) nil 0 nil ,@(cdr command-parts)))))
+  
+ #+end_src
+
+
+**** Init hook
+Run applications or such after exwm-init
+
+ #+begin_src emacs-lisp :tangle ./desktop.el :mkdirp yes
+    (defun efs/after-exwm-init ()
+      ;; Make workspace 1 be the one where we land at startup
+      (exwm-workspace-switch-create 1)
+
+      ;; Open eshell by default
+      ;;(eshell)
+
+      ;; Launch apps that will run in the background
+      ;;(efs/run-in-background "nm-applet")
+      ;;(efs/run-in-background "pavucontrol")
+      ;;(efs/run-in-background "blueman-applet")
+   )
+
+
+ #+end_src
+
+**** Buffer names
+Changes the name in the buffer list to the X class name of the window
+
+ #+begin_src emacs-lisp :tangle ./desktop.el :mkdirp yes
+   (defun efs/exwm-update-class ()
+     (exwm-workspace-rename-buffer exwm-class-name))
+ #+end_src
+ 
+
+*** EXWM Proper
+Loads the exwm mode
+
+#+begin_src emacs-lisp :tangle ./desktop.el :mkdirp yes
+  (use-package exwm
+    :ensure t
+    :config
+    (require 'exwm-input)
+
+    ;; Set the default number of workspaces
+    (setq exwm-workspace-number 5)
+
+    ;; When EXWM finishes initialization, do some extra setup
+    (add-hook 'exwm-init-hook #'efs/after-exwm-init)
+
+    ;; When window "class" updates, use it to set the buffer name
+    (add-hook 'exwm-update-class-hook #'efs/exwm-update-class)
+
+    ;; These keys should always pass through to Emacs
+    (setq exwm-input-prefix-keys
+      '(?\C-x
+        ?\C-u
+        ?\C-h
+        ?\M-\t    ;; M-<tab>
+        ?\M-x
+        ?\M-`
+        ?\M-&
+        ?\M-:
+        ?\C-\M-j  ;; Buffer list
+        ?\C-\ ))  ;; Ctrl+Space
+
+    ;; Ctrl+Q will enable the next key to be sent directly
+    (define-key exwm-mode-map [?\C-q] 'exwm-input-send-next-key)
+
+    ;; Launching apps from counsel
+    (exwm-input-set-key (kbd "s-SPC") 'counsel-linux-app)
+    (exwm-input-set-key (kbd "s-f") 'exwm-layout-toggle-fullscreen)
+
+
+    ;; Set up global key bindings.  These always work, no matter the input state!
+    ;; Keep in mind that changing this list after EXWM initializes has no effect.
+    (setq exwm-input-global-keys
+          `(
+            ;; Reset to line-mode (C-c C-k switches to char-mode via exwm-input-release-keyboard)
+            ([?\s-k] . exwm-reset)
+
+            ;; Bind Super + X/C/V to send Ctrl+X/C/V to the focused X application
+            ([?\s-x] . (lambda ()
+                         (interactive)
+                         (exwm-input-send-key "C-x")))
+            ([?\s-c] . (lambda ()
+                         (interactive)
+                         (exwm-input-send-key "C-c")))
+            ([?\s-v] . (lambda ()
+                         (interactive)
+                         (exwm-input-send-key "C-v")))
+
+            ;; Move between windows
+            ([s-left] . windmove-left)
+            ([s-right] . windmove-right)
+            ([s-up] . windmove-up)
+            ([s-down] . windmove-down)
+
+            ;; Launch applications via shell command
+            ([?\s-r] . (lambda (command)
+                         (interactive (list (read-shell-command "$ ")))
+                         (start-process-shell-command command nil command)))
+
+            ;; Switch workspace
+            ([?\s-w] . exwm-workspace-switch)
+
+            ;; Workspace 0 on s-` 
+            ([?\s-`] . (lambda () (interactive)
+                         (exwm-workspace-switch-create 0)))
+
+            ;; 's-N': Switch to certain workspace with Super (Win) plus a number key (0 - 9)
+            ,@(mapcar (lambda (i)
+                        `(,(kbd (format "s-%d" i)) .
+                          (lambda ()
+                            (interactive)
+                            (exwm-workspace-switch-create ,i))))
+                      (number-sequence 0 9)))
+          ) ;; setq exwm-input...
+
+
+    ;; Load the system tray before exwm-init
+    (require 'exwm-systemtray)
+    (exwm-systemtray-enable)
+
+    ;;Start exwm
+    (exwm-enable)
+    ) ;; use-package exwm
+
+
+#+end_src
+
+** X11 Defaults
+*** Xterm
+Readable xterm
+
+#+begin_src shell :tangle ./exwm/Xresources :mkdirp yes
+XTerm*background: black
+XTerm*foreground: white
+XTerm*faceName: Monospace
+XTerm*faceSize: 10
+#+end_src
+*** Call xrdb
+#+begin_src emacs-lisp :tangle ./desktop.el :mkdirp yes
+(start-process-shell-command "xrdb" nil "xrdb -merge ~/etc/emacs/exwm/Xresources")
+#+end_src
