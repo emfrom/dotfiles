@@ -1063,7 +1063,7 @@ My config is based on this great intro: [[https://www.youtube.com/watch?v=AyhPmy
 
 This snippet adds a hook to =org-mode= buffers so that =emfrom/org-babel-tangle-config= gets executed each time such a buffer gets saved.  This function checks to see if the file being saved is in an auto tangle directory or not. If it is, it's automatically tangled by 'after-save-hook
 
-I use a list of directories so I can change it by addint the following to =.dir-locals.el=
+I use a list of directories so I can change it by adding the following to =.dir-locals.el=
   ((org-mode . ((eval . (add-to-list 'emfrom/org-babel-autotangle-dirs (file-name-directory (or load-file-name buffer-file-name)))))))
 
 The default auto-tangle are my dotfiles directory and emacs directory
