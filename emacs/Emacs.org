@@ -1,4 +1,4 @@
-#+TITLE: Emacs config for emfrom
+#+TITLE: Emacs config
 #+AUTOR: E.M. From
 #+PROPERTY: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
 #+STARTUP: overview
