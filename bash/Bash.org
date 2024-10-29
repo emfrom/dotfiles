@@ -1388,6 +1388,15 @@ For some reason -B doesnt always work, so I added an --ignore=*~
 
 #+end_src
 
+** top
+#+begin_src shell :tangle ./aliases :mkdirp yes
+  #
+  # top / htop
+  #
+  if command -v htop &> /dev/null ; then
+      alias top=htop
+  fi
+#+end_src
 ** which
 A =which= alias for old people
 
