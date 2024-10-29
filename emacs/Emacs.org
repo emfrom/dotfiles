@@ -1522,10 +1522,11 @@ This takes a long time, a very long time. About 5-10s, but it's worth it otherwi
   ;;(org-agenda-list)
   ;;(org-agenda-day-view)
 
-  (pomidor)
+
+  ;;  (pomidor)
 
 #+end_src
-**** TODO Fix org mode agenda so it doesnt take to lone
+**** TODO Fix org mode agenda so it doesnt take to long
 
  
 * Desktop
@@ -1634,7 +1635,7 @@ Loads the exwm mode
     (define-key exwm-mode-map [?\C-q] 'exwm-input-send-next-key)
 
     ;; Launching apps from counsel
-    (exwm-input-set-key (kbd "s-SPC") 'counsel-linux-app)
+    (exwm-input-set-key (kbd "C-M-x") 'counsel-linux-app)
     (exwm-input-set-key (kbd "s-f") 'exwm-layout-toggle-fullscreen)
 
 
@@ -1646,13 +1647,13 @@ Loads the exwm mode
             ([?\s-k] . exwm-reset)
 
             ;; Bind Super + X/C/V to send Ctrl+X/C/V to the focused X application
-            ([?\s-x] . (lambda ()
+            ([?\H-x] . (lambda ()
                          (interactive)
                          (exwm-input-send-key "C-x")))
-            ([?\s-c] . (lambda ()
+            ([?\H-c] . (lambda ()
                          (interactive)
                          (exwm-input-send-key "C-c")))
-            ([?\s-v] . (lambda ()
+            ([?\H-v] . (lambda ()
                          (interactive)
                          (exwm-input-send-key "C-v")))
 
@@ -1663,7 +1664,7 @@ Loads the exwm mode
             ([s-down] . windmove-down)
 
             ;; Launch applications via shell command
-            ([?\s-r] . (lambda (command)
+            ([?\s-x] . (lambda (command)
                          (interactive (list (read-shell-command "$ ")))
                          (start-process-shell-command command nil command)))
 
@@ -1686,7 +1687,7 @@ Loads the exwm mode
 
     ;; Load the system tray before exwm-init
     (require 'exwm-systemtray)
-    (exwm-systemtray-enable)
+    (exwm-systemtray-mode)
 
     ;;Start exwm
     (exwm-enable)
