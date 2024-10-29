@@ -1496,7 +1496,7 @@ This is the client-server model for emacs.
 **** TODO Why does the terminal emacs mode break/crash if the server is run in the EXWM instance
 *** Show on startup
 What to show at startup 
-
+v
 I dont know if this is a good thing
 Maybe I want the pomodoro
 Maybe the REMINDER is kinda stupid
@@ -1698,13 +1698,19 @@ Loads the exwm mode
 
 ** X11 Defaults
 *** Xterm
-Readable xterm
+Readable xterm, sensible defaults
+UX is the predefined class for unicode enabled xterm on some systems
 
 #+begin_src shell :tangle ./exwm/Xresources :mkdirp yes
-XTerm*background: black
-XTerm*foreground: white
-XTerm*faceName: Monospace
-XTerm*faceSize: 10
+  XTerm*background: black
+  XTerm*foreground: white
+  XTerm*faceName: Monospace
+  XTerm*faceSize: 10
+  UXTerm*background: black
+  UXTerm*foreground: white
+  UXTerm*faceName: Monospace
+  UXTerm*faceSize: 10
+  
 #+end_src
 *** Call xrdb
 #+begin_src emacs-lisp :tangle ./desktop.el :mkdirp yes
