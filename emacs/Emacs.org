@@ -528,26 +528,22 @@ Load packages from the git-install directory first
   ;;
   ;; This prepends repos from the git-install dir to the load path
   ;;
-  (defun emfrom/prepend-git-directories-to-load-path ()
-    "Prepend directories in ~/etc/emacs/git and their lisp subdirectories to `load-path`."
-    (let ((git-dir "~/etc/emacs/git-install"))
-      (when (file-directory-p git-dir)
-        (dolist (dir (directory-files git-dir t "^[^.]")) 
-          (when (file-directory-p dir)
-            ;; Add the main directory
-            (add-to-list 'load-path dir)
-            ;; Add the `lisp` subdirectory if it exists
-            (let ((lisp-dir (expand-file-name "lisp" dir)))
-              (when (file-directory-p lisp-dir)
-                (add-to-list 'load-path lisp-dir)))
-            ;; Add the `contrib/lisp` subdirectory if it exists
-            (let ((contrib-dir (expand-file-name "contrib/lisp" dir)))
-              (when (file-directory-p contrib-dir)
-                (add-to-list 'load-path contrib-dir))))))))
-
-  (emfrom/prepend-git-directories-to-load-path)
-
-
+  (funcall (lambda ()
+            (let ((git-dir "~/etc/emacs/git-install"))
+              (when (file-directory-p git-dir)
+                (dolist (dir (directory-files git-dir t "^[^.]"))
+                  (when (file-directory-p dir)
+                    ;; Add the main directory
+                    (add-to-list 'load-path dir)
+                    ;; Add the `lisp` subdirectory if it exists
+                    (let ((lisp-dir (expand-file-name "lisp" dir)))
+                      (when (file-directory-p lisp-dir)
+                        (add-to-list 'load-path lisp-dir)))
+                    ;; Add the `contrib/lisp` subdirectory if it exists
+                    (let ((contrib-dir (expand-file-name "contrib/lisp" dir)))
+                      (when (file-directory-p contrib-dir)
+                        (add-to-list 'load-path contrib-dir))))))))
+  	 
 #+end_src
 
 ** EXWM
