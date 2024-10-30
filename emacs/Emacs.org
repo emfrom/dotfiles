@@ -1303,30 +1303,6 @@ M-/ comments out the line
 
 #+end_src
 
-*** Rust
-
-A mode for coding in rust
-
-#+begin_src emacs-lisp
-
-  ;;
-  ;; Rust mode(the programming language)
-  ;;
-  (require 'rust-mode)
-
-  ;; No tabs in rust code
-  (add-hook 'rust-mode-hook
-            (lambda () (setq indent-tabs-mode nil)))
-
-  ;; Autoformat on save
-  (setq rust-format-on-save t)
-
-  ;; Make rust pretty
-  (add-hook 'rust-mode-hook
-          (lambda () (prettify-symbols-mode)))
-
-#+end_src
-
 *** LSP
 LSP Mode to connect to language servers like clangd
 
@@ -1359,16 +1335,6 @@ LSP Mode to connect to language servers like clangd
 
 
 
-#+end_src
-
-*** Geiser
-#+begin_src emacs-lisp
-  (use-package geiser)
-
-  ;; Set Geiser implementation
-  (setq geiser-active-implementations '(guile))
-
-  
 #+end_src
 
 *** Company
@@ -1404,6 +1370,54 @@ LSP Mode to connect to language servers like clangd
 #+begin_src emacs-lisp
 
   (add-hook 'after-init-hook #'global-flycheck-mode)
+#+end_src
+
+*** Languages
+
+**** Haskell
+
+#+begin_src emacs-lisp
+  ;;
+  ;; Haskell mode
+  ;;
+  (use-package haskell-mode)
+#+end_src
+
+**** Rust
+
+A mode for coding in rust
+
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Rust mode(the programming language)
+  ;;
+  (require 'rust-mode)
+
+  ;; No tabs in rust code
+  (add-hook 'rust-mode-hook
+            (lambda () (setq indent-tabs-mode nil)))
+
+  ;; Autoformat on save
+  (setq rust-format-on-save t)
+
+  ;; Make rust pretty
+  (add-hook 'rust-mode-hook
+          (lambda () (prettify-symbols-mode)))
+
+#+end_src
+
+**** Guile
+GNU version of scheme
+
+***** Geiser
+#+begin_src emacs-lisp
+  (use-package geiser)
+
+  ;; Set Geiser implementation
+  (setq geiser-active-implementations '(guile))
+
+  
 #+end_src
 
 ** Productivity tools
