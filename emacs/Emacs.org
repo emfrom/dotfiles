@@ -3,7 +3,7 @@
 #+PROPERTY: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
 #+STARTUP: overview
 
-*Init files for emacs*
+Init files for [[id:0a2c2173-fd44-4a65-8ab8-b1306108e82d][emacs]]
 
 [[file:early-init.el][early-init.el]] comes from [[Early init]] section
 [[file:desktop.el][desktop.el]] is loaded for EXWM sessions
@@ -234,51 +234,6 @@ Is needed for no littering and also nice to do
 
 #+end_src
 
-*** GUI stuff
-This that only matter if we are not in a terminal
-
-**** Disable gui elements
-#+begin_src emacs-lisp
-
-  ;;
-  ;; Disable GUI elements
-  ;; 
-  (when (display-graphic-p)
-    (set-fringe-mode 10)       ; Give some breathing room
-    (tooltip-mode -1)           ; Disable tooltips
-    ) 
-
-  (scroll-bar-mode -1)        ; Disable visible scrollbar
-  (tool-bar-mode -1)          ; Disable the toolbar
-  (menu-bar-mode -1)        ; Disable the menu bar
-
-#+end_src
-
-*** Visible bell
-Stop emacs from beeping at us all the time
-
-Flashes top and bottom of screen instead
-
-#+begin_src emacs-lisp
-
-  ;;
-  ;; Set up the visible bell
-  ;;
-  (setq visible-bell t)
-
-#+end_src
-
-*** Inhibit startup message
-#+begin_src emacs-lisp
-
-  ;;
-  ;; Turn off the pointless startup message
-  ;;
-  (setq inhibit-startup-message t)
-
-
-#+end_src
-
 *** Key mapping and remapping
 **** Modifiers
 This remaps:
@@ -359,7 +314,7 @@ It's also useful in termux because the ESC key is visible at all times
   (bind-key "M-<iso-lefttab>" 'switch-to-prev-buffer global-map)
 
 #+end_src
-*** Line numbers
+**** Line numbers
 Turn on linenumbers globally but disable for listed modes
 
 #+begin_src emacs-lisp
@@ -378,6 +333,107 @@ Turn on linenumbers globally but disable for listed modes
     (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 #+end_src
+
+** Usability 
+*** GUI stuff
+This that only matter if we are not in a terminal
+
+***** Disable gui elements
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Disable GUI elements
+  ;; 
+  (when (display-graphic-p)
+    (set-fringe-mode 10)       ; Give some breathing room
+    (tooltip-mode -1)           ; Disable tooltips
+    ) 
+
+  (scroll-bar-mode -1)        ; Disable visible scrollbar
+  (tool-bar-mode -1)          ; Disable the toolbar
+  (menu-bar-mode -1)        ; Disable the menu bar
+
+#+end_src
+
+*** Visible bell
+Stop emacs from beeping at us all the time
+
+Flashes top and bottom of screen instead
+
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Set up the visible bell
+  ;;
+  (setq visible-bell t)
+
+#+end_src
+
+*** Inhibit startup message
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Turn off the pointless startup message
+  ;;
+  (setq inhibit-startup-message t)
+
+
+#+end_src
+
+*** Turn off yes-no
+Make it easier to answer questions.
+
+#+begin_src emacs-lisp
+  ;;
+  ;; Eliminate all long form yes-no questions
+  ;;
+  (fset 'yes-or-no-p 'y-or-n-p)
+
+#+end_src
+
+
+
+
+*** Save what we are doing
+**** Sessions
+
+#+begin_src emacs-lisp
+
+(desktop-save-mode 1)
+(setq desktop-restore-eager 5)
+
+#+end_src
+**** History
+
+Save all the history from interactive prompts, kill ring, search ring etc
+Incredibly useful
+
+From: Sasha Chua https://github.com/sachac/.emacs.d/blob/gh-pages/Sacha.org
+
+#+begin_src emacs-lisp
+
+  (setq savehist-file "~/etc/emacs/history/savehist")
+  (savehist-mode 1)
+  (setq history-length t)
+  (setq history-delete-duplicates t)
+  (setq savehist-save-minibuffer-history 1)
+  (setq savehist-additional-variables
+        '(kill-ring
+          search-ring
+          regexp-search-ring))
+  
+#+end_src
+**** Backups
+This stops backup files from piling up everywhere
+
+The no-littering package takes care of the rest
+
+#+begin_src emacs-lisp
+
+  (setq backup-directory-alist '(("." . "~/etc/emacs/history/backups/")))
+  (setq auto-save-file-name-transforms '((".*" "~/.config/emacs/auto-save-list/" t)))
+#+end_src
+
 ** Package managers
 Setup the package managers for emacs and more repositories
 
@@ -623,7 +679,6 @@ Note: Both C-x b and C-x C-b are bound to counsel ibuffer to clutter less
       :ensure t
       :bind (("M-x" . counsel-M-x)
              ("C-x b" . counsel-ibuffer)
-             ("C-x C-b" . counsel-ibuffer)
              ("C-x C-f" . counsel-find-file)
              :map minibuffer-local-map
              ("C-r" . 'counsel-minibuffer-history))
@@ -804,150 +859,150 @@ conf still feels clunky
 
 #+begin_src emacs-lisp
 
-  ;;
-   ;; ORG mode
-   ;;
-   (defun emfrom/org-mode-setup ()
-       (org-indent-mode)
-       (variable-pitch-mode 0)
-       (visual-line-mode 1))
+    ;;
+     ;; ORG mode
+     ;;
+     (defun emfrom/org-mode-setup ()
+         (org-indent-mode)
+         (variable-pitch-mode 0)
+         (visual-line-mode 1))
 
-  (use-package org
-    :ensure t
-    :hook (org-mode . emfrom/org-mode-setup)
-    :config
-    (setq org-ellipsis " ▾")
+    (use-package org
+      :ensure t
+      :hook (org-mode . emfrom/org-mode-setup)
+      :config
+      (setq org-ellipsis " ▾")
 
-      (setq org-return-follows-link t)
+        (setq org-return-follows-link t)
 
-      (setq org-agenda-start-with-log-mode t)
-      (setq org-log-done 'time)
-      (setq org-log-into-drawer t)
+        (setq org-agenda-start-with-log-mode t)
+        (setq org-log-done 'time)
+        (setq org-log-into-drawer t)
 
-      (setq org-directory
-            "~/opt/org-mode")
+        (setq org-directory
+              "~/opt/org-mode")
 
-      (setq org-agenda-files
-            '("~/opt/org-mode/GTD/GTD.org"
-              "~/opt/org-mode/GTD/Someday.org"
-              "~/opt/org-mode/GTD/Habits.org"))
+        (setq org-agenda-files
+              '("~/opt/org-mode/GTD/GTD.org"
+                "~/opt/org-mode/GTD/Someday.org"
+                "~/opt/org-mode/GTD/Habits.org"))
+        (define-key org-mode-map (kbd "s-b") 'org-mark-ring-goto)
+
+        (require 'org-habit)
+        (add-to-list 'org-modules 'org-habit)
+        (setq org-habit-graph-column 60)
+
+        (setq org-refile-targets
+          '(("~/opt/org-mode/GTD/Archive.org" :maxlevel . 1)
+            ("~/opt/org-mode/GTD/Someday.org" :maxlevel . 1)
+            ("~/opt/org-mode/GTD/GTD.org" :maxlevel . 1)))
+
+        ;; Save Org buffers after refiling!
+        (advice-add 'org-refile :after 'org-save-all-org-buffers)
 
 
-      (require 'org-habit)
-      (add-to-list 'org-modules 'org-habit)
-      (setq org-habit-graph-column 60)
+        (setq org-todo-keywords
+          '((sequence "TODO(t)" "NEXT(n)" "WAIT(w@/!)" "|" "DONE(d!)")
+            (sequence "PLAN(p)" "ACTIVE(a)" "SOMEDAY(s)" "TICKLER(i)" "|" "COMPLETED(c)" "CANC(k@)")))
 
-      (setq org-refile-targets
-        '(("~/opt/org-mode/GTD/Archive.org" :maxlevel . 1)
-          ("~/opt/org-mode/GTD/Someday.org" :maxlevel . 1)
-          ("~/opt/org-mode/GTD/GTD.org" :maxlevel . 1)))
+          (setq org-tag-alist
+          '((:startgroup)
+             ; Put mutually exclusive tags here
+             (:endgroup)
+             ("@computer" . ?C)
+             ("@phone" . ?P)
+             ("@town" . ?T)
+             ("@bigtown" . ?B)
+             ("@home" . ?H)
+             ("zoe" . ?z)
+             ("christine" . ?c)
+             ("doctor" . ?d)
+             ("buy" . ?b)
+             ("read" . ?r)
+             ))
 
-      ;; Save Org buffers after refiling!
-      (advice-add 'org-refile :after 'org-save-all-org-buffers)
+          ;;
+          ;; ORG Agenda shows only one day
+          ;;
+          (setq org-agenda-span 1)
 
+          ;;
+          ;; Configure custom agenda views
+          ;;
+          (setq org-agenda-custom-commands
+                '(("z" "Talks to Zoe" tags-todo "zoe"
+                   ((org-agenda-overriding-header "Zoe talk")))
 
-      (setq org-todo-keywords
-        '((sequence "TODO(t)" "NEXT(n)" "WAIT(w@/!)" "|" "DONE(d!)")
-          (sequence "PLAN(p)" "ACTIVE(a)" "SOMEDAY(s)" "TICKLER(i)" "|" "COMPLETED(c)" "CANC(k@)")))
+                  ("n" "Next Tasks"
+                   ((todo "NEXT"
+                          ((org-agenda-overriding-header "Next Tasks")
+                           (org-agenda-max-todos 5)))))
+                  ;; Low-effort next actions
+                  ("e" tags-todo "+TODO=\"NEXT\"++Effort==1"
+                   ((org-agenda-overriding-header "Low Effort Tasks")
+                    (org-agenda-max-todos 10)
+                    (org-agenda-files org-agenda-files)))
 
-        (setq org-tag-alist
-        '((:startgroup)
-           ; Put mutually exclusive tags here
-           (:endgroup)
-           ("@computer" . ?C)
-           ("@phone" . ?P)
-           ("@town" . ?T)
-           ("@bigtown" . ?B)
-           ("@home" . ?H)
-           ("zoe" . ?z)
-           ("christine" . ?c)
-           ("doctor" . ?d)
-           ("buy" . ?b)
-           ("read" . ?r)
-           ))
+                  ("w" "Workflow Status"
+                   ((todo "ACTIVE"
+                          ((org-agenda-overriding-header "Active Projects")
+                           (org-agenda-files org-agenda-files)))
+                    (todo "WAIT"
+                          ((org-agenda-overriding-header "Waiting on External")
+                           (org-agenda-files org-agenda-files)))
+                    (todo "PLAN"
+                          ((org-agenda-overriding-header "In Planning")
+                           (org-agenda-todo-list-sublevels nil)
+                           (org-agenda-files org-agenda-files)))
+                    (todo "COMPLETED"
+                          ((org-agenda-overriding-header "Completed Projects")
+                           (org-agenda-files org-agenda-files)))
+                    (todo "CANC"
+                          ((org-agenda-overriding-header "Cancelled Projects")
+                           (org-agenda-files org-agenda-files)))))))
 
         ;;
-        ;; ORG Agenda shows only one day
-        ;;
-        (setq org-agenda-span 1)
+        ;; Capture templates
+          ;;
+          (setq org-capture-templates
+                `(("t" "Task" entry (file+olp "~/opt/org-mode/GTD/Inbox.org" "Inbox")
+                   "* TODO %?\n:PROPERTIES:\n:CREATED:  %U\n:END:\n  %i" :empty-lines 1)
 
-        ;;
-        ;; Configure custom agenda views
-        ;;
-        (setq org-agenda-custom-commands
-              '(("z" "Talks to Zoe" tags-todo "zoe"
-                 ((org-agenda-overriding-header "Zoe talk")))
+                  ("a" "Task w/ Annotation" entry (file+olp "~/opt/org-mode/GTD/Inbox.org" "Inbox")
+                   "* TODO %?\n:PROPERTIES:\n:CREATED:  %U\n:END:\n  %a\n  %i" :empty-lines 1)
 
-                ("n" "Next Tasks"
-                 ((todo "NEXT"
-                        ((org-agenda-overriding-header "Next Tasks")
-                         (org-agenda-max-todos 5)))))
-                ;; Low-effort next actions
-                ("e" tags-todo "+TODO=\"NEXT\"++Effort==1"
-                 ((org-agenda-overriding-header "Low Effort Tasks")
-                  (org-agenda-max-todos 10)
-                  (org-agenda-files org-agenda-files)))
+                  ("y" "Youtube video idea" entry (file+olp "~/opt/org-mode/doc/Youtube.org" "Ideas")
+                   "* %?\n  %U\n  %a\n  %i" :empty-lines 1)
 
-                ("w" "Workflow Status"
-                 ((todo "ACTIVE"
-                        ((org-agenda-overriding-header "Active Projects")
-                         (org-agenda-files org-agenda-files)))
-                  (todo "WAIT"
-                        ((org-agenda-overriding-header "Waiting on External")
-                         (org-agenda-files org-agenda-files)))
-                  (todo "PLAN"
-                        ((org-agenda-overriding-header "In Planning")
-                         (org-agenda-todo-list-sublevels nil)
-                         (org-agenda-files org-agenda-files)))
-                  (todo "COMPLETED"
-                        ((org-agenda-overriding-header "Completed Projects")
-                         (org-agenda-files org-agenda-files)))
-                  (todo "CANC"
-                        ((org-agenda-overriding-header "Cancelled Projects")
-                         (org-agenda-files org-agenda-files)))))))
+                  ("j" "Journal Entries")
+                  ("jj" "Journal" entry
+                   (file+olp+datetree "~/opt/org-mode/Journal.org")
+                   "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
+                   :empty-lines 1)
 
-      ;;
-      ;; Capture templates
-        ;;
-        (setq org-capture-templates
-              `(("t" "Task" entry (file+olp "~/opt/org-mode/GTD/Inbox.org" "Inbox")
-                 "* TODO %?\n:PROPERTIES:\n:CREATED:  %U\n:END:\n  %i" :empty-lines 1)
+                  ("jm" "Morning Journal" entry
+                   (file+olp+datetree "~/opt/org-mode/Journal.org")
+                   "\n* %<%I:%M %p> - Journal :journal:\n\n%?%[~/opt/org-mode/GTD/Templates/5minMorning.template]\n\n"
+                   :empty-lines 1)
 
-                ("a" "Task w/ Annotation" entry (file+olp "~/opt/org-mode/GTD/Inbox.org" "Inbox")
-                 "* TODO %?\n:PROPERTIES:\n:CREATED:  %U\n:END:\n  %a\n  %i" :empty-lines 1)
+                  ("je" "Evening Journal" entry
+                   (file+olp+datetree "~/opt/org-mode/Journal.org")
+                   "\n* %<%I:%M %p> - Journal :journal:\n\n%?%[~/opt/org-mode/GTD/Templates/5minEvening.template]\n\n"
+                   :empty-lines 1)
 
-                ("y" "Youtube video idea" entry (file+olp "~/opt/org-mode/doc/Youtube.org" "Ideas")
-                 "* %?\n  %U\n  %a\n  %i" :empty-lines 1)
+                  ("js" "Morning 750 words" entry
+                   (file+olp+datetree "~/opt/org-mode/Journal.org")
+                   "\n* %<%I:%M %p> - Journal :journal:\n\n%[~/opt/org-mode/GTD/Templates/Morning750.template]%?\n\n"
+                   :empty-lines 1)
+                  ))
 
-                ("j" "Journal Entries")
-                ("jj" "Journal" entry
-                 (file+olp+datetree "~/opt/org-mode/Journal.org")
-                 "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
-                 :empty-lines 1)
+          (define-key global-map (kbd "C-c c")
+            (lambda () (interactive) (org-capture)))
 
-                ("jm" "Morning Journal" entry
-                 (file+olp+datetree "~/opt/org-mode/Journal.org")
-                 "\n* %<%I:%M %p> - Journal :journal:\n\n%?%[~/opt/org-mode/GTD/Templates/5minMorning.template]\n\n"
-                 :empty-lines 1)
+          (global-set-key (kbd "C-c a") #'org-agenda)
+          (global-set-key (kbd "C-c e") #'org-set-effort)
 
-                ("je" "Evening Journal" entry
-                 (file+olp+datetree "~/opt/org-mode/Journal.org")
-                 "\n* %<%I:%M %p> - Journal :journal:\n\n%?%[~/opt/org-mode/GTD/Templates/5minEvening.template]\n\n"
-                 :empty-lines 1)
-
-                ("js" "Morning 750 words" entry
-                 (file+olp+datetree "~/opt/org-mode/Journal.org")
-                 "\n* %<%I:%M %p> - Journal :journal:\n\n%[~/opt/org-mode/GTD/Templates/Morning750.template]%?\n\n"
-                 :empty-lines 1)
-                ))
-
-        (define-key global-map (kbd "C-c c")
-          (lambda () (interactive) (org-capture)))
-
-        (global-set-key (kbd "C-c a") #'org-agenda)
-        (global-set-key (kbd "C-c e") #'org-set-effort)
-
-        )
+          )
 
 #+end_src
 
@@ -1023,6 +1078,12 @@ It is a database that fills with interdependacy links between org tiles with an 
 
 My config is based on this great intro: [[https://www.youtube.com/watch?v=AyhPmypHDEw&list=PLEoMzSkcN8oN3x3XaZQ-AXFKv52LZzjqD]]
 
+I have my
+
+As I try keep a lot of info in my roam notes, other than the atomic notes that is, I've added a hook to fold the note on startup. This was necessary as roam does not respect the #+STARTUP in nodes
+
+My capture template includes a link section for external links (like wikipedia)
+
 #+begin_src emacs-lisp
 
 
@@ -1030,31 +1091,100 @@ My config is based on this great intro: [[https://www.youtube.com/watch?v=AyhPmy
   ;; ORG Roam, database of files
   ;;
   (use-package org-roam
-      :ensure t
-      :init
-      (setq org-roam-v2-ack t)
-      :custom
-      (org-roam-directory "~/opt/org-mode/roam")
-      (org-roam-completion-everywhere t)
+    :ensure t
+    :init
+    (setq org-roam-v2-ack t)
+    :custom
+    (org-roam-directory "~/opt/org-mode/roam/")
+    (org-roam-completion-everywhere t)
 
-      :bind (("C-c n l" . org-roam-buffer-toggle)
-             ("C-c n f" . org-roam-node-find)
-             ("C-c n i" . org-roam-node-insert)
-             :map org-mode-map
-             ("C-M-i" . completion-at-point))
-      :config
-      (setq org-roam-capture-templates
-            '(("d" "default" plain
-               "\n%?\n\n\n\n\n\n* Links\n** External\n** Internal"
-               :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+author: E.M. From\n#+startup: overview\n#+date: %U\n#+title: ${title}")
-               :unnarrowed t)
-              ))
+    :bind (("C-c n l" . org-roam-buffer-toggle)
+           ("C-c n f" . org-roam-node-find)
+           ("C-c n i" . org-roam-node-insert)
+  	 ("C-c n j" . emfrom/insert-org-roam-link)
+  	 :map org-mode-map
+           ("C-M-i" . completion-at-point))
+    :config
+    (setq org-roam-capture-templates
+          '(("d" "default" plain
+             "\n%?\n\n\n\n\n\n* Flashcards\n** Question :drill:\n***answer\n\n* Links\n** External\n\n** Internal\n\n"
+             :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+author: E.M. From\n#+startup: overview\n#+date: %U\n#+title: ${title}")
+             :unnarrowed t)
+            ))
+    
+    (setq org-link-frame-setup
+          '((file . find-file)        ;; Open files in the same window
+            (default . same-window))) ;; Default behavior is to open in the same window
+    (setq display-buffer-reuse-frames t) ;; Use the same frame for displaying buffers
+    (setq pop-up-frames nil)               ;; Disable opening new frames
+
+    
+    (org-roam-setup)
+    (org-roam-db-autosync-mode)
+
+    ;; Apply 'overview' setting specifically to org-roam buffers
+    ;;
+    (add-hook 'org-roam-find-file-hook
+              (lambda () (org-overview)))
+
+    ;;
+    ;; Set a filename and internal name convention in org-roam to replace spaces with _
+    ;;
+    (defun emfrom/org-roam-title-to-slug (title)
+      "Convert TITLE to a slug by replacing spaces with underscores."
+      (let ((slug (downcase (replace-regexp-in-string " " "_" title))))
+        slug))
+
+    (setq org-roam-title-to-slug #'emfrom/org-roam-title-to-slug)
+
+    ;;
+    ;; But then display them as spaces
+    ;;
+
+    (defun emfrom/org-roam-display-title (title)
+      "Display TITLE by replacing underscores with spaces."
+      (replace-regexp-in-string "_" " " title))
+
+    (defun emfrom/org-roam-display-title-hook ()
+      "Hook to display Org Roam titles with spaces."
+      (let ((title (emfrom/org-roam-get-title)))  ; Example function to get title
+        (emfrom/org-roam-display-title title)))
+
+    (add-hook 'org-roam-after-insert-hook 'emfrom/org-roam-display-title-hook)
+
+    ;;
+    ;; Turn word under point into the corresponding roam node
+    ;;
+    (defun emfrom/insert-org-roam-link ()
+      "Insert an Org-roam link for the word under the cursor after removing it. 
+  The link title is the original word, while the node lookup is case-insensitive."
+      (interactive)
+      (let ((word (thing-at-point 'word t)))  ;; Get the word at point
+        (if word
+            (progn
+              (backward-word)  ;; Move cursor to the start of the word
+              (kill-word 1)    ;; Kill the entire word
+              (org-roam-node-insert
+               (lambda (node)
+                 ;; Use downcase for case-insensitive comparison
+                 (string= (downcase (org-roam-node-title node)) (downcase word)))
+               :templates '(("d" "default" plain "%?" :unnarrowed t)) ;; Optional: specify a template for the link
+               :info (list :title word))  ;; Use original word as title
+              )
+  	(message "No word at point."))))
 
 
-
-      (org-roam-setup)
-      (org-roam-db-autosync-mode))
-
+    ;;
+    ;; Save and kill roam buffers when I leave them using the org ring
+    ;;
+    (defun emfrom/save-and-close-roam-buffer (&rest _args)
+      "Save and kill the buffer if it belongs to the Org-roam directory."
+      (when (and (buffer-file-name)
+                 (string-prefix-p (expand-file-name org-roam-directory)
+                                  (buffer-file-name)))
+        (save-buffer)
+        (kill-buffer (current-buffer))))
+    (advice-add 'org-mark-ring-goto :before 'emfrom/save-and-close-roam-buffer))
 
 #+end_src
 
@@ -1096,6 +1226,30 @@ The default auto-tangle are my dotfiles directory and emacs directory
 #+end_src
 
 
+*** org-drill
+Use org-drill to study repetitive facts. I add them as a "Flashcard" heading with a :drill: tag
+
+[[id:82f67afe-241c-4385-8164-8de40e69c57a][org-drill]]
+
+#+begin_src emacs-lisp
+  ;;
+  ;; Org-drill for flashcard spaced repetition 
+  ;;
+  (use-package org-drill
+    :after org-roam
+    :config
+    (setq org-drill-maximum-items-per-session 20
+  	org-drill-interval-factor 2.5)
+    
+    ;; Use the `org-roam-directory` variable for org-drill scope
+    (setq org-drill-scope (directory-files-recursively org-roam-directory "\\.org$"))
+    
+    ;; Make sure roam ignores the id's of the drill headers
+    (setq org-roam-db-node-include-function
+  	(lambda ()
+  	  (not (member "drill" (org-get-tags))))))
+  
+#+end_src
 ** Development
 This that have to do with programming, version control etc and so forth (not the programing language)
 
@@ -1251,7 +1405,7 @@ LSP Mode to connect to language servers like clangd
 
   (add-hook 'after-init-hook #'global-flycheck-mode)
 #+end_src
- 
+
 ** Productivity tools
 Things that make life easier
 
@@ -1325,9 +1479,10 @@ Maybe .config??
 
 **** TODO Can abbrevs eat up the space after
 **** TODO Can abbrevs use non alnum chars
-
 ** File management
 *** Dired
+
+Source: emacs from scratch
 
 Dired is a built-in file manager for Emacs that does some pretty amazing things!  Here are some key bindings you should try out:
 
