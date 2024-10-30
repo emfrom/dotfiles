@@ -588,6 +588,7 @@ This removes all the glitter printed after the prompt
 #+end_src
   
 ** LD
+
 #+begin_src shell :tangle ./bashrc :mkdirp yes
 
   #
@@ -600,6 +601,20 @@ This removes all the glitter printed after the prompt
   fi
 
 #+end_src
+
+** GTK-2.0
+I dont know why 2.0 cant be satisfied with the XDG directories but here we are
+
+#+begin_src shell
+  #
+  # Set GTK2 rc file
+  #
+
+  #export GTK2_RC_FILES=$XDG_CONFIG_HOME/gtk-2.0
+
+#+end_src
+*** TODO How do I do this?
+
 * Bash logout
 This is a weird file, sourced only when a login shell exits
 
