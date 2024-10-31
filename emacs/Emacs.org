@@ -1051,6 +1051,7 @@ Enables templeate expansion of <el TAB to an emacs-lisp code section
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
   (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
   (add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
+  (add-to-list 'org-structure-template-alist '("hs" . "src haskell"))
 
 
 #+end_src
@@ -1444,7 +1445,7 @@ NOTE: How to make it better at restoring a saved session
         :bind ("<f12>" . pomidor))
     
 
-  (add-hook 'kill-emacs-hook 'pomidor-save-session)
+  ;;(add-hook 'kill-emacs-hook 'pomidor-save-session)
   ;; how to remove interactive, how to load the session
 
 #+end_src
@@ -1675,24 +1676,23 @@ Show the reminders file in scratch as well as the org agenda
 This takes a long time, a very long time. About 5-10s, but it's worth it otherwise I would never look at the thing. The other views like todos take about the same time, it's the opening, collating and extracting info from the org files that takes time.
 
 #+begin_src emacs-lisp
-  ;;
-  ;; Global reminders
-  ;;
+   ;;
+   ;; Global reminders
+   ;;
 
-  ;; DONT do any of these
+   ;; DONT do any of these
 
-  ;; In the scratch buffer
-  ;;(insert-file "~/etc/emacs/REMINDER")
+   ;; In the scratch buffer
+   ;;(insert-file "~/etc/emacs/REMINDER")
 
-  ;;
-  ;; Display the next to do things
-  ;;
-  ;;(add-hook 'after-init-hook (org-agenda-list))
-  ;;(org-agenda-list)
-  ;;(org-agenda-day-view)
+   ;;
+   ;; Display the next to do things
+   ;;
+   ;;(add-hook 'after-init-hook (org-agenda-list))
+  (org-agenda-list)
+  (org-drill)
 
-
-  ;;  (pomidor)
+   ;;  (pomidor)
 
 #+end_src
 **** TODO Fix org mode agenda so it doesnt take to long
