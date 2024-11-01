@@ -1106,7 +1106,7 @@ My capture template includes a link section for external links (like wikipedia)
     :config
     (setq org-roam-capture-templates
           '(("d" "default" plain
-             "\n%?\n\n\n\n\n\n* Flashcards\n** Question :drill:\n***answer\n\n* Links\n** External\n\n** Internal\n\n"
+             "\n%?\n\n\n\n\n\n* Flashcards\n** Question :drill:\n*** answer\n\n* Links\n** External\n\n** Internal\n\n"
              :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+author: E.M. From\n#+startup: overview\n#+date: %U\n#+title: ${title}")
              :unnarrowed t)
             ))
@@ -1232,6 +1232,7 @@ Use org-drill to study repetitive facts. I add them as a "Flashcard" heading wit
 [[id:82f67afe-241c-4385-8164-8de40e69c57a][org-drill]]
 
 #+begin_src emacs-lisp
+  
   ;;
   ;; Org-drill for flashcard spaced repetition 
   ;;
@@ -1242,7 +1243,7 @@ Use org-drill to study repetitive facts. I add them as a "Flashcard" heading wit
   	org-drill-interval-factor 2.5)
     
     ;; Use the `org-roam-directory` variable for org-drill scope
-    (setq org-drill-scope (directory-files-recursively org-roam-directory "\\.org$"))
+    (setq org-drill-scope (directory-files-recursively "~/opt/org-mode/roam" "\\.org$"))
     
 
     ;; Make sure roam ignores the id's of the drill headers
@@ -1251,6 +1252,21 @@ Use org-drill to study repetitive facts. I add them as a "Flashcard" heading wit
   	  (not (member "drill" (org-get-tags))))))
 
 #+end_src
+
+*** org-rich-yank
+Yank (paste) stuff into org mode with context
+
+https://github.com/unhammer/org-rich-yank
+2
+#+begin_src emacs-lisp
+
+(use-package org-rich-yank
+  :ensure t
+  :demand t
+  :bind (:map org-mode-map
+              ("C-M-y" . org-rich-yank)))
+#+end_src
+
 ** Development
 This that have to do with programming, version control etc and so forth (not the programing language)
 
@@ -1663,7 +1679,19 @@ This is the client-server model for emacs.
     (server-start))
 
 #+end_src
-**** TODO Why does the terminal emacs mode break/crash if the server is run in the EXWM instance
+**** TODO Why does the terminal emacs mode break/crash if the server is run in the EXWM instance?cd
+
+*** Load secrets
+#+begin_src emacs-lisp
+  ;;
+  ;; Load secrets
+  ;;
+
+  (let ((secrets "secrets.el"))
+    (when (file-exists-p secrets)
+      (load-file secrets)))
+    
+#+end_src
 *** Show on startup
 What to show at startup 
 v
@@ -1695,7 +1723,11 @@ This takes a long time, a very long time. About 5-10s, but it's worth it otherwi
    ;;  (pomidor)
 
 #+end_src
-**** TODO Fix org mode agenda so it doesnt take to long
+**** DONE Fix org mode agenda so it doesnt take to long
+CLOSED: [2024-11-01 Fri 13:06]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2024-11-01 Fri 13:06]
+:END:
 
  
 * Desktop
