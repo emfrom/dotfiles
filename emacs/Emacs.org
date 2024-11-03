@@ -1729,26 +1729,32 @@ Change between windows within emacs
 *** Server 
 This is the client-server model for emacs.
 
+There's something that doesnt work with exwm and the server so I dont start the server in the X emacs
+
 #+begin_src emacs-lisp
 
-  ;; Emacsclient server
-  (require 'server)
+    ;; Emacsclient server
+    (require 'server)
 
-  ;;
-  ;; Setting the tcp port for windows
-  ;; (Sorry IRC)
-  (when (eq system-type 'windows-nt)
-    (setq server-port 6667)
-    (setq server-host "localhost"))
+    ;;
+    ;; Setting the tcp port for windows
+    ;; (Sorry IRC)
+    (when (eq system-type 'windows-nt)
+      (setq server-port 6667)
+      (setq server-host "localhost"))
 
   ;;
   ;; Start the server
   ;;
-  (unless (server-running-p)
-    (server-start))
+  (unless (featurep 'exwm)
+    (unless (server-running-p)
+      (server-start)))
+
 
 #+end_src
-**** TODO Why does the terminal emacs mode break/crash if the server is run in the EXWM instance?cd
+**** TODO Why does the terminal emacs mode break/crash if the server is run in the EXWM instance?
+This seems very strange, like I can run the server and connect to it but it's like it's out of asyncrounous mode some how. I have to switch to exwm to get the server to update
+
 
 *** Load secrets
 #+begin_src emacs-lisp
