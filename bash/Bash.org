@@ -482,8 +482,12 @@ Emacs shell needs some help in not being braindead
   #
   # Set manpath
   #
-  export MANPATH=${MANPATH}:${HOME}/share/man
-
+  if [[ ! -z $MANPATH ]] ; then
+      export MANPATH=${MANPATH}:
+  fi
+  export MANPATH=$MANPATH${HOME}/share/man
+  export MANPAGER=less
+  
 #+end_src
 
 *** GNU Readline
@@ -1277,6 +1281,13 @@ alias depath='export PATH=$(echo "$PATH" | sed "s/:*[^:]*$//")'
   alias df='df -h'
   alias du='du -h'
 
+#+end_src
+** emacs
+#+begin_src shell :tangle ./aliases :mkdirp yes
+  #
+  # emacsclient
+  #
+  
 #+end_src
 ** eng = env | grep
 #+begin_src shell :tangle ./aliases :mkdirp yes
