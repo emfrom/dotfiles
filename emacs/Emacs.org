@@ -241,25 +241,21 @@ Caps-lock -> Control
 Win-key -> Super
 Menu-key -> Hyper
 
-I changed so that L control is unmapped
-
 Note that this will remap the keys regardless if exwm is active or not
 
 #+begin_src shell :tangle ./exwm/Xmodmap :mkdirp yes
+  clear lock
+  keycode 66 = Control_L
+  add control = Control_L
+
   clear Mod4
   keycode 133 = Super_L
   add Mod4 = Super_L
 
-  clear Mod3
   keycode 135 = NoSymbol
   keycode 135 = Hyper_L
   add Mod3 = Hyper_L
-
-  keycode 37 = NoSymbol
-  clear control
-  keycode 66 = Control_L       
-  add control = Control_L
-
+  
 #+end_src
 
 ***** Call Xmodmap
