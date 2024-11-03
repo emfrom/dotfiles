@@ -241,13 +241,11 @@ Caps-lock -> Control
 Win-key -> Super
 Menu-key -> Hyper
 
+I changed so that L control is unmapped
+
 Note that this will remap the keys regardless if exwm is active or not
 
 #+begin_src shell :tangle ./exwm/Xmodmap :mkdirp yes
-  clear lock
-  keycode 66 = Control_L
-  add control = Control_L
-
   clear Mod4
   keycode 133 = Super_L
   add Mod4 = Super_L
@@ -256,6 +254,12 @@ Note that this will remap the keys regardless if exwm is active or not
   keycode 135 = NoSymbol
   keycode 135 = Hyper_L
   add Mod3 = Hyper_L
+
+  keycode 37 = NoSymbol
+  clear control
+  keycode 66 = Control_L       
+  add control = Control_L
+
 #+end_src
 
 ***** Call Xmodmap
@@ -548,9 +552,6 @@ Load packages from the git-install directory first
 
 ** EXWM
 Emacs Window Manager
-
-The guix configuration is really making me shit bricks over this
-I've decided to just load exwm config unless I'm in a terminal
 
 #+begin_src emacs-lisp
   ;;
@@ -1370,6 +1371,14 @@ LSP Mode to connect to language servers like clangd
 
 #+end_src
 
+*** Electric mode
+#+begin_src emacs-lisp
+;;
+;; Enable matching () {} [] insertion
+;;
+(electric-pair-mode 1)
+
+#+end_src>
 *** Company
 #+begin_src emacs-lisp
     (use-package company
@@ -1377,24 +1386,34 @@ LSP Mode to connect to language servers like clangd
       :hook (prog-mode . company-mode)
       :bind
       (:map company-active-map
-                 ("<tab>" . company-complete-selection))
+    	("<tab>" . company-complete-selection)
+    	("TAB" . company-complete-selection))  ; Ensure Tab key works in different terminals
       (:map lsp-mode-map
-            ("<tab>" . company-indent-or-complete-common))
-      
+    	("<tab>" . (lambda ()
+                         (interactive)
+                         (if (company-tooltip-visible-p)
+    			 (company-complete-selection)
+                           (company-indent-or-complete-common)))))
       :custom
-      (company-minimum-prefix-length 1)
+      (company-minimum-prefix-length 2)
       (company-idle-delay 0.0))
 
 
     (use-package company-box
-      :hook (company-mode . company-box-mode))
-  ;; Ensure the required packages are installed
-  
-  ;; Activate company mode globally
-  (add-hook 'after-init-hook 'global-company-mode)
+      :hook (company-mode . company-box-mode)
+      :config
+      (with-eval-after-load 'company
+        (define-key company-active-map (kbd "<tab>") 'company-complete-selection)
+        (define-key company-active-map (kbd "TAB") 'company-complete-selection)))
 
-  ;; Enable company mode in scheme buffers
-  (add-hook 'scheme-mode-hook (lambda () (company-mode)))
+      
+    ;; Ensure the required packages are installed
+
+    ;; Activate company mode globally
+    (add-hook 'after-init-hook 'global-company-mode)
+
+    ;; Enable company mode in scheme buffers
+    (add-hook 'scheme-mode-hook (lambda () (company-mode)))
 
 
 #+end_src
