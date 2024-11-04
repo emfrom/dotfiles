@@ -1755,8 +1755,7 @@ This is the client-server model for emacs.
   ;;
   ;; Load secrets
   ;;
-
-  (let ((secrets "secrets.el"))
+  (let ((secrets "secrets.el.gpg"))
     (when (file-exists-p secrets)
       (load-file secrets)))
     
