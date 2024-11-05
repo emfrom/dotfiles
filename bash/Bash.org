@@ -500,6 +500,7 @@ Emacs shell needs some help in not being braindead
 #+end_src
 
 *** Mozilla
+
 #+begin_src shell :tangle ./bashrc :mkdirp yes
     #
     # Mozilla config directry
@@ -507,6 +508,13 @@ Emacs shell needs some help in not being braindead
   export MOZILLA_HOME=$XDG_CONFIG_HOME/mozilla
   export MOZ_PROFILE=$MOZILLA_HOME
 
+#+end_src
+
+*** mail
+Just to keep gnus from littering all over the place
+
+#+begin_src shell :tangle ./bashrc :mkdirp yes
+  export MAILDIR=$HOMR/etc/emacs/gnus/mail
 #+end_src
 
 ** Set Dircolours
@@ -1372,13 +1380,14 @@ For some reason -B doesnt always work, so I added an --ignore=*~
   # Use $LS_OPTIONS so we can change on the fly
   #
   # lss = ls without any options
-  alias lss=`which ls`
+  alias lls=`which ls`
 
   # Options as described above 
-  export LS_OPTIONS="-ABghoH --group-directories-first --dereference-command-line-symlink-to-dir --ignore=#* --ignore=.#* --ignore=*~"
+  export LS_OPTIONS="-BghoH --group-directories-first --dereference-command-line-symlink-to-dir --ignore=#* --ignore=.#* --ignore=*~"
 
   # Standard alias for ls
   alias ls='ls $LS_OPTIONS --color=$COLOUR'
+  alias lsa='ls -A $LS_OPTIONS --color=$COLOUR'
 
  
 #+end_src
