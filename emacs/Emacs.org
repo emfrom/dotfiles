@@ -546,24 +546,6 @@ Load packages from the git-install directory first
   	 
 #+end_src
 
-** EXWM
-Emacs Window Manager
-
-#+begin_src emacs-lisp
-  ;;
-  ;; Load EXWM and settings from desktop.el
-  ;;
-  ;;(unless (display-graphic-p)
-  ;;    (message "In terminal, skipping desktop.el")
-  ;;    (load "~/etc/emacs/desktop.el"))
-
-  ;; I give up on this for the time being
-  (load "~/etc/emacs/desktop.el")
-  (exwm-init)
-  
-#+end_src
-*** TODO Fix loading EXWM
-
 ** Themes and eye-candy
 Here goes stuff that has to do with look 
 
@@ -848,6 +830,27 @@ Cant find the package
   (setq display-time-day-and-date nil)
 
 #+end_src
+
+*** gptel
+#+begin_src emacs-lisp
+    ;;
+    ;; Use gptel to inteface with LLMs
+    ;;
+    (use-package gptel
+        :config
+        (setq gptel-format-response 'org)
+        (setq gptel-output-format 'org)
+        (setq gptel-org-set-topic t)
+        (setq gptel-org-set-properties t)
+        (setq gptel-org-branching-context t))
+
+  ;;
+  ;; TODO: Write a function that changes output type depending on the buffer
+  ;;
+  (global-set-key (kbd "s-<return>") 'gptel-send)
+
+#+end_src
+
 ** ORG Mode 
 The almighty org mode life, stuff and everything organizer
 https://orgmode.org/
@@ -1293,16 +1296,17 @@ https://github.com/unhammer/org-rich-yank
               ("C-M-y" . org-rich-yank)))
 #+end_src
 ** Gnus
-Gnus is the awesomest email client (that also does news, rss and practically everything)
+
+Gnus is an awsome email client (that also does news, rss and practically everything)
 
 Setting it up and getting used to it is a pain but it's awesome when it's running
-
-TL;DL
-Gnus wants a primary email, the setup for this mail set in the "gnus-select-method" variable
-
-Everything else goes into the gnus-secondary-select-methods list
-
 (the gnus pdf/info manual is 400 pages long)
+
+Love how the screen is empty when you dont have any unread mail. Proper dompamine rush compared to "normal" email clients.
+
+=TL;DR=
+Gnus wants a primary email, the setup for this mail set in the "gnus-select-method" variable
+Everything else goes into the gnus-secondary-select-methods list
 
 #+begin_src emacs-lisp
 
@@ -1876,18 +1880,7 @@ This is the client-server model for emacs.
     (server-start))
 
 #+end_src
-**** TODO Why does the terminal emacs mode break/crash if the server is run in the EXWM instance?cd
-
-*** Load secrets
-#+begin_src emacs-lisp
-  ;;
-  ;; Load secrets
-  ;;
-  (let ((secrets "secrets.el.gpg"))
-    (when (file-exists-p secrets)
-      (load-file secrets)))
-    
-#+end_src
+**** TODO Why does the terminal emacs mode break/crash if the server is run in the EXWM instance?
 *** Show on startup
 What to show at startup 
 v
@@ -1952,13 +1945,7 @@ Each emacs-lisp section in here needs to tangle to that target
   ;;
   ;;
 #+end_src
-*** Start compton before EXWM
-#+begin_src emacs-lisp :tangle ./desktop.el :mkdirp yes
-  ;;
-  (start-process-shell-command "compton" nil "compton")
 
-
-#+end_src
 ** EXWM
 *** EXWM Support functions
 Helper functions for a better EXWM experience
@@ -2007,109 +1994,112 @@ Changes the name in the buffer list to the X class name of the window
 Loads the exwm mode
 
 #+begin_src emacs-lisp :tangle ./desktop.el :mkdirp yes
-    (use-package exwm
-      :ensure t
-      :config
-      (require 'exwm-input)
+  (use-package exwm
+    :ensure t
+    :config
+    (require 'exwm-input)
 
-      ;; Set the default number of workspaces
-      (setq exwm-workspace-number 6)
+    ;; Set the default number of workspaces
+    (setq exwm-workspace-number 6)
 
-      ;; When EXWM finishes initialization, do some extra setup
-      (add-hook 'exwm-init-hook #'efs/after-exwm-init)
+    ;; When EXWM finishes initialization, do some extra setup
+    (add-hook 'exwm-init-hook #'efs/after-exwm-init)
 
-      ;; When window "class" updates, use it to set the buffer name
-      (add-hook 'exwm-update-class-hook #'efs/exwm-update-class)
+    ;; When window "class" updates, use it to set the buffer name
+    (add-hook 'exwm-update-class-hook #'efs/exwm-update-class)
 
-      ;; These keys should always pass through to Emacs
-      (setq exwm-input-prefix-keys
-        '(?\C-x
-          ?\C-u
-          ?\C-h
-          ?\M-\t    ;; M-<tab>
-          ?\M-x
-          ?\M-`
-          ?\M-&
-          ?\M-:
-          ?\C-\M-j  ;; Buffer list
-          ?\C-\ ))  ;; Ctrl+Space
+    ;; These keys should always pass through to Emacs
+    (setq exwm-input-prefix-keys
+      '(?\C-x
+        ?\C-u
+        ?\C-h
+        ?\M-\t    ;; M-<tab>
+        ?\M-x
+        ?\M-`
+        ?\M-&
+        ?\M-:
+        ?\C-\M-j  ;; Buffer list
+        ?\C-\ ))  ;; Ctrl+Space
 
-      ;; Ctrl+Q will enable the next key to be sent directly
-      (define-key exwm-mode-map [?\C-q] 'exwm-input-send-next-key)
+    ;; Ctrl+Q will enable the next key to be sent directly
+    (define-key exwm-mode-map [?\C-q] 'exwm-input-send-next-key)
 
-      ;; Launching apps from counsel
-      (exwm-input-set-key (kbd "M-s-x") 'counsel-linux-app)
-      (exwm-input-set-key (kbd "s-f") 'exwm-layout-toggle-fullscreen)
-
-
-      ;; Set up global key bindings.  These always work, no matter the input state!
-      ;; Keep in mind that changing this list after EXWM initializes has no effect.
-      (setq exwm-input-global-keys
-            `(
-              ;; Reset to line-mode (C-c C-k switches to char-mode via exwm-input-release-keyboard)
-              ([?\s-k] . exwm-reset)
-
-              ;; Bind Super + X/C/V to send Ctrl+X/C/V to the focused X application
-              ([?\H-x] . (lambda ()
-                           (interactive)
-                           (exwm-input-send-key "C-x")))
-              ([?\H-c] . (lambda ()
-                           (interactive)
-                           (exwm-input-send-key "C-c")))
-              ([?\H-v] . (lambda ()
-                           (interactive)
-                           (exwm-input-send-key "C-v")))
-
-              ;; Move between windows
-              ([s-left] . windmove-left)
-              ([s-right] . windmove-right)
-              ([s-up] . windmove-up)
-              ([s-down] . windmove-down)
-
-              ;; Launch applications via shell command
-              ([?\s-x] . (lambda (command)
-                           (interactive (list (read-shell-command "$ ")))
-                           (start-process-shell-command command nil command)))
-
-              ;; Switch workspace
-              ([?\s-w] . exwm-workspace-switch)
-
-              ;; Workspace 0 on s-` 
-              ([?\s-`] . (lambda () (interactive)
-                           (exwm-workspace-switch-create 0)))
-
-              ;; 's-N': Switch to certain workspace with Super (Win) plus a number key (0 - 9)
-              ,@(mapcar (lambda (i)
-                          `(,(kbd (format "s-%d" i)) .
-                            (lambda ()
-                              (interactive)
-                              (exwm-workspace-switch-create ,i))))
-                        (number-sequence 0 9)))
-            ) ;; setq exwm-input...
-
-      ;; Automatically move EXWM buffer to current workspace when selected
-      (setq exwm-layout-show-all-buffers t)
-
-      ;; Display all EXWM buffers in every workspace buffer list
-      (setq exwm-workspace-show-all-buffers t)
-
-      ;; This fixes an annoying error when I auto-save-kill roam buffers
-      ;;(defun emfrom/exwm-refresh-buffer-list (&optional _arg)
-      ;;  "Remove dead buffers from the EXWM workspace buffer list."
-      ;;  (setq exwm-workspace-buffer-list (cl-remove-if-not 'buffer-live-p exwm-workspace-buffer-list)))
-      ;;
-      ;;(advice-add 'exwm-workspace-switch :before #'emfrom/exwm-refresh-buffer-list)
-
-      ;; Load the system tray before exwm-init
-      (require 'exwm-systemtray)
-      (exwm-systemtray-mode)
-      (setq exwm-systemtray-height 16)
-
-      ;;Start exwm
-      (exwm-enable)
-      ) ;; use-package exwm
+    ;; Launching apps from counsel
+    (exwm-input-set-key (kbd "M-s-x") 'counsel-linux-app)
+    (exwm-input-set-key (kbd "s-f") 'exwm-layout-toggle-fullscreen)
 
 
+    ;; Set up global key bindings.  These always work, no matter the input state!
+    ;; Keep in mind that changing this list after EXWM initializes has no effect.
+    (setq exwm-input-global-keys
+          `(
+            ;; Reset to line-mode (C-c C-k switches to char-mode via exwm-input-release-keyboard)
+            ([?\s-k] . exwm-reset)
+
+            ;; Bind Super + X/C/V to send Ctrl+X/C/V to the focused X application
+            ([?\H-x] . (lambda ()
+                         (interactive)
+                         (exwm-input-send-key "C-x")))
+            ([?\H-c] . (lambda ()
+                         (interactive)
+                         (exwm-input-send-key "C-c")))
+            ([?\H-v] . (lambda ()
+                         (interactive)
+                         (exwm-input-send-key "C-v")))
+
+            ;; Move between windows
+            ([s-left] . windmove-left)
+            ([s-right] . windmove-right)
+            ([s-up] . windmove-up)
+            ([s-down] . windmove-down)
+
+            ;; Launch applications via shell command
+            ([?\s-x] . (lambda (command)
+                         (interactive (list (read-shell-command "$ ")))
+                         (start-process-shell-command command nil command)))
+
+            ;; Switch workspace
+            ([?\s-w] . exwm-workspace-switch)
+
+            ;; Workspace 0 on s-` 
+            ([?\s-`] . (lambda () (interactive)
+                         (exwm-workspace-switch-create 0)))
+
+            ;; 's-N': Switch to certain workspace with Super (Win) plus a number key (0 - 9)
+            ,@(mapcar (lambda (i)
+                        `(,(kbd (format "s-%d" i)) .
+                          (lambda ()
+                            (interactive)
+                            (exwm-workspace-switch-create ,i))))
+                      (number-sequence 0 9)))
+          ) ;; setq exwm-input...
+
+    ;; Automatically move EXWM buffer to current workspace when selected
+    (setq exwm-layout-show-all-buffers t)
+
+    ;; Display all EXWM buffers in every workspace buffer list
+    (setq exwm-workspace-show-all-buffers t)
+
+    ;; This fixes an annoying error when I auto-save-kill roam buffers
+    ;;(defun emfrom/exwm-refresh-buffer-list (&optional _arg)
+    ;;  "Remove dead buffers from the EXWM workspace buffer list."
+    ;;  (setq exwm-workspace-buffer-list (cl-remove-if-not 'buffer-live-p exwm-workspace-buffer-list)))
+    ;;
+    ;;(advice-add 'exwm-workspace-switch :before #'emfrom/exwm-refresh-buffer-list)
+
+    ;; Load the system tray before exwm-init
+    (require 'exwm-systemtray)
+    (exwm-systemtray-mode)
+    (setq exwm-systemtray-height 16)
+
+    ;;Start exwm
+    (exwm-enable)
+    ) ;; use-package exwm
+
+  ;;
+  ;; Sometimes exwm doesnt start properly without this, running it again wont do any harm
+  ;;
+  (exwm-init)
 #+end_src
 
 *** Desktop Environment
