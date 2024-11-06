@@ -868,147 +868,155 @@ conf still feels clunky
 
 #+begin_src emacs-lisp
 
-    ;;
-     ;; ORG mode
-     ;;
-     (defun emfrom/org-mode-setup ()
-         (org-indent-mode)
-         (variable-pitch-mode 0)
-         (visual-line-mode 1))
+  ;;
+   ;; ORG mode
+   ;;
+   (defun emfrom/org-mode-setup ()
+       (org-indent-mode)
+       (variable-pitch-mode 0)
+       (visual-line-mode 1))
 
-    (use-package org
-      :ensure t
-      :hook (org-mode . emfrom/org-mode-setup)
-      :config
-      (setq org-ellipsis " ▾")
+  (use-package org
+    :ensure t
+    :hook (org-mode . emfrom/org-mode-setup)
+    :config
+    (setq org-ellipsis " ▾")
 
-        (setq org-return-follows-link t)
+      (setq org-return-follows-link t)
 
-        (setq org-agenda-start-with-log-mode t)
-        (setq org-log-done 'time)
-        (setq org-log-into-drawer t)
+      (setq org-agenda-start-with-log-mode t)
+      (setq org-log-done 'time)
+      (setq org-log-into-drawer t)
 
-        (setq org-directory
-              "~/opt/org-mode")
+      (setq org-directory
+            "~/opt/org-mode")
 
-        (setq org-agenda-files
-              '("~/opt/org-mode/GTD/GTD.org"
-                "~/opt/org-mode/GTD/Someday.org"
-                "~/opt/org-mode/GTD/Habits.org"))
-        (define-key org-mode-map (kbd "s-b") 'org-mark-ring-goto)
+      (setq org-agenda-files
+            '("~/opt/org-mode/GTD/GTD.org"
+              "~/opt/org-mode/GTD/Someday.org"
+              "~/opt/org-mode/GTD/Habits.org"))
+      (define-key org-mode-map (kbd "s-b") 'org-mark-ring-goto)
 
-        (require 'org-habit)
-        (add-to-list 'org-modules 'org-habit)
-        (setq org-habit-graph-column 60)
+      (require 'org-habit)
+      (add-to-list 'org-modules 'org-habit)
+      (setq org-habit-graph-column 60)
 
-        (setq org-refile-targets
-          '(("~/opt/org-mode/GTD/Archive.org" :maxlevel . 1)
-            ("~/opt/org-mode/GTD/Someday.org" :maxlevel . 1)
-            ("~/opt/org-mode/GTD/GTD.org" :maxlevel . 1)))
+      (setq org-refile-targets
+        '(("~/opt/org-mode/GTD/Archive.org" :maxlevel . 1)
+          ("~/opt/org-mode/GTD/Someday.org" :maxlevel . 1)
+          ("~/opt/org-mode/GTD/GTD.org" :maxlevel . 1)))
 
-        ;; Save Org buffers after refiling!
-        (advice-add 'org-refile :after 'org-save-all-org-buffers)
+      ;; Save Org buffers after refiling!
+      (advice-add 'org-refile :after 'org-save-all-org-buffers)
 
 
-        (setq org-todo-keywords
-          '((sequence "TODO(t)" "NEXT(n)" "WAIT(w@/!)" "|" "DONE(d!)")
-            (sequence "PLAN(p)" "ACTIVE(a)" "SOMEDAY(s)" "TICKLER(i)" "|" "COMPLETED(c)" "CANC(k@)")))
+      (setq org-todo-keywords
+        '((sequence "TODO(t)" "NEXT(n)" "WAIT(w@/!)" "|" "DONE(d!)")
+          (sequence "PLAN(p)" "ACTIVE(a)" "SOMEDAY(s)" "TICKLER(i)" "|" "COMPLETED(c)" "CANC(k@)")))
 
-          (setq org-tag-alist
-          '((:startgroup)
-             ; Put mutually exclusive tags here
-             (:endgroup)
-             ("@computer" . ?C)
-             ("@phone" . ?P)
-             ("@town" . ?T)
-             ("@bigtown" . ?B)
-             ("@home" . ?H)
-             ("zoe" . ?z)
-             ("christine" . ?c)
-             ("doctor" . ?d)
-             ("buy" . ?b)
-             ("read" . ?r)
-             ))
+        (setq org-tag-alist
+        '((:startgroup)
+           ; Put mutually exclusive tags here
+           (:endgroup)
+           ("@computer" . ?C)
+           ("@phone" . ?P)
+           ("@town" . ?T)
+           ("@bigtown" . ?B)
+           ("@home" . ?H)
+           ("zoe" . ?z)
+           ("christine" . ?c)
+           ("doctor" . ?d)
+           ("buy" . ?b)
+           ("read" . ?r)
+           ))
 
-          ;;
-          ;; ORG Agenda shows only one day
-          ;;
-          (setq org-agenda-span 1)
+        ;;
+        ;; ORG Agenda shows only one day
+        ;;
+        (setq org-agenda-span 1)
 
-          ;;
-          ;; Configure custom agenda views
-          ;;
-          (setq org-agenda-custom-commands
-                '(("z" "Talks to Zoe" tags-todo "zoe"
-                   ((org-agenda-overriding-header "Zoe talk")))
+        ;;
+        ;; Agenda list doesnt show category
+        ;;
+        (setq org-agenda-prefix-format '((agenda . " %i %?-12t% s")
+  				       (todo . " %i ")
+  				       (tags . " %i ")
+  				       (search . " %i ")))
+        
+        ;;
+        ;; Configure custom agenda views
+        ;;
+        (setq org-agenda-custom-commands
+              '(("z" "Talks to Zoe" tags-todo "zoe"
+                 ((org-agenda-overriding-header "Zoe talk")))
 
-                  ("n" "Next Tasks"
-                   ((todo "NEXT"
-                          ((org-agenda-overriding-header "Next Tasks")
-                           (org-agenda-max-todos 5)))))
-                  ;; Low-effort next actions
-                  ("e" tags-todo "+TODO=\"NEXT\"++Effort==1"
-                   ((org-agenda-overriding-header "Low Effort Tasks")
-                    (org-agenda-max-todos 10)
-                    (org-agenda-files org-agenda-files)))
+                ("n" "Next Tasks"
+                 ((todo "NEXT"
+                        ((org-agenda-overriding-header "Next Tasks")
+                         (org-agenda-max-todos 5)))))
+                ;; Low-effort next actions
+                ("e" tags-todo "+TODO=\"NEXT\"++Effort==1"
+                 ((org-agenda-overriding-header "Low Effort Tasks")
+                  (org-agenda-max-todos 10)
+                  (org-agenda-files org-agenda-files)))
 
-                  ("w" "Workflow Status"
-                   ((todo "ACTIVE"
-                          ((org-agenda-overriding-header "Active Projects")
-                           (org-agenda-files org-agenda-files)))
-                    (todo "WAIT"
-                          ((org-agenda-overriding-header "Waiting on External")
-                           (org-agenda-files org-agenda-files)))
-                    (todo "PLAN"
-                          ((org-agenda-overriding-header "In Planning")
-                           (org-agenda-todo-list-sublevels nil)
-                           (org-agenda-files org-agenda-files)))
-                    (todo "COMPLETED"
-                          ((org-agenda-overriding-header "Completed Projects")
-                           (org-agenda-files org-agenda-files)))
-                    (todo "CANC"
-                          ((org-agenda-overriding-header "Cancelled Projects")
-                           (org-agenda-files org-agenda-files)))))))
+                ("w" "Workflow Status"
+                 ((todo "ACTIVE"
+                        ((org-agenda-overriding-header "Active Projects")
+                         (org-agenda-files org-agenda-files)))
+                  (todo "WAIT"
+                        ((org-agenda-overriding-header "Waiting on External")
+                         (org-agenda-files org-agenda-files)))
+                  (todo "PLAN"
+                        ((org-agenda-overriding-header "In Planning")
+                         (org-agenda-todo-list-sublevels nil)
+                         (org-agenda-files org-agenda-files)))
+                  (todo "COMPLETED"
+                        ((org-agenda-overriding-header "Completed Projects")
+                         (org-agenda-files org-agenda-files)))
+                  (todo "CANC"
+                        ((org-agenda-overriding-header "Cancelled Projects")
+                         (org-agenda-files org-agenda-files)))))))
 
         ;;
         ;; Capture templates
-          ;;
-          (setq org-capture-templates
-                `(("t" "Task" entry (file+olp "~/opt/org-mode/GTD/Inbox.org" "Inbox")
-                   "* TODO %?\n:PROPERTIES:\n:CREATED:  %U\n:END:\n  %i" :empty-lines 1)
+        ;;
+        (setq org-capture-templates
+              `(("t" "Task" entry (file+olp "~/opt/org-mode/GTD/Inbox.org" "Inbox")
+                 "* TODO %?\n:PROPERTIES:\n:CREATED:  %U\n:END:\n  %i" :empty-lines 1)
 
-                  ("a" "Task w/ Annotation" entry (file+olp "~/opt/org-mode/GTD/Inbox.org" "Inbox")
-                   "* TODO %?\n:PROPERTIES:\n:CREATED:  %U\n:END:\n  %a\n  %i" :empty-lines 1)
+                ("a" "Task w/ Annotation" entry (file+olp "~/opt/org-mode/GTD/Inbox.org" "Inbox")
+                 "* TODO %?\n:PROPERTIES:\n:CREATED:  %U\n:END:\n  %a\n  %i" :empty-lines 1)
 
-                  ("y" "Youtube video idea" entry (file+olp "~/opt/org-mode/doc/Youtube.org" "Ideas")
-                   "* %?\n  %U\n  %a\n  %i" :empty-lines 1)
+                ("y" "Youtube video idea" entry (file+olp "~/opt/org-mode/doc/Youtube.org" "Ideas")
+                 "* %?\n  %U\n  %a\n  %i" :empty-lines 1)
 
-                  ("j" "Journal Entries")
-                  ("jj" "Journal" entry
-                   (file+olp+datetree "~/opt/org-mode/Journal.org")
-                   "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
-                   :empty-lines 1)
+                ("j" "Journal Entries")
+                ("jj" "Journal" entry
+                 (file+olp+datetree "~/opt/org-mode/Journal.org")
+                 "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
+                 :empty-lines 1)
 
-                  ("jm" "Morning Journal" entry
-                   (file+olp+datetree "~/opt/org-mode/Journal.org")
-                   "\n* %<%I:%M %p> - Journal :journal:\n\n%?%[~/opt/org-mode/GTD/Templates/5minMorning.template]\n\n"
-                   :empty-lines 1)
+                ("jm" "Morning Journal" entry
+                 (file+olp+datetree "~/opt/org-mode/Journal.org")
+                 "\n* %<%I:%M %p> - Journal :journal:\n\n%?%[~/opt/org-mode/GTD/Templates/5minMorning.template]\n\n"
+                 :empty-lines 1)
 
-                  ("je" "Evening Journal" entry
-                   (file+olp+datetree "~/opt/org-mode/Journal.org")
-                   "\n* %<%I:%M %p> - Journal :journal:\n\n%?%[~/opt/org-mode/GTD/Templates/5minEvening.template]\n\n"
-                   :empty-lines 1)
+                ("je" "Evening Journal" entry
+                 (file+olp+datetree "~/opt/org-mode/Journal.org")
+                 "\n* %<%I:%M %p> - Journal :journal:\n\n%?%[~/opt/org-mode/GTD/Templates/5minEvening.template]\n\n"
+                 :empty-lines 1)
 
-                  ("js" "Morning 750 words" entry
-                   (file+olp+datetree "~/opt/org-mode/Journal.org")
-                   "\n* %<%I:%M %p> - Journal :journal:\n\n%[~/opt/org-mode/GTD/Templates/Morning750.template]%?\n\n"
-                   :empty-lines 1)
-                  ))
+                ("js" "Morning 750 words" entry
+                 (file+olp+datetree "~/opt/org-mode/Journal.org")
+                 "\n* %<%I:%M %p> - Journal :journal:\n\n%[~/opt/org-mode/GTD/Templates/Morning750.template]%?\n\n"
+                 :empty-lines 1)
+                ))
 
-          (define-key global-map (kbd "C-c c")
-            (lambda () (interactive) (org-capture)))
+        (define-key global-map (kbd "C-c c")
+          (lambda () (interactive) (org-capture)))
 
-          (global-set-key (kbd "C-c e") #'org-set-effort))
+        (global-set-key (kbd "C-c e") #'org-set-effort))
 #+end_src
 
 *** Agenda side pane
