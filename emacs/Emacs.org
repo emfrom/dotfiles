@@ -400,8 +400,8 @@ Make it easier to answer questions.
 #+begin_src emacs-lisp
 
 (desktop-save-mode 1)
-(setq desktop-restore-eager 5)
-
+(setq desktop-restore-eager 0)
+(setq desktop-restore-frames nil)   ;; Prevents restoring window layouts
 #+end_src
 **** History
 
@@ -1025,27 +1025,27 @@ conf still feels clunky
   ;;
   ;; Right hand side pane with org agenda in it
   ;;
-  (defvar emfrom/side-window-agenda nil
-    "Side window displaying org agenda")
-
   (defun emfrom/org-agenda-side-window ()
-    "Toggle the visibility of a side window with the Org Agenda."
+    "Toggle the visibility of a side window pane with the Org Agenda."
     (interactive)
-    (if emfrom/side-window-agenda
-        (progn
-          (delete-window emfrom/side-window-agenda)
-          (setq emfrom/side-window-agenda nil))
-      (setq emfrom/side-window-agenda
-            (display-buffer-in-side-window
-             (get-buffer-create "*Org Agenda*")
-             '((side . right) (slot . -1) (window . 0) (preserve-size . t))))
-      (org-agenda-list)))
+    (let ((side-window-agenda (if (and (boundp 'emfrom/side-window-agenda)
+                                       (window-live-p emfrom/side-window-agenda))
+                                  emfrom/side-window-agenda
+                                nil)))  
+      (if side-window-agenda
+          (progn
+            (delete-window side-window-agenda)
+            (setq emfrom/side-window-agenda nil))
+        (setq emfrom/side-window-agenda
+              (display-buffer-in-side-window
+               (get-buffer-create "*Org Agenda*")
+               '((side . right) (slot . -1) (window . 0) (preserve-size . t))))
+        (org-agenda-list))))
 
   (global-set-key (kbd "C-c a") 'emfrom/org-agenda-side-window)
 
+
 #+end_src
-
-
 *** Bullets
 Change how the * and ** looks
 #+begin_src emacs-lisp
@@ -1912,48 +1912,61 @@ This is the client-server model for emacs.
 **** TODO Why does the terminal emacs mode break/crash if the server is run in the EXWM instance?
 *** Show on startup
 What to show at startup 
-v
-I dont know if this is a good thing
-Maybe I want the pomodoro
-Maybe the REMINDER is kinda stupid
 
-Show the reminders file in scratch as well as the org agenda
 
-This takes a long time, a very long time. About 5-10s, but it's worth it otherwise I would never look at the thing. The other views like todos take about the same time, it's the opening, collating and extracting info from the org files that takes time.
+Haha, I'm not running windows anymore :)
+//This takes a long time, a very long time. About 5-10s, but it's worth it otherwise I would never look at the thing. The other views like todos take about the same time, it's the opening, collating and extracting info from the org files that takes time.//
 
 #+begin_src emacs-lisp
-      ;;
-      ;; Global reminders
-      ;;
 
-      ;; DONT do any of these
+  ;;
+  ;; Display the next to do things
+  ;;
+  ;;(add-hook 'after-init-hook (org-agenda-list))
 
-      ;; In the scratch buffer
-      ;;(insert-file "~/etc/emacs/REMINDER")
-
-      ;;
-      ;; Display the next to do things
-      ;;
-      ;;(add-hook 'after-init-hook (org-agenda-list))
-     (org-agenda-list)
 
   ;; Org drill crashes if I use it on startup? Why?
+  ;;(org-drill)
 
-  ;; Just trying this out
+  ;; Ignore case in completions
+  ;; (trying it out)
   (setq completion-ignore-case t)
-    
-   ;;(org-drill)
 
-      ;;  (pomidor)
+
+  ;;
+  ;; Bury all org buffers laying around
+  ;;
+  (org-agenda-list)
+  (dolist (buf (buffer-list))
+    (when (or (string-match "\\.org\\'" (buffer-name buf))
+              (string= "*Org Agenda*" (buffer-name buf)))
+      (bury-buffer buf)))
+
+  ;;
+  ;; Beautify the scratch buffer
+  ;;
+  ;;(insert-file "~/etc/emacs/REMINDER")
+  (with-current-buffer "*scratch*"
+    (insert
+     (with-temp-buffer
+       (call-process "~/bin/lolcow.sh" nil t)
+       (let ((output (buffer-string)))
+         (mapconcat (lambda (line) (format ";; %s" line))
+                    (split-string output "\n" t) "\n"))))
+    (insert "\n;;\n"))
+
+
+
+
+
+  ;;
+  ;; Pomodor timer
+  ;;
+
+  ;; (pomidor)
 
 #+end_src
-**** DONE Fix org mode agenda so it doesnt take to long
-CLOSED: [2024-11-01 Fri 13:06]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2024-11-01 Fri 13:06]
-:END:
 
- 
 * Desktop
 Specific config for EXWM Sessions
 This stuff goes into [[desktop.el]]
@@ -1979,6 +1992,32 @@ Each emacs-lisp section in here needs to tangle to that target
 *** EXWM Support functions
 Helper functions for a better EXWM experience
 
+**** Init hook
+Run applications or such after exwm-init
+
+ #+begin_src emacs-lisp :tangle ./desktop.el :mkdirp yes
+   (defun efs/after-exwm-init ()
+
+     ;; Fire up tray apps
+     (start-process-shell-command "blueman-applet" nil "blueman-applet")
+     (start-process-shell-command "pasystray" nil "pasystray")
+     (start-process-shell-command "nm-applet" nil "nm-applet")
+
+     
+     ;; Make workspace 1 be the one where we land at startup
+     (exwm-workspace-switch-create 1)
+
+     ;; Start with agenda pane open
+     (emfrom/org-agenda-side-window)
+
+     ;; But switch focus to scratch
+     (switch-to-buffer-other-window "*scratch*")
+     (goto-char (point-max))
+
+
+
+ #+end_src
+
 **** Run in backgroud
 Run things non-blocking in the background
 
@@ -1991,25 +2030,7 @@ Not using this, it crashes emacs for some reason
 
  #+end_src
 
-
-**** Init hook
-Run applications or such after exwm-init
-
- #+begin_src emacs-lisp :tangle ./desktop.el :mkdirp yes
-   (defun efs/after-exwm-init ()
-     ;; Make workspace 1 be the one where we land at startup
-     (exwm-workspace-switch-create 1)
-
-     ;; Open eshell by default
-     ;;(eshell)
-     (start-process-shell-command "blueman-applet" nil "blueman-applet")
-     (start-process-shell-command "pasystray" nil "pasystray")
-     (start-process-shell-command "nm-applet" nil "nm-applet"))
-
-
-
- #+end_src
-
+ 
 **** Buffer names
 Changes the name in the buffer list to the X class name of the window
 
@@ -2063,7 +2084,7 @@ Loads the exwm mode
     (setq exwm-input-global-keys
           `(
             ;; Reset to line-mode (C-c C-k switches to char-mode via exwm-input-release-keyboard)
-            ([?\s-k] . exwm-reset)
+            ([?\s-r] . exwm-reset)
 
             ;; Bind Super + X/C/V to send Ctrl+X/C/V to the focused X application
             ([?\H-x] . (lambda ()
