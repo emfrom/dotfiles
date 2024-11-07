@@ -1292,17 +1292,21 @@ alias depath='export PATH=$(echo "$PATH" | sed "s/:*[^:]*$//")'
 #+end_src
 ** emacs
 #+begin_src shell :tangle ./aliases :mkdirp yes
-  #
-  # emacsclient
-  #
-  alias emacs='emacsclient -nw -c -a emacs'
+    #
+    # emacsclient
+    #
 
+  if [[ -z EMACS ]] ; then
+      alias emacs='emacsclient -nw -c -a emacs'
+  else
+      alias emacs='emacsclient -r -a vim'
+  fi
 #+end_src
 ** eng = env | grep
 #+begin_src shell :tangle ./aliases :mkdirp yes
 
   # An alias to find processes quickly
-  alias eng='env | grep'
+  alias eng='env | grep -i'
 
 #+end_src
 ** grep 
