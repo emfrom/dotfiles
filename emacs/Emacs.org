@@ -235,52 +235,6 @@ Is needed for no littering and also nice to do
 #+end_src
 
 *** Key mapping and remapping
-**** Modifiers
-This remaps:
-Caps-lock -> Control
-Win-key -> Super
-Menu-key -> Hyper
-
-Note that this will remap the keys regardless if exwm is active or not
-
-#+begin_src shell :tangle ./exwm/Xmodmap :mkdirp yes
-  clear lock
-  keycode 66 = Control_L
-  add control = Control_L
-
-  clear Mod4
-  keycode 133 = Super_L
-  add Mod4 = Super_L
-
-  keycode 135 = NoSymbol
-  keycode 135 = Hyper_L
-  add Mod3 = Hyper_L
-  
-#+end_src
-
-***** Call Xmodmap
-#+begin_src emacs-lisp
-
-  ;; Remap keys as per exwm/Xmodmap
-  (start-process-shell-command "xmodmap" nil "xmodmap ~/etc/emacs/exwm/Xmodmap")
-
-  ;; Make sure emacs recognises Hyper properly
-  ;;
-  ;; I really dont understand enough of these keymaps
-  ;; but if I dont do this after startup it just does not regognise the hyper key
-  ;;  (defun emfrom/set-hyper-key ()
-  ;;    (setq x-hyper-keysym 'hyper))
-  ;;
-  ;;(add-hook 'emacs-startup-hook #'emfrom/set-hyper-key)
-
-
-
-
-#+end_src
-
-***** TODO Fix Hyper key
-For some reason this does not work under EXWM while working fine under Xcfe
-
 **** PAUSE to C-c
 #+begin_src emacs-lisp
 
@@ -301,17 +255,20 @@ It's also useful in termux because the ESC key is visible at all times
   ;; Make ESC quit prompts
   ;;
   (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
-
+  
 
 #+end_src
 **** Alt-TAB to switch buffer
+
+I've changed the order here as it makes more sense to cycle in the other direction
+
 #+begin_src emacs-lisp
 
   ;;
   ;; Somewhat windowsy
   ;;
-  (bind-key "M-<tab>" 'switch-to-next-buffer global-map)
-  (bind-key "M-<iso-lefttab>" 'switch-to-prev-buffer global-map)
+  (bind-key "M-<tab>" 'switch-to-prev-buffer global-map)
+  (bind-key "M-<iso-lefttab>" 'switch-to-next-buffer global-map)
 
 #+end_src
 **** Line numbers
@@ -1149,7 +1106,7 @@ My capture template includes a link section for external links (like wikipedia)
     :config
     (setq org-roam-capture-templates
           '(("d" "default" plain
-             "\n%?\n\n\n\n\n\n* Flashcards\n** Question :drill:\n*** answer\n\n* Links\n** External\n\n** Internal\n\n"
+             "\n%?\n\n\n\n* Links\n** External\n\n** Internal\n\n* Flashcards\n** Question :drill:\n*** answer\n\n"
              :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+author: E.M. From\n#+startup: overview\n#+date: %U\n#+title: ${title}")
              :unnarrowed t)
             ))
@@ -1305,11 +1262,27 @@ Use org-drill to study repetitive facts. I add them as a "Flashcard" heading wit
   	org-drill-interval-factor 2.5)
     
     ;; Use the `org-roam-directory` variable for org-drill scope
-    (setq org-drill-scope (directory-files-recursively "~/opt/org-mode/roam/" "\\.org$"))
+    (setq org-drill-scope (directory-files-recursively "~/opt/org-mode/roam" "\\.org$"))
 )    
 
 
 #+end_src
+
+Why does this org drill not return any exercises?
+
+The =org-drill= configuration might not return any exercises due to a few potential issues:
+
+1. *Tag Not Present*: Ensure that the "Flashcard" headings with the =:drill:= tag are correctly placed in your Org files under the specified scope. If there are no entries with that tag, =org-drill= won't have items to present.
+
+2. *Empty Scope*: Check that the directory specified in =org-drill-scope= (=~/opt/org-mode/roam/=) actually contains =.org= files that have drill items. If the directory is empty or doesn’t contain any relevant files, =org-drill= will not have anything to display.
+
+3. *File Accessibility*: Ensure that the files are readable and are not excluded by any settings in your Org mode configuration.
+
+4. *Configuration Errors*: Look for any errors emitted when your configuration is loaded. Changes to =org-drill= might not be applied if there are errors in earlier parts of your config.
+
+5. *Initialization Order*: Make sure =org-drill= is loaded after =org-roam=, as specified. If =org-roam= isn’t properly set up or loaded before it, it could affect the functioning of =org-drill=.
+
+You can troubleshoot by checking the contents of your Org files for the expected tags and verifying that their structure matches what =org-drill= expects.
 
 *** org-rich-yank
 Yank (paste) stuff into org mode with context
@@ -2012,7 +1985,7 @@ Run applications or such after exwm-init
 
      ;; But switch focus to scratch
      (switch-to-buffer-other-window "*scratch*")
-     (goto-char (point-max))
+     (goto-char (point-max)))
 
 
 
