@@ -1,0 +1,95 @@
+#+TITLE: ChatGPT interactions
+#+AUTHOR: E.M. From
+#+STARTUP: overview
+
+Setup of the kanata keyboard manager
+
+Based on this video:
+https://www.youtube.com/watch?v=sLWQ4Gx88h4
+
+* Config file
+Writing out the layout is really not necessary
+
+#+begin_src lisp :tangle ./config.kbd :mkdirp yes
+      ;; defsrc is still necessary
+      (defcfg
+          process-unmapped-keys yes)
+    (defsrc
+      grv   1    2    3    4    5    6    7    8    9    0    -    =    bspc
+      tab   q    w    e    r    t    y    u    i    o    p    [    ]    \
+      caps  a    s    d    f    g    h    j    k    l    ;    '    ret
+      lsft  z    x    c    v    b    n    m    ,    .    /    rsft
+      lctl  lmet lalt           spc            ralt rmet rctl
+    )
+
+      (defvar
+        tap-time 150
+        hold-time 200)
+
+      ;;
+      ;; Uses non-emacsy names
+      ;;
+      ;; lmet and rmet means super
+      ;; lalt and ralt means meta
+      ;;
+      (defalias
+        a (tap-hold $tap-time $hold-time a (layer-while-held nav))
+        s (tap-hold $tap-time $hold-time s lalt)
+        d (tap-hold $tap-time $hold-time d lsft)
+        f (tap-hold $tap-time $hold-time f lctl)
+        j (tap-hold $tap-time $hold-time j rctl)
+        k (tap-hold $tap-time $hold-time k rsft)
+        l (tap-hold $tap-time $hold-time l ralt)
+        ; (tap-hold $tap-time $hold-time ; rmet)
+        g (tap-hold $tap-time $hold-time g lmet))
+
+
+    (deflayer base
+      grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+      tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
+      bspc @a   @s   @d   @f   @g    h    @j   @k   @l   @;    '    ret
+      lsft z    x    c    v    b    n    m    ,    .    /    rsft
+      lctl lmet tab           spc            ret rmet rctl
+    )
+
+     (deflayer nav 
+      grv    1    2    3    4    5    6    7    8    9    0    -    =    bspc
+      tab    q    w    e    r    t    y    u    i    o    p    [    ]    \
+      bspc   @a   @s   @d   @f   @g    h    down   left   right   up    '    ret
+      lsft   z    x    c    v    b    n    m    ,    .    /    rsft
+      lctl  lmet  tab        spc            ret  rmet  rctl
+    )
+
+
+
+#+end_src
+
+
+
+ 
+* Systemd entry
+
+#+begin_src shell :tangle ~/etc/systemd/user/kanata.service
+  [Unit]
+  Description=Kanata keyboard remapper
+  Documentation=https://github.com/jtroo/kanata
+
+  [Service]
+  Environment=PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/bin
+  Environment=DISPLAY=:0
+  Type=simple
+  ExecStart=/usr/bin/sh -c 'exec /home/emfrom/bin/kanata -c /home/emfrom/etc/kanata/config.kbd'
+  Restart=no
+
+  [Install]
+  WantedBy=default.target
+
+#+end_src
+
+* Tangle on save
+Lastly, setup org babel to auto-tangle in this directory
+
+#+begin_src emacs-lisp :tangle ./.dir-locals.el :mkdirp yes
+((org-mode . ((eval . (add-to-list 'emfrom/org-babel-autotangle-dirs (file-name-directory (or load-file-name buffer-file-name)))))))
+#+end_src
+
