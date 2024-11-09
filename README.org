@@ -24,6 +24,10 @@ Everthing of import is in the file [[file:emacs/Emacs.org][Emacs.org]] that tang
 
 The whole config is in [[file:bash/Bash.org][Bash.org]] it tangles to the bashrc bash-profile etc. Short stub scripts are used in the home directory so it's easier to see when/how they've been modified by programs.
 
+* Kanata
+
+Manages my keybindings, in [[kanata/Kanata.org][Kanata.org]]
+
 
 * Tangle Script
 
