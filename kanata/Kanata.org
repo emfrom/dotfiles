@@ -8,7 +8,19 @@ Based on this video:
 https://www.youtube.com/watch?v=sLWQ4Gx88h4
 
 * Config file
-Writing out the layout is really not necessary
+Writing out the layout as ascii art is not necessary but helpful
+
+I have two maps
+base: with home row modifiers 
+nav: jkl; act as navigation keys but otherwise the same s the first
+
+The home row modifiers are not entirely symmetric.
+sdf and jkl are, however
+a is mapped to switching the layer
+g and ; are mapped to super.
+
+The super mappings are both to lmet, aka the windows key.
+The mapping of the meny key (ralt here) to Hyper is done via xmodmap
 
 #+begin_src lisp :tangle ./config.kbd :mkdirp yes
       ;; defsrc is still necessary
@@ -40,7 +52,7 @@ Writing out the layout is really not necessary
         j (tap-hold $tap-time $hold-time j rctl)
         k (tap-hold $tap-time $hold-time k rsft)
         l (tap-hold $tap-time $hold-time l ralt)
-        ; (tap-hold $tap-time $hold-time ; rmet)
+        ; (tap-hold $tap-time $hold-time ; lmet)
         g (tap-hold $tap-time $hold-time g lmet))
 
 
@@ -64,9 +76,20 @@ Writing out the layout is really not necessary
 
 #+end_src
 
+* Adding Hyper key
 
+I'm still using the hyper key in emacs so I set it using Xmodmap
 
- 
+xmodmap is called in [[~/etc/emacs/Emacs.org][Emacs.org]]
+
+#+begin_src shell :tangle ~/etc/emacs/exwm/Xmodmap
+  clear Mod3
+  keycode 135 = NoSymbol
+  keycode 135 = Hyper_L
+  remove Mod4 = Hyper_L
+  add Mod3 = Hyper_L
+#+end_src
+  
 * Systemd entry
 
 #+begin_src shell :tangle ~/etc/systemd/user/kanata.service

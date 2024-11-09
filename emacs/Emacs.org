@@ -2140,6 +2140,13 @@ Loads the exwm mode
 #+end_src
 
 ** X11 Defaults
+*** Hyper keybinding
+The resources file Xmodmap is generated in [[~/etc/kanata/Kanata.org][Kanata.org]]
+
+#+begin_src emacs-lisp :tangle ./desktop.el :mkdirp yes
+(start-process-shell-command "xmodmap" nil "xmodmap ~/etc/emacs/exwm/Xmodmap")
+#+end_src
+
 *** Xterm
 Readable xterm, sensible defaults
 UX is the predefined class for unicode enabled xterm on some systems
