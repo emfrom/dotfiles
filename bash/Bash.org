@@ -1143,6 +1143,7 @@ Removes the lolcow (and anything else)
 #+end_src
 
 ** colorise_string_escaped
+
 A function to create an escaped string generating a rainbow color pattern
 Outputs a repeating pattern that will work on all but the dumbest of terminals
 
@@ -1172,6 +1173,18 @@ Suitable for use in the prompt
   }
 #+end_src 
 
+** ls_func
+
+#+begin_src shell :tangle ./functions :mkdirp yes
+  #
+  # This strips off symlink targets, requires the alias lls to be set
+  #
+
+  ls_func() {
+        /usr/bin/ls ${LS_OPTIONS} --color=always "$@" | cut -d '>' -f 1 | sed 's/ -$//'
+  }
+
+#+end_src 
 * Aliases
 Aliases are for simple command conversion and adding basic options to invoked programs as well as some shortcuts for common usecases and typos
 
@@ -1390,7 +1403,7 @@ For some reason -B doesnt always work, so I added an --ignore=*~
   export LS_OPTIONS="-BghoH --group-directories-first --dereference-command-line-symlink-to-dir --ignore=#* --ignore=.#* --ignore=*~"
 
   # Standard alias for ls
-  alias ls='ls $LS_OPTIONS --color=$COLOUR'
+  alias ls=ls_func
   alias lsa='ls -A $LS_OPTIONS --color=$COLOUR'
 
  
