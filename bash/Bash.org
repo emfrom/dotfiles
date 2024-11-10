@@ -414,6 +414,20 @@ Load the content of the helper files
 
 #+end_src
 
+** dircolours
+This needs to be done before we do exa or ls
+
+#+begin_src shell :tangle ./bashrc :mkdirp yes
+
+  #
+  # Use the terminal colours set in etc/bash/dircolours
+  #
+  if [[ -f "${XDG_CONFIG_HOME}/bash/dircolours" ]] ; then
+      eval "$(dircolors -b ${XDG_CONFIG_HOME}/bash/dircolours)"
+  fi
+#+end_src
+
+
 ** Program settings
 *** Emacs shell-mode
 
@@ -514,20 +528,21 @@ Emacs shell needs some help in not being braindead
 Just to keep gnus from littering all over the place
 
 #+begin_src shell :tangle ./bashrc :mkdirp yes
-  export MAILDIR=$HOMR/etc/emacs/gnus/mail
+  export MAILDIR=$HOME/etc/emacs/gnus/mail
 #+end_src
-
-** Set Dircolours
+*** exa
 #+begin_src shell :tangle ./bashrc :mkdirp yes
 
-  #
-  # Use the terminal colours set in etc/bash/dircolours
-  #
-  if [[ -f "${XDG_CONFIG_HOME}/bash/dircolours" ]] ; then
-      eval "$(dircolors -b ${XDG_CONFIG_HOME}/bash/dircolours)"
+    export EXA_OPTIONS='-lBuh --git --no-permissions --group-directories-first -I #* -I .#* -I *~' 
+    export EXA_COLORS='da=1,35
+  '
+#+end_src
+*** zoxide
+#+begin_src shell :tangle ./bashrc :mkdirp yes
+  if command -v zoxide $> /dev/null ; then
+    eval "$(zoxide init --cmd cd bash)"
   fi
 #+end_src
-
 ** Prompt
 *** Static prompt
 This is the static part of setting the prompt
@@ -1127,7 +1142,6 @@ I used to love this one, dont use it so much anymore
       return 0
   }
 
-  alias cd=cd_func
 
 #+end_src
 
@@ -1235,38 +1249,43 @@ Aliases is tangled to [[file:aliases][aliases]]
 #+end_src
 
 ** cd
-Some cd shorthand
+Zoxide set's up the cd aliases by itself, if on a system without use old setup
 
 For the cd_func definition see [[CD Function]] 
 
 #+begin_src shell :tangle ./aliases :mkdirp yes
   #
-  # NOTE: cd itself is already aliased to cd_func
-  #
+  # Fallback on cd if no zoxide
+  # 
+  if ! command -v zoxide $> /dev/null ; then
+    #
+    # cd
+    #
+    alias cd=cd_func
 
-  #
-  # Some classic cd aliases
-  #
-  alias cd..='cd ..'
-  alias ..='cd ..'
-  alias ...='cd ../..'
-  alias ....='cd ../../..'
+    #
+    # Some classic cd aliases
+    #
+    alias cd..='cd ..'
+    alias ..='cd ..'
+    alias ...='cd ../..'
+    alias ....='cd ../../..'
 
-  #
-  # cd stuff related to cd_func
-  #
-  alias dc='cd -'
-  alias c='cd --'
-  alias c1='cd -1'
-  alias c2='cd -2'
-  alias c3='cd -3'
-  alias c4='cd -4'
-  alias c5='cd -5'
-  alias c6='cd -6'
-  alias c7='cd -7'
-  alias c8='cd -8'
-  alias c9='cd -9'
-
+    #
+    # cd stuff related to cd_func
+    #
+    alias dc='cd -'
+    alias c='cd --'
+    alias c1='cd -1'
+    alias c2='cd -2'
+    alias c3='cd -3'
+    alias c4='cd -4'
+    alias c5='cd -5'
+    alias c6='cd -6'
+    alias c7='cd -7'
+    alias c8='cd -8'
+    alias c9='cd -9'
+  fi
 #+end_src
 
 ** clear/cls
@@ -1363,7 +1382,7 @@ Old school
   
 #+end_src
 
-** ls
+** ls / ex
 Set and use the variable LS_OPTIONS to change ls behaviour
 
 =TL;DR= No superflous information and pretty
@@ -1403,8 +1422,8 @@ For some reason -B doesnt always work, so I added an --ignore=*~
   export LS_OPTIONS="-BghoH --group-directories-first --dereference-command-line-symlink-to-dir --ignore=#* --ignore=.#* --ignore=*~"
 
   # Standard alias for ls
-  alias ls=ls_func
-  alias lsa='ls -A $LS_OPTIONS --color=$COLOUR'
+  alias ls='exa $EXA_OPTIONS'
+  alias lss='ls -A $LS_OPTIONS --color=$COLOUR'
 
  
 #+end_src
