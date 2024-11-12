@@ -1871,6 +1871,8 @@ Change between windows within emacs
 #+end_src
 
 **** Unset <insert>
+Hate hitting insert by mistake, worse than caps-lock
+
 #+begin_src emacs-lisp
 
   ;; Get rid of insert
@@ -1936,7 +1938,7 @@ Haha, I'm not running windows anymore :)
   ;;
   ;; Bury all org buffers laying around
   ;;
-  (org-agenda-list)
+  ;; (org-agenda-list)
   (dolist (buf (buffer-list))
     (when (or (string-match "\\.org\\'" (buffer-name buf))
               (string= "*Org Agenda*" (buffer-name buf)))
