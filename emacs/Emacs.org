@@ -823,8 +823,8 @@ The almighty org mode life, stuff and everything organizer
 https://orgmode.org/
 *** Debugging org mode
 #+begin_src emacs-lisp
-  (setq org-element--cache-self-verify 'backtrace)
-  (message "You have org-mode debugging on!")
+  ;; (setq org-element--cache-self-verify 'backtrace)
+  ;; (message "You have org-mode debugging on!")
 #+end_src
 
 *** ORG Mode
@@ -1003,6 +1003,7 @@ conf still feels clunky
       (if side-window-agenda
           (progn
             (delete-window side-window-agenda)
+  	  (org-save-all-org-buffers)
             (setq emfrom/side-window-agenda nil))
         (setq emfrom/side-window-agenda
               (display-buffer-in-side-window
@@ -1828,6 +1829,21 @@ NOTE: If you want to move everything out of the ~/.emacs.d folder reliably, set 
 
 ** Finishing touches
 Last things before firing the startup hook
+*** Kill word-or-region
+This makes C-w behave like it does in readline when a region is not active
+The default seems braindead to me but perhaps I'm missing something
+
+#+begin_src emacs-lisp
+
+(defun emfrom/kill-word-or-region ()
+  "Kill region if the mark is active, otherwise kill word."
+  (interactive)
+  (if (use-region-p)
+      (kill-region (region-beginning) (region-end))
+    (kill-word -1)))  ;; Kill the word before the cursor
+
+(global-set-key (kbd "C-w") 'my-kill-or-kill-region)
+#+end_src
 
 *** Keybindings
 
