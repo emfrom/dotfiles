@@ -27,7 +27,7 @@ The mapping of the meny key (ralt here) to Hyper is done via xmodmap
       (defcfg
           process-unmapped-keys yes)
     (defsrc
-      grv   1    2    3    4    5    6    7    8    9    0    -    =    bspc
+      esc   1    2    3    4    5    6    7    8    9    0    -    =    bspc
       tab   q    w    e    r    t    y    u    i    o    p    [    ]    \
       caps  a    s    d    f    g    h    j    k    l    ;    '    ret
       lsft  z    x    c    v    b    n    m    ,    .    /    rsft
@@ -45,6 +45,7 @@ The mapping of the meny key (ralt here) to Hyper is done via xmodmap
       ;; lalt and ralt means meta
       ;;
       (defalias
+        bspc (tap-hold $tap-time $hold-time bspc esc)
         a (tap-hold $tap-time $hold-time a (layer-while-held nav))
         s (tap-hold $tap-time $hold-time s lalt)
         d (tap-hold $tap-time $hold-time d lsft)
@@ -56,26 +57,34 @@ The mapping of the meny key (ralt here) to Hyper is done via xmodmap
         g (tap-hold $tap-time $hold-time g lmet))
 
 
+    
+
     (deflayer base
       grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
       tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
-      bspc @a   @s   @d   @f   @g    h    @j   @k   @l   @;    '    ret
+     @bspc @a   @s   @d   @f   @g    h    @j   @k   @l   @;    '    ret
       lsft z    x    c    v    b    n    m    ,    .    /    rsft
       lctl lmet tab           spc            ret rmet rctl
     )
 
-     (deflayer nav 
+     (deflayer nav
       grv    1    2    3    4    5    6    7    8    9    0    -    =    bspc
       tab    q    w    e    r    t    y    u    i    o    p    [    ]    \
-      bspc   @a   @s   @d   @f   @g    h    down   left   right   up    '    ret
+     @bspc   @a   @s   @d   @f   @g    h    up   left   right  down   '   ret
       lsft   z    x    c    v    b    n    m    ,    .    /    rsft
       lctl  lmet  tab        spc            ret  rmet  rctl
     )
 
-
+  (deflayer colemak-dh-not-finished
+      grv    1    2    3    4    5    6    7    8    9    0    -    =    bspc
+      tab    q    w    f    p    t    y    u    i    o    p    [    ]    \
+     @bspc   @a   @s   @d   @f   @g    h    down   left   right   up    '    ret
+      lsft   z    x    c    v    b    n    m    ,    .    /    rsft
+      lctl  lmet  tab        spc            ret  rmet  rctl
+      ) 
 
 #+end_src
-
+QWFPBJLUY;[]
 * Adding Hyper key
 
 I'm still using the hyper key in emacs so I set it using Xmodmap
