@@ -1275,7 +1275,7 @@ opening a file in the roam directory before calling org-drill this way solves th
     :after org-roam
     :config
     (setq org-drill-maximum-items-per-session 20
-  	org-drill-interval-factor 2.5)
+    	org-drill-interval-factor 2.5)
     
     ;; Use the `org-roam-directory` variable for org-drill scope
     ;;(setq org-drill-scope (directory-files-recursively "~/opt/org-mode/roam/" "\\.org$"))
@@ -1285,6 +1285,9 @@ opening a file in the roam directory before calling org-drill this way solves th
     )    
 
   ;; Function that fixes the cache error
+  ;; The opening of the file is the key to fixing the cache bug,
+  ;;  done any other way, drill can throw a cache error
+  ;; (org-drill is old and unmaintained)
   (defun emf/start-org-drill ()
     "Open the org-drill file in a single window and start org-drill."
     (interactive)
