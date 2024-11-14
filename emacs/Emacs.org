@@ -185,7 +185,8 @@ Actually, we want both
 #+end_src
 
 
-* Init 
+* Init
+ 
 The rest of this file generates [[file:init.el][init.el]]
 
 This is basically my versions of David Wilsons Emacs from scratch
@@ -211,14 +212,14 @@ TO EDIT, OR NOT TO EDIT
   ;;
   ;; Say how long emacs took to start
   ;;
-  (defun emfrom/display-startup-time ()
+  (defun emf/display-startup-time ()
     (message "Emacs loaded in %s with %d garbage collections."
              (format "%.2f seconds"
                      (float-time
                       (time-subtract after-init-time before-init-time)))
              gcs-done))
 
-  (add-hook 'emacs-startup-hook #'emfrom/display-startup-time)
+  (add-hook 'emacs-startup-hook #'emf/display-startup-time)
 
 #+end_src
 
@@ -703,7 +704,7 @@ NOTE: Do I really use this?
 ;; ;;
 ;; (use-package general
 ;;   :config
-;;   (general-create-definer emfrom/leader-keys
+;;   (general-create-definer emf/leader-keys
 ;;     :keymaps '(normal insert visual emacs)
 ;;     :prefix "RET"
 ;;     :global-prefix "C-RET"))  
@@ -732,7 +733,7 @@ NOTE: I'm not really using this either
   ;;   ("k" text-scale-decrease "out")
   ;;   ("f" nil "finished" :exit t))
 
-  ;; (emfrom/leader-keys
+  ;; (emf/leader-keys
   ;;   "t" '(counsel-load-theme :which-key "choose theme")
   ;;   "s" '(hydra-text-scale/body :which-key "scale text"))
 
@@ -823,8 +824,8 @@ The almighty org mode life, stuff and everything organizer
 https://orgmode.org/
 *** Debugging org mode
 #+begin_src emacs-lisp
-  ;; (setq org-element--cache-self-verify 'backtrace)
-  ;; (message "You have org-mode debugging on!")
+  (setq org-element--cache-self-verify 'backtrace)
+  (message "You have org-mode debugging on!")
 #+end_src
 
 *** ORG Mode
@@ -838,7 +839,7 @@ conf still feels clunky
   ;;
   ;; ORG mode
   ;;
-  (defun emfrom/org-mode-setup ()
+  (defun emf/org-mode-setup ()
     (org-indent-mode)
     (variable-pitch-mode 0)
     (visual-line-mode 1))
@@ -846,7 +847,7 @@ conf still feels clunky
 
   (use-package org
     :ensure t
-    :hook (org-mode . emfrom/org-mode-setup)
+    :hook (org-mode . emf/org-mode-setup)
     :config
     (setq org-ellipsis " ▾")
 
@@ -993,25 +994,25 @@ conf still feels clunky
   ;;
   ;; Right hand side pane with org agenda in it
   ;;
-  (defun emfrom/org-agenda-side-window ()
+  (defun emf/org-agenda-side-window ()
     "Toggle the visibility of a side window pane with the Org Agenda."
     (interactive)
-    (let ((side-window-agenda (if (and (boundp 'emfrom/side-window-agenda)
-                                       (window-live-p emfrom/side-window-agenda))
-                                  emfrom/side-window-agenda
+    (let ((side-window-agenda (if (and (boundp 'emf/side-window-agenda)
+                                       (window-live-p emf/side-window-agenda))
+                                  emf/side-window-agenda
                                 nil)))  
       (if side-window-agenda
           (progn
             (delete-window side-window-agenda)
   	  (org-save-all-org-buffers)
-            (setq emfrom/side-window-agenda nil))
-        (setq emfrom/side-window-agenda
+            (setq emf/side-window-agenda nil))
+        (setq emf/side-window-agenda
               (display-buffer-in-side-window
                (get-buffer-create "*Org Agenda*")
                '((side . right) (slot . -1) (window . 0) (preserve-size . t))))
         (org-agenda-list))))
 
-  (global-set-key (kbd "C-c a") 'emfrom/org-agenda-side-window)
+  (global-set-key (kbd "C-c a") 'emf/org-agenda-side-window)
 
 
 #+end_src
@@ -1112,7 +1113,7 @@ My capture template includes a link section for external links (like wikipedia)
     :bind (("C-c n l" . org-roam-buffer-toggle)
            ("C-c n f" . org-roam-node-find)
            ("C-c n i" . org-roam-node-insert)
-  	 ("C-c n j" . emfrom/insert-org-roam-link)
+  	 ("C-c n j" . emf/insert-org-roam-link)
   	 :map org-mode-map
            ("C-M-i" . completion-at-point))
     :config
@@ -1161,32 +1162,32 @@ My capture template includes a link section for external links (like wikipedia)
     ;;
     ;; Set a filename and internal name convention in org-roam to replace spaces with _
     ;;
-    (defun emfrom/org-roam-title-to-slug (title)
+    (defun emf/org-roam-title-to-slug (title)
       "Convert TITLE to a slug by replacing spaces with underscores."
       (let ((slug (downcase (replace-regexp-in-string " " "_" title))))
         slug))
 
-    (setq org-roam-title-to-slug #'emfrom/org-roam-title-to-slug)
+    (setq org-roam-title-to-slug #'emf/org-roam-title-to-slug)
 
     ;;
     ;; But then display them as spaces
     ;;
 
-    (defun emfrom/org-roam-display-title (title)
+    (defun emf/org-roam-display-title (title)
       "Display TITLE by replacing underscores with spaces."
       (replace-regexp-in-string "_" " " title))
 
-    (defun emfrom/org-roam-display-title-hook ()
+    (defun emf/org-roam-display-title-hook ()
       "Hook to display Org Roam titles with spaces."
-      (let ((title (emfrom/org-roam-get-title)))  ; Example function to get title
-        (emfrom/org-roam-display-title title)))
+      (let ((title (emf/org-roam-get-title)))  ; Example function to get title
+        (emf/org-roam-display-title title)))
 
-    (add-hook 'org-roam-after-insert-hook 'emfrom/org-roam-display-title-hook)
+    (add-hook 'org-roam-after-insert-hook 'emf/org-roam-display-title-hook)
 
     ;;
     ;; Turn word under point into the corresponding roam node
     ;;
-    (defun emfrom/insert-org-roam-link ()
+    (defun emf/insert-org-roam-link ()
       "Insert an Org-roam link for the word under the cursor after removing it. 
   The link title is the original word, while the node lookup is case-insensitive."
       (interactive)
@@ -1208,38 +1209,38 @@ My capture template includes a link section for external links (like wikipedia)
     ;;
     ;; Save and kill roam buffers when I leave them using the org ring
     ;;
-    (defun emfrom/save-and-close-roam-buffer (&rest _args)
+    (defun emf/save-and-close-roam-buffer (&rest _args)
       "Save and kill the buffer if it belongs to the Org-roam directory."
       (when (and (buffer-file-name)
                  (string-prefix-p (expand-file-name org-roam-directory)
                                   (buffer-file-name)))
         (save-buffer)
         (kill-buffer (current-buffer))))
-    (advice-add 'org-mark-ring-goto :before 'emfrom/save-and-close-roam-buffer))
+    (advice-add 'org-mark-ring-goto :before 'emf/save-and-close-roam-buffer))
 
 #+end_src
 
 *** Auto-tangle
 **** This file
 
-This snippet adds a hook to =org-mode= buffers so that =emfrom/org-babel-tangle-config= gets executed each time such a buffer gets saved.  This function checks to see if the file being saved is in an auto tangle directory or not. If it is, it's automatically tangled by 'after-save-hook
+This snippet adds a hook to =org-mode= buffers so that =emf/org-babel-tangle-config= gets executed each time such a buffer gets saved.  This function checks to see if the file being saved is in an auto tangle directory or not. If it is, it's automatically tangled by 'after-save-hook
 
 I use a list of directories so I can change it by adding the following to =.dir-locals.el=
-  ((org-mode . ((eval . (add-to-list 'emfrom/org-babel-autotangle-dirs (file-name-directory (or load-file-name buffer-file-name)))))))
+  ((org-mode . ((eval . (add-to-list 'emf/org-babel-autotangle-dirs (file-name-directory (or load-file-name buffer-file-name)))))))
 
 The default auto-tangle are my dotfiles directory and emacs directory
   
 #+begin_src emacs-lisp
 
   ;; Define a customizable list for directories to tangle automatically
-  (defvar emfrom/org-babel-autotangle-dirs
+  (defvar emf/org-babel-autotangle-dirs
     (mapcar #'expand-file-name '("~/etc/emacs/" "~/etc/"))
     "List of directories where org-babel-tangle should auto-tangle on save.")
 
   ;; Function to use the customizable list
-  (defun emfrom/org-babel-tangle-config ()
+  (defun emf/org-babel-tangle-config ()
     (when (member (file-name-directory (buffer-file-name))
-                  emfrom/org-babel-autotangle-dirs)
+                  emf/org-babel-autotangle-dirs)
       (let ((org-confirm-babel-evaluate nil))
         (org-babel-tangle))))
 
@@ -1247,7 +1248,7 @@ The default auto-tangle are my dotfiles directory and emacs directory
   ;; Automatically tangle our org-mode config files when we save them
   ;; Lists the directories that are managed by org mode
   ;;
-  (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'emfrom/org-babel-tangle-config)))
+  (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'emf/org-babel-tangle-config)))
 
 
   ;; These help with auto tangling in some cases 
@@ -1260,10 +1261,13 @@ The default auto-tangle are my dotfiles directory and emacs directory
 *** org-drill
 Use org-drill to study repetitive facts. I add them as a "Flashcard" heading with a :drill: tag
 
+Added the emf/start-org-drill and set org-drill-scope to directory,
+opening a file in the roam directory before calling org-drill this way solves the cache error
+
 [[id:82f67afe-241c-4385-8164-8de40e69c57a][org-drill]]
 
 #+begin_src emacs-lisp
-  
+
   ;;
   ;; Org-drill for flashcard spaced repetition 
   ;;
@@ -1274,27 +1278,27 @@ Use org-drill to study repetitive facts. I add them as a "Flashcard" heading wit
   	org-drill-interval-factor 2.5)
     
     ;; Use the `org-roam-directory` variable for org-drill scope
-    (setq org-drill-scope (directory-files-recursively "~/opt/org-mode/roam" "\\.org$"))
-)    
+    ;;(setq org-drill-scope (directory-files-recursively "~/opt/org-mode/roam/" "\\.org$"))
 
+    ;; Fixing the cache error
+    (setq org-drill-scope 'directory)
+    )    
 
+  ;; Function that fixes the cache error
+  (defun emf/start-org-drill ()
+    "Open the org-drill file in a single window and start org-drill."
+    (interactive)
+    (let ((org-drill-file "~/opt/org-mode/roam/20241030154050-org_drill.org"))
+      (find-file org-drill-file)
+      (delete-other-windows)  
+      (org-drill)))           
+
+  (global-set-key (kbd "C-c d") 'emf/start-org-drill)
 #+end_src
 
-Why does this org drill not return any exercises?
 
-The =org-drill= configuration might not return any exercises due to a few potential issues:
 
-1. *Tag Not Present*: Ensure that the "Flashcard" headings with the =:drill:= tag are correctly placed in your Org files under the specified scope. If there are no entries with that tag, =org-drill= won't have items to present.
 
-2. *Empty Scope*: Check that the directory specified in =org-drill-scope= (=~/opt/org-mode/roam/=) actually contains =.org= files that have drill items. If the directory is empty or doesn’t contain any relevant files, =org-drill= will not have anything to display.
-
-3. *File Accessibility*: Ensure that the files are readable and are not excluded by any settings in your Org mode configuration.
-
-4. *Configuration Errors*: Look for any errors emitted when your configuration is loaded. Changes to =org-drill= might not be applied if there are errors in earlier parts of your config.
-
-5. *Initialization Order*: Make sure =org-drill= is loaded after =org-roam=, as specified. If =org-roam= isn’t properly set up or loaded before it, it could affect the functioning of =org-drill=.
-
-You can troubleshoot by checking the contents of your Org files for the expected tags and verifying that their structure matches what =org-drill= expects.
 
 *** org-rich-yank
 Yank (paste) stuff into org mode with context
@@ -1835,7 +1839,7 @@ The default seems braindead to me but perhaps I'm missing something
 
 #+begin_src emacs-lisp
 
-(defun emfrom/kill-word-or-region ()
+(defun emf/kill-word-or-region ()
   "Kill region if the mark is active, otherwise kill word."
   (interactive)
   (if (use-region-p)
@@ -1969,6 +1973,7 @@ Haha, I'm not running windows anymore :)
 
 #+end_src
 
+
 * Desktop
 Specific config for EXWM Sessions
 This stuff goes into [[desktop.el]]
@@ -1978,6 +1983,40 @@ Each emacs-lisp section in here needs to tangle to that target
  =
  :tangle ./desktop.el :mkdirp yes
  =
+** X11 Defaults
+#+end_src
+
+*** Hyper keybinding
+The resources file Xmodmap is generated in [[~/etc/kanata/Kanata.org][Kanata.org]]
+
+#+begin_src emacs-lisp :tangle ./desktop.el :mkdirp yes
+(start-process-shell-command "xmodmap" nil "xmodmap ~/etc/emacs/exwm/Xmodmap")
+#+end_src
+
+*** Xterm
+Readable xterm, sensible defaults
+UX is the predefined class for unicode enabled xterm on some systems
+
+  XTerm*faceName: Monospace
+  XTerm*faceSize: 10
+
+
+#+begin_src shell :tangle ./exwm/Xresources :mkdirp yes
+  XTerm*background: black
+  XTerm*foreground: white
+  XTerm*faceName: JetBrains Mono
+  XTerm*faceSize: 10
+  UXTerm*background: black11
+  UXTerm*foreground: white
+  UXTerm*faceName: Monospace
+  UXTerm*faceSize: 10
+
+#+end_src
+*** Call xrdb
+#+begin_src emacs-lisp :tangle ./desktop.el :mkdirp yes
+(start-process-shell-command "xrdb" nil "xrdb -merge ~/etc/emacs/exwm/Xresources")
+#+end_src
+
 ** Init
 *** Reminder to edit the org file
 #+begin_src emacs-lisp :tangle ./desktop.el :mkdirp yes
@@ -2010,7 +2049,7 @@ Run applications or such after exwm-init
      (exwm-workspace-switch-create 1)
 
      ;; Start with agenda pane open
-     (emfrom/org-agenda-side-window)
+     (emf/org-agenda-side-window)
 
      ;; But switch focus to scratch
      (switch-to-buffer-other-window "*scratch*")
@@ -2133,11 +2172,11 @@ Loads the exwm mode
     (setq exwm-workspace-show-all-buffers t)
 
     ;; This fixes an annoying error when I auto-save-kill roam buffers
-    ;;(defun emfrom/exwm-refresh-buffer-list (&optional _arg)
+    ;;(defun emf/exwm-refresh-buffer-list (&optional _arg)
     ;;  "Remove dead buffers from the EXWM workspace buffer list."
     ;;  (setq exwm-workspace-buffer-list (cl-remove-if-not 'buffer-live-p exwm-workspace-buffer-list)))
     ;;
-    ;;(advice-add 'exwm-workspace-switch :before #'emfrom/exwm-refresh-buffer-list)
+    ;;(advice-add 'exwm-workspace-switch :before #'emf/exwm-refresh-buffer-list)
 
     ;; Load the system tray before exwm-init
     (require 'exwm-systemtray)
@@ -2165,38 +2204,5 @@ Loads the exwm mode
        (desktop-environment-brightness-normal-increment "5%+")
        (desktop-environment-brightness-normal-decrement "5%-"))
 
-
 #+end_src
-
-** X11 Defaults
-*** Hyper keybinding
-The resources file Xmodmap is generated in [[~/etc/kanata/Kanata.org][Kanata.org]]
-
-#+begin_src emacs-lisp :tangle ./desktop.el :mkdirp yes
-(start-process-shell-command "xmodmap" nil "xmodmap ~/etc/emacs/exwm/Xmodmap")
-#+end_src
-
-*** Xterm
-Readable xterm, sensible defaults
-UX is the predefined class for unicode enabled xterm on some systems
-
-  XTerm*faceName: Monospace
-  XTerm*faceSize: 10
-
-
-#+begin_src shell :tangle ./exwm/Xresources :mkdirp yes
-  XTerm*background: black
-  XTerm*foreground: white
-  XTerm*faceName: JetBrains Mono
-  XTerm*faceSize: 10
-  UXTerm*background: black11
-  UXTerm*foreground: white
-  UXTerm*faceName: Monospace
-  UXTerm*faceSize: 10
-
-#+end_src
-*** Call xrdb
-#+begin_src emacs-lisp :tangle ./desktop.el :mkdirp yes
-(start-process-shell-command "xrdb" nil "xrdb -merge ~/etc/emacs/exwm/Xresources")
-#+end_src
-
+       
