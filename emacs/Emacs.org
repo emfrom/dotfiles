@@ -382,14 +382,24 @@ From: Sasha Chua https://github.com/sachac/.emacs.d/blob/gh-pages/Sacha.org
 
 #+end_src
 **** Backups
-This stops backup files from piling up everywhere
+This stops backup files and auto-save files from piling up everywhere
 
 The no-littering package takes care of the rest
 
 #+begin_src emacs-lisp
+  ;; Disable auto-save files
+  (setq auto-save-default nil)
 
-  (setq backup-directory-alist '(("." . "~/etc/emacs/history/backups/")))
-  (setq auto-save-file-name-transforms '((".*" "~/.config/emacs/auto-save-list/" t)))
+  ;; Disable backup files
+  (setq make-backup-files nil)
+
+  (defun emf/auto-save-all-buffers ()
+    "Save all modified buffers."
+    (when (and (not (minibufferp))
+               (buffer-modified-p))
+      (save-buffer)))
+
+  (run-with-idle-timer 3 t 'emf/auto-save-all-buffers)
 #+end_src
 
 ** Package managers
