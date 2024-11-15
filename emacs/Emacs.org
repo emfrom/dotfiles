@@ -1847,20 +1847,23 @@ NOTE: If you want to move everything out of the ~/.emacs.d folder reliably, set 
 
 ** Finishing touches
 Last things before firing the startup hook
+
 *** Kill word-or-region
 This makes C-w behave like it does in readline when a region is not active
 The default seems braindead to me but perhaps I'm missing something
 
 #+begin_src emacs-lisp
 
-(defun emf/kill-word-or-region ()
-  "Kill region if the mark is active, otherwise kill word."
-  (interactive)
-  (if (use-region-p)
-      (kill-region (region-beginning) (region-end))
-    (kill-word -1)))  ;; Kill the word before the cursor
+  (defun emf/kill-word-or-region ()
+    "Kill region if the mark is active, otherwise kill word."
+    (interactive)
+    (if (use-region-p)
+        (kill-region (region-beginning) (region-end))
+      (kill-word -1)))  ;; Kill the word before the cursor
 
-(global-set-key (kbd "C-w") 'my-kill-or-kill-region)
+  (global-set-key (kbd "C-w") 'emf/kill-word-or-region)
+
+  
 #+end_src
 
 *** Keybindings
