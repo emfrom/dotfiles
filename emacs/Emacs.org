@@ -392,14 +392,17 @@ The no-littering package takes care of the rest
 
   ;; Disable backup files
   (setq make-backup-files nil)
-
   (defun emf/auto-save-all-buffers ()
-    "Save all modified buffers."
+    "Save all modified buffers, excluding non-file and empty buffers."
     (when (and (not (minibufferp))
-               (buffer-modified-p))
+               (buffer-modified-p)
+               (buffer-file-name (current-buffer))
+               (not (string= (buffer-string) "")))  ;; Check if the buffer is not empty
       (save-buffer)))
 
+  ;; Set a timer to auto-save every 3 seconds
   (run-with-idle-timer 3 t 'emf/auto-save-all-buffers)
+
 #+end_src
 
 ** Package managers
