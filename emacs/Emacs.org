@@ -1076,6 +1076,7 @@ Enables templeate expansion of <el TAB to an emacs-lisp code section
   (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
   (add-to-list 'org-structure-template-alist '("sc" . "src scheme"))
   (add-to-list 'org-structure-template-alist '("hs" . "src haskell"))
+  (add-to-list 'org-structure-template-alist '("rs" . "src rust"))
 
 
 #+end_src
@@ -1343,11 +1344,6 @@ Everything else goes into the gnus-secondary-select-methods list
 #+begin_src emacs-lisp
 
   ;;
-  ;; Startup protonmail bridge
-  ;;
-  (start-process-shell-command "protonmail-bridge" nil "protonmail-bridge")
-
-  ;;
   ;; GNUS for email and rss
   ;;
   (require 'gnus)
@@ -1503,10 +1499,13 @@ LSP Mode to connect to language servers like clangd
 #+begin_src emacs-lisp
   (use-package lsp-mode
     :commands (lsp lsp-deferred)
+    :hook
+    (rust-mode . lsp)
+
     :init
     (setq lsp-keymap-prefix "s-l")  ;; Or 'C-l', 's-l'
     :config
-    (lsp-enable-which-key-integration t))
+    (lsp-enable-which-key-integration t)
 
   (defun efs/lsp-mode-setup ()
     (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
@@ -1526,6 +1525,7 @@ LSP Mode to connect to language servers like clangd
   (use-package lsp-ivy)
 
   (add-hook 'c-mode 'lsp-deferred)
+
 
 
 
@@ -1595,7 +1595,7 @@ LSP Mode to connect to language servers like clangd
   (use-package haskell-mode)
 #+end_src
 
-**** Rust
+**** Rustj
 
 A mode for coding in rust
 
@@ -1604,18 +1604,25 @@ A mode for coding in rust
   ;;
   ;; Rust mode(the programming language)
   ;;
-  (require 'rust-mode)
+  (use-package rust-mode
+    :config
+    ;; No tabs in rust code
+    (add-hook 'rust-mode-hook
+              (lambda () (setq indent-tabs-mode nil)))
 
-  ;; No tabs in rust code
-  (add-hook 'rust-mode-hook
-            (lambda () (setq indent-tabs-mode nil)))
+    ;;(setq lsp-rust-analyzer-cargo-watch-command "clippy")
+    ;;(setq lsp-rust-analyzer-display-chaining-hints t))
 
-  ;; Autoformat on save
-  (setq rust-format-on-save t)
+    ;; Autoformat on save
+    (setq rust-format-on-save t)
 
-  ;; Make rust pretty
-  (add-hook 'rust-mode-hook
-          (lambda () (prettify-symbols-mode)))
+    ;; Make rust pretty
+    (add-hook 'rust-mode-hook
+              (lambda () (prettify-symbols-mode)))
+
+    ;; Tell lsp to fire up
+    (add-hook 'rust-mode-hook #'lsp))
+
 
 #+end_src
 
@@ -1863,7 +1870,6 @@ The default seems braindead to me but perhaps I'm missing something
 
   (global-set-key (kbd "C-w") 'emf/kill-word-or-region)
 
-  
 #+end_src
 
 *** Keybindings
@@ -2000,9 +2006,109 @@ Each emacs-lisp section in here needs to tangle to that target
  =
  :tangle ./desktop.el :mkdirp yes
  =
-** X11 Defaults
+
+#+end_src
+** Init
+*** Reminder to edit the org file
+#+begin_src emacs-lisp :tangle ./desktop.el :mkdirp yes
+  ;;; -*- lexical-binding: t -*-
+  ;;
+  ;; OBS!!!!
+  ;;
+  ;; Dont edit this file, edit Emacs.org
+  ;;
+  ;;
+#+end_src
+** Shell scripts
+Support shell scripts to launch a crafted exwm session
+
+#+begin_src emacs-lisp
+(start-process-shell-command "services.sh" nil "~/etc/emacs/services.sh")
 #+end_src
 
+*** Services
+Stuff to launch (old-fashioned way)
+
+#+begin_src shell :tangle ./exwm/services.sh :mkdirp yes
+  #!/bin/bash
+  #
+  # This script is intended to be launched by emacs to start services during desktop launch
+  #
+  # Auto-generated from Emacs.org (do not edit)
+
+  if [[ -z XDG_CONFIG_HOME ]] ; then
+      export XDG_CONFIG_HOME=$HOME/etc
+  fi
+
+
+  ENV_FILE=$XDG_CONFIG_HOME/emacs/exwm/env
+
+  if [[ -f $ENV_FILE ]] ; then
+      rm -f $ENV_FILE
+  fi
+  touch $ENV_FILE
+
+  # Fire up keyring and replace whatever was there before
+  eval $(/usr/bin/gnome-keyring-daemon --replace --components=pkcs11,ssh,gpg)
+  echo "GNOME_KEYRING_CONTROL="$GNOME_KEYRING_CONTROL >> $ENV_FILE
+  echo "SSH_AUTH_SOCK="$SSH_AUTH_SOCK >> $ENV_FILE
+
+  #Fire up onedrive
+  onedrive -m --enable-logging --log-dir=/home/emfrom/share/onedrive/ &> /dev/null  &
+
+  #Fire up protonmail
+  protonmail-brige &> /dev/null &
+
+  # Maybe dropbox?
+  
+
+
+
+#+end_src
+
+
+*** startup
+#+begin_src shell :tangle ./exwm/start-exwm.sh :mkdirp yes
+  #!/bin/bash 
+  #
+  # Script to launch EXWM from emacs
+  # Auto-generated from Emacs.org (do not edit)
+  #
+
+  # Set config dir before doing anything
+  if [[ -z XDG_CONFIG_HOME ]] ; then
+      export XDG_CONFIG_HOME=$HOME/etc
+  fi
+
+  #
+  # Load enviornment
+  #
+  for file in $XDG_CONFIG_HOME/env/* ; do
+      if [[ -f $file ]] ; then
+  	while IFS= read -r line ; do
+  	    # Ignore empty lines and comments
+  	    [[ -z "$line" || "$line" =~ ^# ]] && continue
+  	    
+  	    # Check if the line is in the format XXX=yyy
+  	    if [[ "$line" =~ ^([a-zA-Z_][a-zA-Z0-9_]*)=(.*)$ ]] ; then
+  		export "$line"
+  	    else
+  		echo "Ignored malformatted line: $line"
+  	    fi
+  	done < "$file"
+      fi
+  done
+
+
+  # Compositor
+  compton &
+
+  # Fire it up
+  exec dbus-launch --exit-with-session emacs -mm --debug-init -l /home/emfrom/etc/emacs/desktop.el
+
+#+end_src
+
+** X11 Defaults
 *** Hyper keybinding
 The resources file Xmodmap is generated in [[~/etc/kanata/Kanata.org][Kanata.org]]
 
@@ -2032,18 +2138,6 @@ UX is the predefined class for unicode enabled xterm on some systems
 *** Call xrdb
 #+begin_src emacs-lisp :tangle ./desktop.el :mkdirp yes
 (start-process-shell-command "xrdb" nil "xrdb -merge ~/etc/emacs/exwm/Xresources")
-#+end_src
-
-** Init
-*** Reminder to edit the org file
-#+begin_src emacs-lisp :tangle ./desktop.el :mkdirp yes
-  ;;; -*- lexical-binding: t -*-
-  ;;
-  ;; OBS!!!!
-  ;;
-  ;; Dont edit this file, edit Emacs.org
-  ;;
-  ;;
 #+end_src
 
 ** EXWM
