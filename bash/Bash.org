@@ -218,6 +218,59 @@ This quits if the shell is not interactive
   fi
 
 #+end_src
+*** XDG Directories
+#+begin_src shell :tangle ./bashrc :mkdirp yes
+  #
+  # Set or override XDG directories
+  #
+  
+  #      Where user-specific configurations should be written (analogous to /etc).
+  #      Should default to $HOME/.config.
+  export XDG_CONFIG_HOME=$HOME/etc
+
+  #      Where user-specific non-essential (cached) data should be written (analogous to /var/cache).
+  #      Should default to $HOME/.cache.
+  export XDG_CACHE_HOME=$HOME/opt/cache
+
+  #      Where user-specific data files should be written (analogous to /usr/share).
+  #      Should default to $HOME/.local/share.
+  export XDG_DATA_HOME=$HOME/share
+
+  #      Where user-specific state files should be written (analogous to /var/lib).
+  #      Should default to $HOME/.local/state.
+  export XDG_STATE_HOME=$HOME/opt/state
+
+#+end_src
+
+*** Environment defaults
+
+Load environment defaults from file. Using this setup makes it alot easier to integrate with GUIX, Nushell, Eshell in emacs and across the traditional shells.
+
+Step one of my shell migration.
+
+#+begin_src shell
+  #
+  # Load enivronment defaults
+  #
+  for file in $XDG_CONFIG_HOME/env/* ; do
+      if [[ -f $file ]] ; then
+  	while IFS= read -r line ; do
+  	    # Ignore empty lines and comments
+  	    [[ -z "$line" || "$line" =~ ^# ]] && continue
+  	    
+  	    # Check if the line is in the format XXX=yyy
+  	    if [[ "$line" =~ ^([a-zA-Z_][a-zA-Z0-9_]*)=(.*)$ ]] ; then
+  		export "$line"
+  	    else
+  		echo "Ignored malformatted line: $line"
+  	    fi
+  	done < "$file"
+      fi
+  done
+
+
+#+end_src
+
 *** .config symlink
 
 #+begin_src shell
@@ -276,10 +329,10 @@ The reason for this is so that we can save things with preexisting commands and 
 
   # # Merge search-paths from multiple profiles, the order matters.
   # eval "$(guix package --search-paths \
-  #             -p $HOME/etc/guix/current \
-  #             -p $HOME/.guix-home/profile \
-  #             -p $HOME/.guix-profile \
-  #             -p /run/current-system/profile)"
+      #             -p $HOME/etc/guix/current \
+      #             -p $HOME/.guix-home/profile \
+      #             -p $HOME/.guix-profile \
+      #             -p /run/current-system/profile)"
 
   # # Prepend setuid programs.
   # export PATH=/run/setuid-programs:$PATH
@@ -307,7 +360,7 @@ This creates some problems under both termux and guix
   if [[ $HOSTNAME = "localhost" ]] ; then
       export HOSTNAME="Android"
   fi
-  
+
 #+end_src
 ** Path
 Set the path
@@ -333,25 +386,6 @@ Also, add the current directory to the end of the path. (this is unsafe if you d
   fi
 
   export PATH=$PATH:.
-
-#+end_src
-** XDG Directories
-#+begin_src shell :tangle ./bashrc :mkdirp yes
-  #      Where user-specific configurations should be written (analogous to /etc).
-  #      Should default to $HOME/.config.
-  export XDG_CONFIG_HOME=$HOME/etc
-
-  #      Where user-specific non-essential (cached) data should be written (analogous to /var/cache).
-  #      Should default to $HOME/.cache.
-  export XDG_CACHE_HOME=$HOME/opt/cache
-
-  #      Where user-specific data files should be written (analogous to /usr/share).
-  #      Should default to $HOME/.local/share.
-  export XDG_DATA_HOME=$HOME/share
-
-  #      Where user-specific state files should be written (analogous to /var/lib).
-  #      Should default to $HOME/.local/state.
-  export XDG_STATE_HOME=$HOME/opt/state
 
 #+end_src
 ** Source helper files
@@ -460,6 +494,26 @@ Emacs shell needs some help in not being braindead
   #
   # Setting up rust toolchain
   #
+  if [[ -z $ ]] ; then
+      export 
+  fi
+
+    if [[ -z $ ]] ; then
+      export 
+  fi
+
+      if [[ -z $ ]] ; then
+      export 
+  fi
+
+        if [[ -z $ ]] ; then
+      export 
+  fi
+
+          if [[ -z $ ]] ; then
+      export 
+  fi
+
   export CARGO_HOME="$HOME/opt/rust/cargo"
   export RUSTUP_HOME="$HOME/opt/rust/rustup"
   export CARGO_BUILD_JOBS=8
@@ -1754,6 +1808,6 @@ Colours are given as ansi colours. Extended and truecolour sequences works if yo
 Lastly, setup org babel to auto-tangle in this directory
 
 #+begin_src emacs-lisp :tangle ./.dir-locals.el :mkdirp yes
-  ((org-mode . ((eval . (add-to-list 'emfrom/org-babel-autotangle-dirs (file-name-directory (or load-file-name buffer-file-name)))))))
+  ((org-mode . ((eval . (add-to-list 'emf/org-babel-autotangle-dirs (file-name-directory (or load-file-name buffer-file-name)))))))
 #+end_src
 
