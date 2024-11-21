@@ -291,7 +291,23 @@ Turn on linenumbers globally but disable for listed modes
     (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 #+end_src
+*** Load environment
+Force load the enviornment defaults from ~/etc/env
+#+begin_src emacs-lisp
+  ;;
+  ;; Load environment defaults
+  ;; 
+  (dolist (file (directory-files "~/etc/env" t))
+    (when (file-regular-p file)
+      (with-temp-buffer
+        (insert-file-contents file)
+        (goto-char (point-min))
+        (while (re-search-forward "^\\([^=]+\\)=\\(.*\\)$" nil t)
+          (let ((var (match-string 1))
+                (value (match-string 2)))
+            (setenv var value))))))
 
+#+end_src
 ** Usability 
 *** GUI stuff
 This that only matter if we are not in a terminal
@@ -1499,13 +1515,10 @@ LSP Mode to connect to language servers like clangd
 #+begin_src emacs-lisp
   (use-package lsp-mode
     :commands (lsp lsp-deferred)
-    :hook
-    (rust-mode . lsp)
-
     :init
     (setq lsp-keymap-prefix "s-l")  ;; Or 'C-l', 's-l'
     :config
-    (lsp-enable-which-key-integration t)
+    (lsp-enable-which-key-integration t))
 
   (defun efs/lsp-mode-setup ()
     (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
@@ -1524,8 +1537,7 @@ LSP Mode to connect to language servers like clangd
 
   (use-package lsp-ivy)
 
-  (add-hook 'c-mode 'lsp-deferred)
-
+  (add-hook 'prog-mode-hook 'lsp-deferred)
 
 
 
@@ -1555,7 +1567,7 @@ LSP Mode to connect to language servers like clangd
     			 (company-complete-selection)
                            (company-indent-or-complete-common)))))
       :custom
-      (company-minimum-prefix-length 2)
+      (company-minimum-prefix-length 1)
       (company-idle-delay 0.0))
 
 
@@ -1595,7 +1607,7 @@ LSP Mode to connect to language servers like clangd
   (use-package haskell-mode)
 #+end_src
 
-**** Rustj
+**** Rust
 
 A mode for coding in rust
 
@@ -1610,8 +1622,8 @@ A mode for coding in rust
     (add-hook 'rust-mode-hook
               (lambda () (setq indent-tabs-mode nil)))
 
-    ;;(setq lsp-rust-analyzer-cargo-watch-command "clippy")
-    ;;(setq lsp-rust-analyzer-display-chaining-hints t))
+    (setq lsp-rust-analyzer-cargo-watch-command "clippy")
+    (setq lsp-rust-analyzer-display-chaining-hints t)
 
     ;; Autoformat on save
     (setq rust-format-on-save t)
@@ -1621,7 +1633,23 @@ A mode for coding in rust
               (lambda () (prettify-symbols-mode)))
 
     ;; Tell lsp to fire up
-    (add-hook 'rust-mode-hook #'lsp))
+    (add-hook 'rust-mode-hook #'lsp)) 
+
+
+  ;; Make sure rust is in path
+  (let ((new-path "/home/emfrom/opt/rust/cargo/bin"))
+  (unless (member new-path exec-path)
+    (setq exec-path (append exec-path (list new-path)))
+    (setenv "PATH" (concat (getenv "PATH") ":" new-path))))
+
+  ;; Set the rust env-variables
+  (let ((env-file "/home/emfrom/etc/env/rust"))
+  (when (file-exists-p env-file)
+    (with-temp-buffer
+      (insert-file-contents env-file)
+      (goto-char (point-min))
+      (while (re-search-forward "^\\([^=]+\\)=\\(.*\\)$" nil t)
+        (setenv (match-string 1) (match-string 2))))))
 
 
 #+end_src
