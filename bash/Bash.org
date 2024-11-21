@@ -1438,7 +1438,7 @@ Old school
 
 #+end_src
 
-** ls / ex
+** ls 
 Set and use the variable LS_OPTIONS to change ls behaviour
 
 =TL;DR= No superflous information and pretty
@@ -1478,8 +1478,8 @@ For some reason -B doesnt always work, so I added an --ignore=*~
   export LS_OPTIONS="-BghoH --group-directories-first --dereference-command-line-symlink-to-dir --ignore=#* --ignore=.#* --ignore=*~"
 
   # Standard alias for ls
-  alias ls='exa $EXA_OPTIONS'
-  alias lss='ls -A $LS_OPTIONS --color=$COLOUR'
+  alias ls='ls $LS_OPTIONS --color=$COLOUR'
+  alias lsa='ls -A'
 
 
 #+end_src
