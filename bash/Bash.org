@@ -586,11 +586,13 @@ Just to keep gnus from littering all over the place
 #+begin_src shell :tangle ./bashrc :mkdirp yes
   export MAILDIR=$HOME/etc/emacs/gnus/mail
 #+end_src
-*** exa
+*** eza
 #+begin_src shell :tangle ./bashrc :mkdirp yes
 
-  export EXA_OPTIONS='-lBu --git --no-permissions --group-directories-first -I #* -I .#* -I *~' 
-  export EXA_COLORS='da=1,35'
+  export EZA_OPTIONS='-@oX --icons --no-permissions --group-directories-first --colour-scale size --git --git-repos-no-status -I #* -I .#* -I *~'
+
+  export EZA_COLOURS='da=1,35'
+
 
 #+end_src
 *** zoxide
@@ -1475,12 +1477,14 @@ For some reason -B doesnt always work, so I added an --ignore=*~
   alias lls=`which ls`
 
   # Options as described above 
-  export LS_OPTIONS="-BghoH --group-directories-first --dereference-command-line-symlink-to-dir --ignore=#* --ignore=.#* --ignore=*~"
+  export LS_OPTIONS="-BlGhoH --group-directories-first --dereference-command-line-symlink-to-dir --ignore=#* --ignore=.#* --ignore=*~"
 
-  # Standard alias for ls
-  alias ls='ls $LS_OPTIONS --color=$COLOUR'
-  alias lsa='ls -A'
+  # Standard aliases for ls
+  alias lss='lls $LS_OPTIONS --color=$COLOUR'
+  alias lsa='lss -A'
 
+  # exa
+  alias ls='eza $EZA_OPTIONS'
 
 #+end_src
 ** make
