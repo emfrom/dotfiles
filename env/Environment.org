@@ -1,0 +1,91 @@
+#+TITLE: Environment setup
+#+AUTOR: E.M. From
+#+STARTUP: overview
+
+These are my environment defaults
+
+* Shell
+#+begin_src shell :tangle ./shell.env
+  # Dont edit this file, edit Environment.org
+  PAGER=less
+  EDITOR=emacs
+#+end_src
+
+* Rust
+#+begin_src shell :tangle ./rust.env
+# Dont edit this file, edit Environment.org
+CARGO_TARGET_DIR=/home/emfrom/opt/rust/cargo/target
+CARGO_HOME=/home/emfrom/opt/rust/cargo
+CARGO_BUILD_JOBS=8
+RUSTUP_HOME=/home/emfrom/opt/rust/rustup
+RUST_BACKTRACE=1
+#+end_src
+
+* XDG Setting
+#+begin_src shell :tangle ./xdg.env
+# Dont edit this file, edit Environment.org
+XDG_DATA_HOME=/home/emfrom/share
+XDG_CONFIG_HOME=/home/emfrom/etc
+XDG_CACHE_HOME=/home/emfrom/opt/cache
+XDG_STATE_HOME=/home/emfrom/opt/state
+XDG_RUNTIME_DIR=/run/user/1000
+#+END_SRC
+
+* Locale
+
+LC_MEASUREMENT=metric might now be supported everywhere
+
+#+begin_src shell :tangle ./locale.env
+  # Dont edit this file, edit Environment.org
+  LC_ALL=en_GB.UTF-8
+  LC_ADDRESS=en_GB.UTF-8
+  LC_NAME=en_GB.UTF-8
+  LC_MONETARY=en_GB.UTF-8
+  LC_PAPER=A4
+  LC_IDENTIFICATION=en_GB.UTF-8
+  LC_TELEPHONE=en_GB.UTF-8
+  LC_MEASUREMENT=metric
+  LC_TIME=en_GB.UTF-8
+  LC_NUMERIC=en_GB.UTF-8
+  LANGUAGE=en_GB:en
+  GDM_LANG=en_GB
+  LANG=en_GB.UTF-8
+  XTERM_LOCALE=en_GB.UTF-8
+  PAPERSIZE=A4
+#+END_SRC
+
+
+* Scripts and emacs stuff
+
+** Shell script to load the files
+
+#+begin_src shell :tangle ./load-env.sh
+  #!/bin/bash
+  #
+  # Load enivronment defaults
+  #
+  for file in *.env ; do
+      if [[ -f $file ]] ; then
+  	while IFS= read -r line ; do
+  	    # Ignore empty lines and comments
+  	    [[ -z "$line" || "$line" =~ ^# ]] && continue
+  	    
+  	    # Check if the line is in the format XXX=yyy
+  	    if [[ "$line" =~ ^([a-zA-Z_][a-zA-Z0-9_]*)=(.*)$ ]] ; then
+  		export "$line"
+  	    else
+  		echo "Ignored malformatted line: $line"
+  	    fi
+  	done < "$file"
+      fi
+  done
+
+#+end_src
+
+** Tangle on save
+Lastly, setup org babel to auto-tangle in this directory
+
+#+begin_src emacs-lisp :tangle ./.dir-locals.el :mkdirp yes
+  ((org-mode . ((eval . (add-to-list 'emf/org-babel-autotangle-dirs (file-name-directory (or load-file-name buffer-file-name)))))))
+#+end_src
+

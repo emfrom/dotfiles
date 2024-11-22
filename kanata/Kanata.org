@@ -1,4 +1,4 @@
-#+TITLE: ChatGPT interactions
+#+TITLE: Kanata configuration
 #+AUTHOR: E.M. From
 #+STARTUP: overview
 
