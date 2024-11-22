@@ -252,7 +252,7 @@ Step one of my shell migration.
   #
   # Load enivronment defaults
   #
-  for file in $XDG_CONFIG_HOME/env/* ; do
+  for file in $XDG_CONFIG_HOME/env/*.env ; do
       if [[ -f $file ]] ; then
   	while IFS= read -r line ; do
   	    # Ignore empty lines and comments
@@ -691,6 +691,7 @@ This removes all the glitter printed after the prompt
 I dont know why 2.0 cant be satisfied with the XDG directories but here we are
 
 #+begin_src shell
+
   #
   # Set GTK2 rc file
   #
@@ -1484,7 +1485,7 @@ For some reason -B doesnt always work, so I added an --ignore=*~
   alias lsa='lss -A'
 
   # exa
-  alias ls='eza $EZA_OPTIONS'
+  alias ls='eza $EZA_OPTIONS --colour=$COLOUR --width=$COLUMNS'
 
 #+end_src
 ** make

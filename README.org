@@ -26,8 +26,13 @@ The whole config is in [[file:bash/Bash.org][Bash.org]] it tangles to the bashrc
 
 * Kanata
 
-Manages my keybindings, in [[kanata/Kanata.org][Kanata.org]]
+Manages my keybindings, including home row modifiers and navigation overlays.
+[[file:kanata/Kanata.org][Kanata.org]]
 
+* Environment
+
+Basic set of envrionement configuration valid in all/most circumstances. Part of my move from old dotfiles/bash to guix/nu?
+[[file:Environment.org][Environment.org]]
 
 * Tangle Script
 

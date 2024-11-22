@@ -294,18 +294,18 @@ Turn on linenumbers globally but disable for listed modes
 *** Load environment
 Force load the enviornment defaults from ~/etc/env
 #+begin_src emacs-lisp
-  ;;
-  ;; Load environment defaults
-  ;; 
-  (dolist (file (directory-files "~/etc/env" t))
-    (when (file-regular-p file)
-      (with-temp-buffer
-        (insert-file-contents file)
-        (goto-char (point-min))
-        (while (re-search-forward "^\\([^=]+\\)=\\(.*\\)$" nil t)
-          (let ((var (match-string 1))
-                (value (match-string 2)))
-            (setenv var value))))))
+    ;;
+    ;; Load environment defaults
+    ;; 
+  (dolist (file (directory-files "~/etc/env" t "\\.env$"))
+    (with-temp-buffer
+      (insert-file-contents file)
+      ;; (message file)
+      (goto-char (point-min))
+      (while (re-search-forward "^\\([^=]+\\)=\\(.*\\)$" nil t)
+        (let ((var (match-string 1))
+              (value (match-string 2)))
+          (setenv var value)))))
 
 #+end_src
 ** Usability 
