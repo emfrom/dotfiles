@@ -4,6 +4,8 @@
 
 These are my environment defaults
 
+Currently loaded by bashrc, emacs init.el and nu.env
+
 * Shell
 #+begin_src shell :tangle ./shell.env
   # Dont edit this file, edit Environment.org
