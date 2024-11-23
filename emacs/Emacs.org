@@ -294,9 +294,9 @@ Turn on linenumbers globally but disable for listed modes
 *** Load environment
 Force load the enviornment defaults from ~/etc/env
 #+begin_src emacs-lisp
-    ;;
-    ;; Load environment defaults
-    ;; 
+  ;;
+  ;; Load environment defaults
+  ;; 
   (dolist (file (directory-files "~/etc/env" t "\\.env$"))
     (with-temp-buffer
       (insert-file-contents file)
@@ -305,9 +305,10 @@ Force load the enviornment defaults from ~/etc/env
       (while (re-search-forward "^\\([^=]+\\)=\\(.*\\)$" nil t)
         (let ((var (match-string 1))
               (value (match-string 2)))
+  	(message (match-string 1))
           (setenv var value)))))
 
-#+end_src
+        #+end_src
 ** Usability 
 *** GUI stuff
 This that only matter if we are not in a terminal
@@ -373,9 +374,9 @@ Make it easier to answer questions.
 
 #+begin_src emacs-lisp
 
-(desktop-save-mode 1)
-(setq desktop-restore-eager 0)
-(setq desktop-restore-frames nil)   ;; Prevents restoring window layouts
+  (desktop-save-mode 1)
+  (setq desktop-restore-eager 0)
+  (setq desktop-restore-frames nil)   ;; Prevents restoring window layouts
 #+end_src
 **** History
 
@@ -428,21 +429,21 @@ Setup the package managers for emacs and more repositories
 
 #+begin_src emacs-lisp
 
-        ;;
-        ;; Initialize package sources
-        ;;
-        (require 'package)
+  ;;
+  ;; Initialize package sources
+  ;;
+  (require 'package)
 
-        (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                                 ("elpa" . "https://elpa.gnu.org/packages/")
-  			       ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
+  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                           ("elpa" . "https://elpa.gnu.org/packages/")
+  			 ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
 
-        (package-initialize)
+  (package-initialize)
 
-        ;; Reload package archives
-        ;; Is this what takes forever on startup?
-        (unless package-archive-contents
-          (package-refresh-contents))
+  ;; Reload package archives
+  ;; Is this what takes forever on startup?
+  (unless package-archive-contents
+    (package-refresh-contents))
 
 
 #+end_src
@@ -514,21 +515,21 @@ Load packages from the git-install directory first
   ;; This prepends repos from the git-install dir to the load path
   ;;
   (funcall (lambda ()
-            (let ((git-dir "~/etc/emacs/git-install"))
-              (when (file-directory-p git-dir)
-                (dolist (dir (directory-files git-dir t "^[^.]"))
-                  (when (file-directory-p dir)
-                    ;; Add the main directory
-                    (add-to-list 'load-path dir)
-                    ;; Add the `lisp` subdirectory if it exists
-                    (let ((lisp-dir (expand-file-name "lisp" dir)))
-                      (when (file-directory-p lisp-dir)
-                        (add-to-list 'load-path lisp-dir)))
-                    ;; Add the `contrib/lisp` subdirectory if it exists
-                    (let ((contrib-dir (expand-file-name "contrib/lisp" dir)))
-                      (when (file-directory-p contrib-dir)
-                        (add-to-list 'load-path contrib-dir)))))))))
-  	 
+             (let ((git-dir "~/etc/emacs/git-install"))
+               (when (file-directory-p git-dir)
+                 (dolist (dir (directory-files git-dir t "^[^.]"))
+                   (when (file-directory-p dir)
+                     ;; Add the main directory
+                     (add-to-list 'load-path dir)
+                     ;; Add the `lisp` subdirectory if it exists
+                     (let ((lisp-dir (expand-file-name "lisp" dir)))
+                       (when (file-directory-p lisp-dir)
+                         (add-to-list 'load-path lisp-dir)))
+                     ;; Add the `contrib/lisp` subdirectory if it exists
+                     (let ((contrib-dir (expand-file-name "contrib/lisp" dir)))
+                       (when (file-directory-p contrib-dir)
+                         (add-to-list 'load-path contrib-dir)))))))))
+
 #+end_src
 
 ** Themes and eye-candy
@@ -658,16 +659,16 @@ Note: Both C-x b and C-x C-b are bound to counsel ibuffer to clutter less
   ;;
   ;; Counsel to change completion in M-x and some other core emacs functionality
   ;;
-    (use-package counsel
-      :ensure t
-      :bind (("M-x" . counsel-M-x)
-             ("C-x b" . counsel-ibuffer)
-             ("C-x C-f" . counsel-find-file)
-             :map minibuffer-local-map
-             ("C-r" . 'counsel-minibuffer-history))
-      :custom
-      (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
-      )
+  (use-package counsel
+    :ensure t
+    :bind (("M-x" . counsel-M-x)
+           ("C-x b" . counsel-ibuffer)
+           ("C-x C-f" . counsel-find-file)
+           :map minibuffer-local-map
+           ("C-r" . 'counsel-minibuffer-history))
+    :custom
+    (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
+    )
 
 #+end_src
 
@@ -726,15 +727,15 @@ NOTE: Do I really use this?
 
 #+begin_src emacs-lisp
 
-;; ;;
-;; ;; General to bind a leader key
-;; ;;
-;; (use-package general
-;;   :config
-;;   (general-create-definer emf/leader-keys
-;;     :keymaps '(normal insert visual emacs)
-;;     :prefix "RET"
-;;     :global-prefix "C-RET"))  
+  ;; ;;
+  ;; ;; General to bind a leader key
+  ;; ;;
+  ;; (use-package general
+  ;;   :config
+  ;;   (general-create-definer emf/leader-keys
+  ;;     :keymaps '(normal insert visual emacs)
+  ;;     :prefix "RET"
+  ;;     :global-prefix "C-RET"))  
 
 
 #+end_src
@@ -779,7 +780,7 @@ Binding it to C-c w globally since it something I might do a lot
     :defer)
   (global-set-key (kbd "C-c w") 'wc-count)
 
-  #+end_src
+#+end_src
 **** TODO Why does :bind for the key not work
 
 The key does not work because the mode is not loaded. I tried writing a function that sets wc-mode true but it just threw a bunch of errors
@@ -828,16 +829,16 @@ Cant find the package
 
 *** gptel
 #+begin_src emacs-lisp
-    ;;
-    ;; Use gptel to inteface with LLMs
-    ;;
-    (use-package gptel
-        :config
-        (setq gptel-format-response 'org)
-        (setq gptel-output-format 'org)
-        (setq gptel-org-set-topic t)
-        (setq gptel-org-set-properties t)
-        (setq gptel-org-branching-context t))
+  ;;
+  ;; Use gptel to inteface with LLMs
+  ;;
+  (use-package gptel
+    :config
+    (setq gptel-format-response 'org)
+    (setq gptel-output-format 'org)
+    (setq gptel-org-set-topic t)
+    (setq gptel-org-set-properties t)
+    (setq gptel-org-branching-context t))
 
   ;;
   ;; TODO: Write a function that changes output type depending on the buffer
@@ -1254,7 +1255,7 @@ My capture template includes a link section for external links (like wikipedia)
 This snippet adds a hook to =org-mode= buffers so that =emf/org-babel-tangle-config= gets executed each time such a buffer gets saved.  This function checks to see if the file being saved is in an auto tangle directory or not. If it is, it's automatically tangled by 'after-save-hook
 
 I use a list of directories so I can change it by adding the following to =.dir-locals.el=
-  ((org-mode . ((eval . (add-to-list 'emf/org-babel-autotangle-dirs (file-name-directory (or load-file-name buffer-file-name)))))))
+((org-mode . ((eval . (add-to-list 'emf/org-babel-autotangle-dirs (file-name-directory (or load-file-name buffer-file-name)))))))
 
 The default auto-tangle are my dotfiles directory and emacs directory
   
@@ -1282,15 +1283,14 @@ The default auto-tangle are my dotfiles directory and emacs directory
   ;; These help with auto tangling in some cases 
   ;; (setq org-babel-min-lines-for-block-output 0)
   ;; (setq max-buffer-size (* 1024 1024 1024))
-  
+
 #+end_src
 
 
 *** org-drill
 Use org-drill to study repetitive facts. I add them as a "Flashcard" heading with a :drill: tag
 
-Added the emf/start-org-drill and set org-drill-scope to directory,
-opening a file in the roam directory before calling org-drill this way solves the cache error
+Have altered the way org-drill-scope is set and added the two advice functions to open all roam files and 
 
 [[id:82f67afe-241c-4385-8164-8de40e69c57a][org-drill]]
 
@@ -1303,28 +1303,43 @@ opening a file in the roam directory before calling org-drill this way solves th
     :after org-roam
     :config
     (setq org-drill-maximum-items-per-session 20
-    	org-drill-interval-factor 2.5)
-    
-    ;; Use the `org-roam-directory` variable for org-drill scope
-    ;;(setq org-drill-scope (directory-files-recursively "~/opt/org-mode/roam/" "\\.org$"))
+       	org-drill-interval-factor 2.5))
 
-    ;; Fixing the cache error
-    (setq org-drill-scope 'directory)
-    )    
+  ;; Use the `org-roam-directory` variable for org-drill scope
+  (setq org-drill-scope (directory-files-recursively "/home/emfrom/opt/org-mode/roam/" "\\.org$"))
 
-  ;; Function that fixes the cache error
-  ;; The opening of the file is the key to fixing the cache bug,
-  ;;  done any other way, drill can throw a cache error
-  ;; (org-drill is old and unmaintained)
-  (defun emf/start-org-drill ()
-    "Open the org-drill file in a single window and start org-drill."
-    (interactive)
-    (let ((org-drill-file "~/opt/org-mode/roam/20241030154050-org_drill.org"))
-      (find-file org-drill-file)
-      (delete-other-windows)  
-      (org-drill)))           
+  ;;
+  ;; To get the cache to load properly and org-drill work, open all the buffers
+  ;;  that has :drill: tags in the org roam directory
+  ;;  
+  (defun emf/org-drill-open-all-roam-files ()
+    "Open all .org files in the ~/opt/org-mode/roam/ directory and close those without :drill:."
+    (dolist (file (directory-files "~/opt/org-mode/roam/" t "\\.org$"))
+      (find-file file)
+      (unless (save-excursion
+                (goto-char (point-min))
+                (search-forward ":drill:" nil t))
+        (kill-buffer))))
+  (advice-add 'org-drill :before #'emf/org-drill-open-all-roam-files)
 
-  (global-set-key (kbd "C-c d") 'emf/start-org-drill)
+
+  ;;
+  ;; Close all roam buffers
+  ;; This is of course a bit dangerous but it works. I only drill once or twice per day, GEFN
+  ;;
+  (defun emf/org-drill-save-and-close-roam-buffers ()
+    "Save and close all buffers that point to files in the ~/opt/org-mode/roam/ directory."
+    (dolist (buffer (buffer-list))
+      (when (and (buffer-file-name buffer)
+                 (string-prefix-p (expand-file-name "~/opt/org-mode/roam/") 
+                                  (expand-file-name (buffer-file-name buffer))))
+        (with-current-buffer buffer
+          (save-buffer)
+          (kill-buffer)))))
+
+  (advice-add 'org-drill :after #'emf/org-drill-save-and-close-roam-buffers)
+
+  (global-set-key (kbd "C-c d") 'org-drill)
 #+end_src
 
 
@@ -1338,11 +1353,11 @@ https://github.com/unhammer/org-rich-yank
 
 #+begin_src emacs-lisp
 
-(use-package org-rich-yank
-  :ensure t
-  :demand t
-  :bind (:map org-mode-map
-              ("C-M-y" . org-rich-yank)))
+  (use-package org-rich-yank
+    :ensure t
+    :demand t
+    :bind (:map org-mode-map
+                ("C-M-y" . org-rich-yank)))
 #+end_src
 ** Gnus
 
@@ -1553,39 +1568,39 @@ LSP Mode to connect to language servers like clangd
 #+end_src>
 *** Company
 #+begin_src emacs-lisp
-    (use-package company
-      :after lsp-mode
-      :hook (prog-mode . company-mode)
-      :bind
-      (:map company-active-map
-    	("<tab>" . company-complete-selection)
-    	("TAB" . company-complete-selection))  ; Ensure Tab key works in different terminals
-      (:map lsp-mode-map
-    	("<tab>" . (lambda ()
-                         (interactive)
-                         (if (company-tooltip-visible-p)
-    			 (company-complete-selection)
-                           (company-indent-or-complete-common)))))
-      :custom
-      (company-minimum-prefix-length 1)
-      (company-idle-delay 0.0))
+  (use-package company
+    :after lsp-mode
+    :hook (prog-mode . company-mode)
+    :bind
+    (:map company-active-map
+  	("<tab>" . company-complete-selection)
+  	("TAB" . company-complete-selection))  ; Ensure Tab key works in different terminals
+    (:map lsp-mode-map
+  	("<tab>" . (lambda ()
+                       (interactive)
+                       (if (company-tooltip-visible-p)
+  			 (company-complete-selection)
+                         (company-indent-or-complete-common)))))
+    :custom
+    (company-minimum-prefix-length 1)
+    (company-idle-delay 0.0))
 
 
-    (use-package company-box
-      :hook (company-mode . company-box-mode)
-      :config
-      (with-eval-after-load 'company
-        (define-key company-active-map (kbd "<tab>") 'company-complete-selection)
-        (define-key company-active-map (kbd "TAB") 'company-complete-selection)))
+  (use-package company-box
+    :hook (company-mode . company-box-mode)
+    :config
+    (with-eval-after-load 'company
+      (define-key company-active-map (kbd "<tab>") 'company-complete-selection)
+      (define-key company-active-map (kbd "TAB") 'company-complete-selection)))
 
-      
-    ;; Ensure the required packages are installed
 
-    ;; Activate company mode globally
-    (add-hook 'after-init-hook 'global-company-mode)
+  ;; Ensure the required packages are installed
 
-    ;; Enable company mode in scheme buffers
-    (add-hook 'scheme-mode-hook (lambda () (company-mode)))
+  ;; Activate company mode globally
+  (add-hook 'after-init-hook 'global-company-mode)
+
+  ;; Enable company mode in scheme buffers
+  (add-hook 'scheme-mode-hook (lambda () (company-mode)))
 
 
 #+end_src
@@ -1638,18 +1653,10 @@ A mode for coding in rust
 
   ;; Make sure rust is in path
   (let ((new-path "/home/emfrom/opt/rust/cargo/bin"))
-  (unless (member new-path exec-path)
-    (setq exec-path (append exec-path (list new-path)))
-    (setenv "PATH" (concat (getenv "PATH") ":" new-path))))
+    (unless (member new-path exec-path)
+      (setq exec-path (append exec-path (list new-path)))
+      (setenv "PATH" (concat (getenv "PATH") ":" new-path))))
 
-  ;; Set the rust env-variables
-  (let ((env-file "/home/emfrom/etc/env/rust"))
-  (when (file-exists-p env-file)
-    (with-temp-buffer
-      (insert-file-contents env-file)
-      (goto-char (point-min))
-      (while (re-search-forward "^\\([^=]+\\)=\\(.*\\)$" nil t)
-        (setenv (match-string 1) (match-string 2))))))
 
 
 #+end_src
