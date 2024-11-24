@@ -75,6 +75,9 @@ The mapping of the meny key (ralt here) to Hyper is done via xmodmap
       lctl  lmet  tab        spc            ret  rmet  rctl
     )
 
+
+
+  
   (deflayer colemak-dh-not-finished
       grv    1    2    3    4    5    6    7    8    9    0    -    =    bspc
       tab    q    w    f    p    t    y    u    i    o    p    [    ]    \
