@@ -829,21 +829,22 @@ Cant find the package
 
 *** gptel
 #+begin_src emacs-lisp
-  ;;
-  ;; Use gptel to inteface with LLMs
-  ;;
-  (use-package gptel
-    :config
-    (setq gptel-format-response 'org)
-    (setq gptel-output-format 'org)
-    (setq gptel-org-set-topic t)
-    (setq gptel-org-set-properties t)
-    (setq gptel-org-branching-context t))
+    ;;
+    ;; Use gptel to inteface with LLMs
+    ;;
+    (use-package gptel
+      :config
+      (setq gptel-format-response 'org)
+      (setq gptel-output-format 'org)
+      (setq gptel-org-set-topic t)
+      (setq gptel-org-set-properties t)
+      (setq gptel-org-branching-context t)
+      (setq gptel-default-model 'gpt-4o-mini))
 
-  ;;
-  ;; TODO: Write a function that changes output type depending on the buffer
-  ;;
-  (global-set-key (kbd "s-<return>") 'gptel-send)
+    ;;
+    ;; TODO: Write a function that changes output type depending on the buffer
+    ;;
+    (global-set-key (kbd "s-<return>") 'gptel-send)
 
 #+end_src
 
@@ -1303,26 +1304,29 @@ Have altered the way org-drill-scope is set and added the two advice functions t
     :after org-roam
     :config
     (setq org-drill-maximum-items-per-session 20
-       	org-drill-interval-factor 2.5))
+         	org-drill-interval-factor 2.5))
 
   ;; Use the `org-roam-directory` variable for org-drill scope
-  (setq org-drill-scope (directory-files-recursively "/home/emfrom/opt/org-mode/roam/" "\\.org$"))
+  ;; (setq org-drill-scope (directory-files-recursively "/home/emfrom/opt/org-mode/roam/" "\\.org$"))
 
   ;;
   ;; To get the cache to load properly and org-drill work, open all the buffers
   ;;  that has :drill: tags in the org roam directory
-  ;;  
+  ;; This function now set's the scope variabel as well so that new entries are included
+  ;; 
   (defun emf/org-drill-open-all-roam-files ()
-    "Open all .org files in the ~/opt/org-mode/roam/ directory and close those without :drill:."
-    (dolist (file (directory-files "~/opt/org-mode/roam/" t "\\.org$"))
-      (find-file file)
-      (unless (save-excursion
-                (goto-char (point-min))
-                (search-forward ":drill:" nil t))
-        (kill-buffer))))
+    "Open all .org files in the ~/opt/org-mode/roam/ directory and close those without :drill:. Set org-drill-scope to the valid files."
+    (let ((drill-files '()))
+      (dolist (file (directory-files "~/opt/org-mode/roam/" t "\\.org$"))
+        (find-file file)
+        (if (save-excursion
+              (goto-char (point-min))
+              (search-forward ":drill:" nil t))
+            (push file drill-files)
+          (kill-buffer)))
+      (setq org-drill-scope drill-files)))
+
   (advice-add 'org-drill :before #'emf/org-drill-open-all-roam-files)
-
-
   ;;
   ;; Close all roam buffers
   ;; This is of course a bit dangerous but it works. I only drill once or twice per day, GEFN
@@ -1657,8 +1661,12 @@ A mode for coding in rust
       (setq exec-path (append exec-path (list new-path)))
       (setenv "PATH" (concat (getenv "PATH") ":" new-path))))
 
-
-
+  ;; FLycheck integration
+  (use-package flycheck-rust)
+  (add-hook 'rust-mode-hook #'flycheck-mode)
+  ;;(add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
+  (setq flycheck-rust-check-tests t) ; Check test code too
+  (setq flycheck-rust-cargo-executable "cargo clippy") ; Use Clippy
 #+end_src
 
 **** Guile
