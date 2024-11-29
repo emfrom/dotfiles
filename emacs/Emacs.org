@@ -929,6 +929,10 @@ conf still feels clunky
             ))
 
     ;;
+    ;; Show latex snippets
+    ;;
+    (setq org-startup-with-latex-preview t)
+    ;;
     ;; ORG Agenda shows only one day
     ;;
     (setq org-agenda-span 1)
