@@ -24,6 +24,10 @@
 [filter "tabs-and-crlf"]
     clean = "sed -e 's/\\t/  /g' -e 's/\\r$//'"
     smudge = "sed -e 's/\\t/  /g' -e 's/\\r$//'"
+[filter "krstyle"]
+    clean = "indent -kr -i4 -nut"
+    smudge = "indent -kr -i2 -nut"
+
 [fetch]
 	writeCommitGraph = true
 [alias]
