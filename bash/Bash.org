@@ -525,13 +525,14 @@ Emacs shell needs some help in not being braindead
 #+end_src
 *** less
 #+begin_src shell :tangle ./bashrc :mkdirp yes
-  
-    #
-    # I dont need history in less
-    #  Setting the histfile to /dev/null fixes this
-    #
 
-    export LESSHISTFILE=/dev/null
+  #
+  # I dont need history in less
+  #  Setting the histfile to /dev/null fixes this
+  #
+
+  export LESSHISTFILE=/dev/null
+  export LESS="-R"
 
 #+end_src
 
@@ -1303,7 +1304,7 @@ Aliases is tangled to [[file:aliases][aliases]]
 ** cat
 #+begin_src shell :tangle ./aliases :mkdirp yes
   # Trying out bat instead of cat
-  alias cat='bat'
+  alias cat='bat --color $COLOUR'
 
 #+end_src
 
