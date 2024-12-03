@@ -25,6 +25,13 @@ Currently loaded by bashrc, emacs init.el and nu.env
   RUST_BACKTRACE=1
 #+end_src
 
+* Haskell
+#+begin_src shell :tangle ./haskell.env
+GHCUP_INSTALL_BASE_PREFIX=/home/emfrom/opt/haskell
+CABAL_DIR=/home/emfrom/opt/haskell/cabal
+STACK_ROOT=/home/emfrom/opt/haskell/stack
+#+END_SRC
+
 * XDG Setting
 #+begin_src shell :tangle ./xdg.env
   # Dont edit this file, edit Environment.org
