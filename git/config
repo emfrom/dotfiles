@@ -38,3 +38,5 @@
 	unstage = reset HEAD --
 	last = log -1 HEAD
 	blame = blame -w -C -C -C
+[pull]
+	rebase = true
