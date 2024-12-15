@@ -23,61 +23,78 @@ The super mappings are both to lmet, aka the windows key.
 The mapping of the meny key (ralt here) to Hyper is done via xmodmap
 
 #+begin_src lisp :tangle ./config.kbd :mkdirp yes
-      ;; defsrc is still necessary
-      (defcfg
-          process-unmapped-keys yes)
-    (defsrc
-      esc   1    2    3    4    5    6    7    8    9    0    -    =    bspc
-      tab   q    w    e    r    t    y    u    i    o    p    [    ]    \
-      caps  a    s    d    f    g    h    j    k    l    ;    '    ret
-      lsft  z    x    c    v    b    n    m    ,    .    /    rsft
-      lctl  lmet lalt           spc            ralt rmet rctl
+        ;; defsrc is still necessary
+        (defcfg
+            process-unmapped-keys yes)
+      (defsrc
+        esc   1    2    3    4    5    6    7    8    9    0    -    =    bspc
+        tab   q    w    e    r    t    y    u    i    o    p    [    ]    \
+        caps  a    s    d    f    g    h    j    k    l    ;    '    ret
+        lsft  z    x    c    v    b    n    m    ,    .    /    rsft
+        lctl  lmet lalt           spc            ralt rmet rctl
+      )
+
+        (defvar
+          tap-time 0
+          hold-time 200)
+
+  ;;(defalias src (use-defsrc))
+        ;;
+        ;; Uses non-emacsy names
+        ;;
+        ;; lmet and rmet means super
+        ;; lalt and ralt means meta
+        ;;
+        (defalias
+          navr (multi (layer-while-held nav) (layer-switch base))
+          caps (tap-hold $tap-time $hold-time bspc (multi (layer-while-held nav) (layer-switch base)))
+          tab (tap-hold $tap-time $hold-time tab esc)
+          grv (tap-hold $tap-time $hold-time grv esc)
+          a (tap-hold $tap-time $hold-time a (multi (layer-while-held nav) (layer-switch base)))
+          s (tap-hold $tap-time $hold-time s lalt)
+          d (tap-hold $tap-time $hold-time d lsft)
+          f (tap-hold $tap-time $hold-time f lctl)
+          j (tap-hold $tap-time $hold-time j rctl)
+          k (tap-hold $tap-time $hold-time k rsft)
+          l (tap-hold $tap-time $hold-time l ralt)
+          ; (tap-hold $tap-time $hold-time ; lmet)
+          g (tap-hold $tap-time $hold-time g lmet)
+
+          up (tap-hold $tap-time $hold-time up rctl)
+          left (tap-hold $tap-time $hold-time left rsft)
+          right (tap-hold $tap-time $hold-time right ralt)
+          down  (tap-hold $tap-time $hold-time down lmet)
+        )
+      
+
+      (deflayer base
+        grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+       @tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
+       @caps @a   @s   @d   @f   @g    h    @j   @k   @l   @;    '   ret
+        @nav z    x    c    v    b    n    m    ,    .    /    @nav
+        lctl lmet tab           spc            ret rmet rctl
+      )
+
+       (deflayer nav
+        grv    1    2    3    4    5    6    7    8    9    0    -    =    bspc
+        tab    q    w    e    r    t    y    u    i    o    p    [    ]    \
+       @caps   @a   @s   @d   @f   @g    h    @up   @left   @right  @down   '   ret
+       @base   z    x    c    v    b    n    m    ,    .    up    @base
+        lctl  lmet  tab        spc            left down  right
+      )
+
+    (defalias
+        nav  (layer-switch nav)
+        base (layer-switch base)
     )
 
-      (defvar
-        tap-time 150
-        hold-time 200)
 
-      ;;
-      ;; Uses non-emacsy names
-      ;;
-      ;; lmet and rmet means super
-      ;; lalt and ralt means meta
-      ;;
-      (defalias
-        bspc (tap-hold $tap-time $hold-time bspc esc)
-        a (tap-hold $tap-time $hold-time a (layer-while-held nav))
-        s (tap-hold $tap-time $hold-time s lalt)
-        d (tap-hold $tap-time $hold-time d lsft)
-        f (tap-hold $tap-time $hold-time f lctl)
-        j (tap-hold $tap-time $hold-time j rctl)
-        k (tap-hold $tap-time $hold-time k rsft)
-        l (tap-hold $tap-time $hold-time l ralt)
-        ; (tap-hold $tap-time $hold-time ; lmet)
-        g (tap-hold $tap-time $hold-time g lmet))
-
-
-    
-
-    (deflayer base
-      grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
-      tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
-     @bspc @a   @s   @d   @f   @g    h    @j   @k   @l   @;    '    ret
-      lsft z    x    c    v    b    n    m    ,    .    /    rsft
-      lctl lmet tab           spc            ret rmet rctl
-    )
-
-     (deflayer nav
-      grv    1    2    3    4    5    6    7    8    9    0    -    =    bspc
-      tab    q    w    e    r    t    y    u    i    o    p    [    ]    \
-     @bspc   @a   @s   @d   @f   @g    h    up   left   right  down   '   ret
-      lsft   z    x    c    v    b    n    m    ,    .    /    rsft
-      lctl  lmet  tab        spc            ret  rmet  rctl
-    )
+#+end_src
+QWFPBJLUY;[]
 
 
 
-  
+
   (deflayer colemak-dh-not-finished
       grv    1    2    3    4    5    6    7    8    9    0    -    =    bspc
       tab    q    w    f    p    t    y    u    i    o    p    [    ]    \
@@ -86,20 +103,21 @@ The mapping of the meny key (ralt here) to Hyper is done via xmodmap
       lctl  lmet  tab        spc            ret  rmet  rctl
       ) 
 
-#+end_src
-QWFPBJLUY;[]
+
 * Adding Hyper key
 
 I'm still using the hyper key in emacs so I set it using Xmodmap
 
 xmodmap is called in [[~/etc/emacs/Emacs.org][Emacs.org]]
 
+I am temporarily disabling this for trying out some configs without hyper key
+
 #+begin_src shell :tangle ~/etc/emacs/exwm/Xmodmap
-  clear Mod3
-  keycode 135 = NoSymbol
-  keycode 135 = Hyper_L
-  remove Mod4 = Hyper_L
-  add Mod3 = Hyper_L
+ # clear Mod3
+ # keycode 135 = NoSymbol
+ # keycode 135 = Hyper_L
+ # remove Mod4 = Hyper_L
+ # add Mod3 = Hyper_L
 #+end_src
   
 * Systemd entry
@@ -125,6 +143,6 @@ xmodmap is called in [[~/etc/emacs/Emacs.org][Emacs.org]]
 Lastly, setup org babel to auto-tangle in this directory
 
 #+begin_src emacs-lisp :tangle ./.dir-locals.el :mkdirp yes
-((org-mode . ((eval . (add-to-list 'emfrom/org-babel-autotangle-dirs (file-name-directory (or load-file-name buffer-file-name)))))))
+((org-mode . ((eval . (add-to-list 'emf/org-babel-autotangle-dirs (file-name-directory (or load-file-name buffer-file-name)))))))
 #+end_src
 
