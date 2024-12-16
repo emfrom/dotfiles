@@ -38,7 +38,7 @@ The mapping of the meny key (ralt here) to Hyper is done via xmodmap
           tap-time 0
           hold-time 200)
 
-  ;;(defalias src (use-defsrc))
+     (defalias src (multi _ (layer-switch base)))
         ;;
         ;; Uses non-emacsy names
         ;;
@@ -70,17 +70,17 @@ The mapping of the meny key (ralt here) to Hyper is done via xmodmap
       (deflayer base
         grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
        @tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
-       @caps @a   @s   @d   @f   @g    h    @j   @k   @l   @;    '   ret
+       @caps @a   @s   @d   @f   @g   h    @j   @k   @l   @;    '   ret
         @nav z    x    c    v    b    n    m    ,    .    /    @nav
-        lctl lmet tab           spc            ret rmet rctl
+        lctl lmet ret           spc            tab rmet rctl
       )
 
        (deflayer nav
-        grv    1    2    3    4    5    6    7    8    9    0    -    =    bspc
-        tab    q    w    e    r    t    y    u    i    o    p    [    ]    \
-       @caps   @a   @s   @d   @f   @g    h    @up   @left   @right  @down   '   ret
-       @base   z    x    c    v    b    n    m    ,    .    up    @base
-        lctl  lmet  tab        spc            left down  right
+       @src   @src  @src  @src  @src  @src  @src  @src  @src  @src  @src  -    =  bspc
+       @tab  @src  @src  @src  @src  @src  @src  @src  @src  @src  @src    [    ]    \
+       @caps   @a   @s   @d   @f   @g  @src    @up   @left   @right  @down  ' @src
+       @base @src  @src  @src  @src  @src  @src  @src    ,    .    up    @base
+       @src  @src ret           spc           left  down right
       )
 
     (defalias
@@ -103,7 +103,7 @@ QWFPBJLUY;[]
       lctl  lmet  tab        spc            ret  rmet  rctl
       ) 
 
-
+      
 * Adding Hyper key
 
 I'm still using the hyper key in emacs so I set it using Xmodmap
