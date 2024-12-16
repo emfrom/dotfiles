@@ -518,6 +518,7 @@ Load packages from the git-install directory first
     (when (file-directory-p git-dir)
       (dolist (dir (directory-files git-dir t "^[^.]"))
         (when (file-directory-p dir)
+  	(setq load-path (delete dir load-path)) ;; remove if it's already in the path
           (add-to-list 'load-path dir)
           (let ((lisp-dir (expand-file-name "lisp" dir)))
             (when (file-directory-p lisp-dir)
