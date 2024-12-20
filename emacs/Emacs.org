@@ -1,4 +1,4 @@
-#+TITLE: Emacs config
+j#+TITLE: Emacs config
 #+AUTOR: E.M. From
 #+PROPERTY: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
 #+STARTUP: overview
@@ -1898,8 +1898,59 @@ NOTE: If you want to move everything out of the ~/.emacs.d folder reliably, set 
 
 ** Finishing touches
 Last things before firing the startup hook
+*** Scratch buffe
+Testing out persistent scratch buffer
 
-*** Kill word-or-region
+#+begin_src emacs-lisp
+  ;;
+  ;; persistent scratch buffer 
+  ;; 
+
+
+  (setq scratch-file "~/etc/emacs/scratch") ; Set the file to save the scratch buffer.
+
+  (defun emf/save-scratch-buffer ()
+    "Remove leading comments and save the *scratch* buffer to a file."
+    (with-current-buffer "*scratch*"
+      (goto-char (point-min))
+
+      (while (and (not (eobp))
+                  (looking-at-p "^;;"))
+        (delete-line))
+      (write-region (point-min) (point-max) scratch-file)))
+
+  (defun emf/load-scratch-buffer ()
+    "Load the *scratch* buffer from a file, if it exists."
+    (when (file-exists-p scratch-file)
+      (with-current-buffer "*scratch*"
+        (erase-buffer)
+        (insert
+         (with-temp-buffer
+  	 (call-process "~/bin/lolcow.sh" nil t)
+  	 (let ((output (buffer-string)))
+  	   (mapconcat (lambda (line) (format ";; %s" line))
+  		      (split-string output "\n" t) "\n"))))
+        (insert "\n;; \n")
+        (insert-file-contents scratch-file))))
+
+  (defun emf/relaunch-scratch-buffer ()
+    "Relaunch the *scratch* buffer shortly after it is killed."
+    (when (string-equal (buffer-name) "*scratch*")
+      (emf/save-scratch-buffer) ;; Save the current contents.
+      (run-at-time 0.1 nil
+  		 (lambda ()
+                     (with-current-buffer (get-buffer-create "*scratch*")
+                       (lisp-interaction-mode)
+                       (emf/load-scratch-buffer))))))
+
+
+  (add-hook 'kill-emacs-hook #'emf/save-scratch-buffer)
+  (add-hook 'kill-buffer-hook #'emf/relaunch-scratch-buffer)
+  (add-hook 'emacs-startup-hook #'emf/load-scratch-buffer)
+
+
+#+end_src
+*** kill word-or-region
 This makes C-w behave like it does in readline when a region is not active
 The default seems braindead to me but perhaps I'm missing something
 
@@ -2019,14 +2070,7 @@ Haha, I'm not running windows anymore :)
   ;; Beautify the scratch buffer
   ;;
   ;;(insert-file "~/etc/emacs/REMINDER")
-  (with-current-buffer "*scratch*"
-    (insert
-     (with-temp-buffer
-       (call-process "~/bin/lolcow.sh" nil t)
-       (let ((output (buffer-string)))
-         (mapconcat (lambda (line) (format ";; %s" line))
-                    (split-string output "\n" t) "\n"))))
-    (insert "\n;;\n"))
+
 
 
 
