@@ -113,13 +113,14 @@ xmodmap is called in [[~/etc/emacs/Emacs.org][Emacs.org]]
 I am temporarily disabling this for trying out some configs without hyper key
 
 #+begin_src shell :tangle ~/etc/emacs/exwm/Xmodmap
- # clear Mod3
- # keycode 135 = NoSymbol
- # keycode 135 = Hyper_L
- # remove Mod4 = Hyper_L
- # add Mod3 = Hyper_L
+  keycode 135 = NoSymbol
+  keycode 135 = Down
 #+end_src
-  
+  # clear Mod3
+  # keycode 135 = Hyper_L
+  # remove Mod4 = Hyper_L
+  # add Mod3 = Hyper_L
+
 * Systemd entry
 
 #+begin_src shell :tangle ~/etc/systemd/user/kanata.service
