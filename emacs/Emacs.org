@@ -1,4 +1,4 @@
-j#+TITLE: Emacs config
+#+TITLE: Emacs config
 #+AUTOR: E.M. From
 #+PROPERTY: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
 #+STARTUP: overview
@@ -664,8 +664,7 @@ Note: Both C-x b and C-x C-b are bound to counsel ibuffer to clutter less
            :map minibuffer-local-map
            ("C-r" . 'counsel-minibuffer-history))
     :custom
-    (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
-    )
+    (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only))
 
 #+end_src
 
@@ -694,6 +693,8 @@ WHY?
 
 *** Which key
 Show possible completions in minibuffer whenever a key has been hit
+
+This is really good. I think this the emacs package I have the most help from
 
 #+begin_src emacs-lisp
 
@@ -763,24 +764,6 @@ NOTE: I'm not really using this either
   ;;   "s" '(hydra-text-scale/body :which-key "scale text"))
 
 #+end_src
-
-*** Word counts
-Counting of words
-Binding it to C-c w globally since it something I might do a lot
-
-#+begin_src emacs-lisp
-
-  ;;
-  ;; Word count mode
-  ;;
-  (use-package wc-mode
-    :defer)
-  (global-set-key (kbd "C-c w") 'wc-count)
-
-#+end_src
-**** TODO Why does :bind for the key not work
-
-The key does not work because the mode is not loaded. I tried writing a function that sets wc-mode true but it just threw a bunch of errors
 
 *** Better undo-redo
 
@@ -2006,9 +1989,14 @@ Hate hitting insert by mistake, worse than caps-lock
 #+begin_src emacs-lisp
 
   ;; Kill buffer
-  (global-set-key (kbd "s-k") (lambda () (interactive) (kill-buffer (current-buffer))))
+  (global-set-key (kbd "s-k") 
+  		(lambda () 
+  		  (interactive) 
+  		  (kill-buffer (current-buffer)) 
+  		  (unless (one-window-p)
+  		    (delete-window))))
   (global-set-key (kbd "C-x k") 'kill-buffer)
-  
+
 #+end_src
 
 *** Server 
