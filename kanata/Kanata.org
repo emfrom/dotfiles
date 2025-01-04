@@ -65,22 +65,21 @@ The mapping of the meny key (ralt here) to Hyper is done via xmodmap
        right (tap-hold $tap-time $hold-time right ralt)
        down  (tap-hold $tap-time $hold-time down lmet)
 
-       bspc (tap-hold $tap-time $hold-time bspc (layer-switch game))
-       gameback (tap-hold $tap-time $hold-time bspc (layer-switch base))
+       game (tap-hold $tap-time 1000 tab (layer-switch game))
+       gameback (tap-hold $tap-time 1000 tab (layer-switch base))
      )
    
   (defalias
       nav  (layer-switch nav)
       base (layer-switch base)
-      game (layer-switch game)
   )
 
    (deflayer base
-     grv  1    2    3    4    5    6    7    8    9    0    -    =    @bspc
+     grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
     @tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
     @caps @a   @s   @d   @f   @g   h    @j   @k   @l   @;    '   ret
      @nav z    x    c    v    b    n    m    ,    .    /    @nav
-     lctl lmet ret           spc            tab rmet rctl
+     lctl lmet ret           spc            @game rmet rctl
    )
 
     (deflayer nav
@@ -94,11 +93,11 @@ The mapping of the meny key (ralt here) to Hyper is done via xmodmap
 
 
     (deflayer game
-       esc   1    2    3    4    5    6    7    8    9    0    -    =    @gameback
+       esc   1    2    3    4    5    6    7    8    9    0    -    =    bspc
        tab   q    w    e    r    t    y    u    i    o    p    [    ]    \
        caps  a    s    d    f    g    h    j    k    l    ;    '    ret
        lsft  z    x    c    v    b    n    m    ,    .    /    rsft
-       lctl  lmet lalt           spc            ralt rmet rctl
+       lctl  lmet lalt           spc            @gameback rmet rctl
      )
 
 
@@ -120,11 +119,10 @@ QWFPBJLUY;[]
       
 * Adding Hyper key
 
-I'm still using the hyper key in emacs so I set it using Xmodmap
-
 xmodmap is called in [[~/etc/emacs/Emacs.org][Emacs.org]]
 
-I am temporarily disabling this for trying out some configs without hyper key
+I am using the arrow keys now in the nav laayer so I just map menu key directly to down so that it's valid 
+Note, I completely removed the hyper key from emacs.
 
 #+begin_src shell :tangle ~/etc/emacs/exwm/Xmodmap
   keycode 135 = NoSymbol
