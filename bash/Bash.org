@@ -381,6 +381,10 @@ Also, add the current directory to the end of the path. (this is unsafe if you d
       export PATH=$PATH:/usr/local/bin
   fi
 
+  if ! echo $PATH | grep "usr/games/bin" > /dev/null ; then
+      export PATH=$PATH:/usr/games/bin
+  fi
+
   if ! echo $PATH | grep "$HOME/bin" > /dev/null ; then
       export PATH=$HOME/bin:$PATH
   fi
