@@ -1828,27 +1828,55 @@ Dired is a built-in file manager for Emacs that does some pretty amazing things!
 
 #+begin_src emacs-lisp
 
+  ;; david wilsons dired setup 
+  (defun dw/dired-mode-hook ()
+    (interactive)
+    (dired-hide-details-mode 1)
+    (hl-line-mode 1))
+
   (use-package dired
     :ensure nil
-    :commands (dired dired-jump)
-    :bind (("C-x C-j" . dired-jump))
-    :custom ((dired-listing-switches "-agoh")))
-
-  ;; Cant find for some reason
-  ;;(use-package dired-single)
-
-  (use-package all-the-icons-dired
-    :hook (dired-mode . all-the-icons-dired-mode))
-
-  (use-package dired-open
+    :bind (:map dired-mode-map
+                ("b" . dired-up-directory))
     :config
-    ;; Doesn't work as expected!
-    ;;(add-to-list 'dired-open-functions #'dired-open-xdg t)
-    (setq dired-open-extensions '(("png" . "feh")
-                                  ("mkv" . "mpv"))))
+    (setq dired-listing-switches "-alv --group-directories-first"
+          dired-omit-files "^\\.[^.].*"
+          dired-omit-verbose nil
+          dired-dwim-target 'dired-dwim-target-next
+          dired-hide-details-hide-symlink-targets nil
+          dired-kill-when-opening-new-dired-buffer t
+          delete-by-moving-to-trash t)
 
-  (use-package dired-hide-dotfiles
-    :hook (dired-mode . dired-hide-dotfiles-mode))
+    (add-hook 'dir;; ed-mode-hook #'dw/dired-mode-hook))
+
+    ;; (use-package dired
+    ;;   :ensure nil
+    ;;   :commands (dired dired-jump)
+    ;;   :bind (("C-x C-j" . dired-jump))
+    ;;   :custom ((dired-listing-switches "-agoh")))
+
+    ;; Cant find for some reason
+    ;;(use-package dired-single)
+
+;;    (use-package all-the-icons-dired
+   ;;   :hook (dired-mode . all-the-icons-dired-mode))
+
+    ;; (use-package dired-open
+    ;;   :config
+    ;;   ;; Doesn't work as expected!
+    ;;   ;;(add-to-list 'dired-open-functions #'dired-open-xdg t)
+    ;;   (setq dired-open-extensions '(("png" . "feh")
+    ;;                                 ("mkv" . "mpv"))))
+
+    (defun emf/dired-open-external ()
+       "Open the file or directory at point in an external application."
+       (interactive)
+       (let ((file (dired-get-file-for-visit)))
+         (start-process "my-opening-process" nil "xdg-open" file)))
+
+     ;; Bind the function to a key in Dired mode
+     (eval-after-load 'dired
+       '(define-key dired-mode-map (kbd "C-c o") emf/dired-open-external))
 
 #+end_src
 
