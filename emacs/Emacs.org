@@ -2030,9 +2030,8 @@ This is the client-server model for emacs.
 
   ;;
   ;; Setting the tcp port for windows
-  ;; (Sorry IRC)
   (when (eq system-type 'windows-nt)
-    (setq server-port 6667)
+    (setq server-port 666)
     (setq server-host "localhost"))
 
   ;;
@@ -2044,8 +2043,9 @@ This is the client-server model for emacs.
 #+end_src
 **** TODO Why does the terminal emacs mode break/crash if the server is run in the EXWM instance?
 *** Show on startup
-What to show at startup 
+What to show at startup
 
+This has be come the catch all place where I dump all the "last moment" stuff and things I'm trying out. 
 
 Haha, I'm not running windows anymore :)
 //This takes a long time, a very long time. About 5-10s, but it's worth it otherwise I would never look at the thing. The other views like todos take about the same time, it's the opening, collating and extracting info from the org files that takes time.//
