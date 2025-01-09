@@ -707,7 +707,7 @@ This is really good. I think this the emacs package I have the most help from
     :config
 
     ;; Time before popup	 
-    (setq which-key-idle-delay 0.5))
+    (setq which-key-idle-delay 0.25))
 
 #+end_src
 
