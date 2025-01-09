@@ -1579,7 +1579,9 @@ LSP Mode to connect to language servers like clangd
     :bind
     (:map company-active-map
   	("<tab>" . company-complete-selection)
-  	("TAB" . company-complete-selection))  ; Ensure Tab key works in different terminals
+  	("TAB" . company-complete-selection)  ; Ensure Tab key works in different terminals
+          ("RET" . nil) ;; Unbind Enter to prevent completion acceptance
+  	("<return>" . nil)) 
     (:map lsp-mode-map
   	("<tab>" . (lambda ()
                        (interactive)
@@ -1590,14 +1592,13 @@ LSP Mode to connect to language servers like clangd
     (company-minimum-prefix-length 1)
     (company-idle-delay 0.0))
 
-
   (use-package company-box
     :hook (company-mode . company-box-mode)
     :config
     (with-eval-after-load 'company
       (define-key company-active-map (kbd "<tab>") 'company-complete-selection)
       (define-key company-active-map (kbd "TAB") 'company-complete-selection)))
-
+    
 
   ;; Ensure the required packages are installed
 
@@ -1864,13 +1865,13 @@ Based on David wilson and Matthew Graybosch
             delete-by-moving-to-trash t
             dired-recursive-copies 'always
             dired-recursive-deletes 'always
-    	    dired-clean-up-buffers-too t)
+      	  dired-clean-up-buffers-too t))
 
-      (bind-key "q"
-  	      (lambda () 
-    		  (interactive) 
-    		  (kill-buffer (current-buffer)))
-    		  dired-mode-map)
+  ;;    (bind-key "q"
+   ;; 	      (lambda () 
+    		  ;; (interactive) 
+    		  ;; (kill-buffer (current-buffer))
+    		  ;; dired-mode-map)))
 
     (defun emf/dired-open-external ()
       "Open the file or directory at point in an external application."
