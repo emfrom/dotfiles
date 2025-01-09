@@ -330,18 +330,27 @@ This that only matter if we are not in a terminal
 
 #+end_src
 
-*** Visible bell
+*** Flash modeline for alerts
 Stop emacs from beeping at us all the time
+The visble bell is also far to intrusive
 
-Flashes top and bottom of screen instead
+Flash only the modeline, from Matthew Graybosch <contact@starbreaker.org>
 
 #+begin_src emacs-lisp
 
   ;;
   ;; Set up the visible bell
   ;;
-  (setq visible-bell t)
+  (setq visible-bell nil
+      ring-bell-function 'flash-modeline)
 
+(defun flash-modeline ()
+  "A much less intrusive visible bell"
+  (let ((flash-sec (/ 2.0 20)))
+    (invert-face 'mode-line)
+    (run-with-timer flash-sec nil #'invert-face 'mode-line)
+    (run-with-timer (* 2 flash-sec) nil #'invert-face 'mode-line)
+    (run-with-timer (* 3 flash-sec) nil #'invert-face 'mode-line)))
 #+end_src
 
 *** Inhibit startup message
