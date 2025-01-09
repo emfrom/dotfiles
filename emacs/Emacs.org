@@ -828,6 +828,13 @@ Cant find the package
 
 #+end_src
 
+*** ansi-term
+#+begin_src emacs-lisp
+
+ (bind-key "C-c t" (lambda () (interactive) (ansi-term "/bin/bash")))
+
+#+end_src
+
 ** ORG Mode 
 The almighty org mode life, stuff and everything organizer
 https://orgmode.org/
