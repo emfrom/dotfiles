@@ -1477,7 +1477,8 @@ I actually understand this one
     :custom
     (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
-  (bind-key "s-m" 'magit-status global-map)
+  (bind-key "s-m" 'magit-status global-map) ;; Phase out super
+  (bind-key "C-c m" 'magit-status global-map)
 #+end_src
 
 *** Rainbow delimiters
