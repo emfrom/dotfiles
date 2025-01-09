@@ -1998,16 +1998,24 @@ Hate hitting insert by mistake, worse than caps-lock
 
 #+end_src
 
-**** Useful super setting
+**** Kill buffer(s)
 #+begin_src emacs-lisp
 
-  ;; Kill buffer
+  ;; Kill buffer and window 
   (global-set-key (kbd "s-k") 
   		(lambda () 
   		  (interactive) 
   		  (kill-buffer (current-buffer)) 
   		  (unless (one-window-p)
   		    (delete-window))))
+
+  ;; Kill buffer
+  (global-set-key (kbd "C-c k") 
+  		(lambda () 
+  		  (interactive) 
+  		  (kill-buffer (current-buffer))))
+
+  ;; Normal ibuffer killing
   (global-set-key (kbd "C-x k") 'kill-buffer)
 
 #+end_src
