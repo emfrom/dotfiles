@@ -4,7 +4,7 @@
 #+STARTUP: overview
 
 Init files for [[id:0a2c2173-fd44-4a65-8ab8-b1306108e82d][emacs]]
- 
+
 [[file:early-init.el][early-init.el]] comes from [[Early init]] section
 [[file:desktop.el][desktop.el]] is loaded for EXWM sessions
 [[file:init.el][init.el]] is the rest of the file starting with the [[Init][Init]] section
@@ -21,7 +21,7 @@ Each emacs-lisp section in here needs to tangle to that target
  =
  :tangle ./early-init.el :mkdirp yes
  =
- 
+
 ** Reminder to edit this file
 
 #+begin_src emacs-lisp :tangle ./early-init.el :mkdirp yes
@@ -32,7 +32,7 @@ Each emacs-lisp section in here needs to tangle to that target
   ;; Dont edit this file, edit Emacs.org
   ;;
   ;;
-  
+
 #+end_src
 
 ** Debug during startup
@@ -186,7 +186,7 @@ Actually, we want both
 
 
 * Init
- 
+
 The rest of this file generates [[file:init.el][init.el]]
 
 This is basically my versions of David Wilsons Emacs from scratch
@@ -256,7 +256,7 @@ It's also useful in termux because the ESC key is visible at all times
   ;; Make ESC quit prompts
   ;;
   (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
-  
+
 
 #+end_src
 **** Alt-TAB to switch buffer
@@ -296,7 +296,7 @@ Force load the enviornment defaults from ~/etc/env
 #+begin_src emacs-lisp
   ;;
   ;; Load environment defaults
-  ;; 
+  ;;
   (dolist (file (directory-files "~/etc/env" t "\\.env$"))
     (with-temp-buffer
       (insert-file-contents file)
@@ -309,7 +309,7 @@ Force load the enviornment defaults from ~/etc/env
           (setenv var value)))))
 
         #+end_src
-** Usability 
+** Usability
 *** GUI stuff
 This that only matter if we are not in a terminal
 
@@ -318,11 +318,11 @@ This that only matter if we are not in a terminal
 
   ;;
   ;; Disable GUI elements
-  ;; 
+  ;;
   (when (display-graphic-p)
     (set-fringe-mode 10)       ; Give some breathing room
     (tooltip-mode -1)           ; Disable tooltips
-    ) 
+    )
 
   (scroll-bar-mode -1)        ; Disable visible scrollbar
   (tool-bar-mode -1)          ; Disable the toolbar
@@ -539,7 +539,7 @@ Load packages from the git-install directory first
 #+end_src
 
 ** Themes and eye-candy
-Here goes stuff that has to do with look 
+Here goes stuff that has to do with look
 
 *** All the icons
 #+begin_src emacs-lisp
@@ -566,7 +566,7 @@ Use a pretty modeline instead of the default one
 #+end_src
 
 *** Theme
-**** Doom theme
+**** Doom taheme
 Use a doom theme instead of a normal emacs theme since it covers more modes
 
 #+begin_src emacs-lisp
@@ -624,7 +624,7 @@ Swiper is the search document function bound to C-s
     :diminish
     :bind (("C-s" . swiper)
            :map ivy-minibuffer-map
-           ("TAB" . ivy-alt-done)	
+           ("TAB" . ivy-alt-done)
            ("C-l" . ivy-alt-done)
            ("C-j" . ivy-next-line)
 
@@ -715,7 +715,7 @@ This is really good. I think this the emacs package I have the most help from
     :diminish which-key-mode
     :config
 
-    ;; Time before popup	 
+    ;; Time before popup
     (setq which-key-idle-delay 0.25))
 
 #+end_src
@@ -742,7 +742,7 @@ NOTE: Do I really use this?
   ;;   (general-create-definer emf/leader-keys
   ;;     :keymaps '(normal insert visual emacs)
   ;;     :prefix "RET"
-  ;;     :global-prefix "C-RET"))  
+  ;;     :global-prefix "C-RET"))
 
 
 #+end_src
@@ -844,7 +844,7 @@ Cant find the package
 
 #+end_src
 
-** ORG Mode 
+** ORG Mode
 The almighty org mode life, stuff and everything organizer
 https://orgmode.org/
 *** Debugging org mode
@@ -940,7 +940,7 @@ conf still feels clunky
   				   (todo . " %i ")
   				   (tags . " %i ")
   				   (search . " %i ")))
-    
+
     ;;
     ;; Configure custom agenda views
     ;;
@@ -1029,7 +1029,7 @@ conf still feels clunky
     (let ((side-window-agenda (if (and (boundp 'emf/side-window-agenda)
                                        (window-live-p emf/side-window-agenda))
                                   emf/side-window-agenda
-                                nil)))  
+                                nil)))
       (if side-window-agenda
           (progn
             (delete-window side-window-agenda)
@@ -1087,7 +1087,7 @@ Enables templeate expansion of <el TAB to an emacs-lisp code section
 
   ;;
   ;; Adding source code block templates
-  ;; 
+  ;;
 
   (require 'org-tempo)
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
@@ -1100,7 +1100,7 @@ Enables templeate expansion of <el TAB to an emacs-lisp code section
 #+end_src
 
 *** Indentation in code blocks
-Make tab in code blocks behave like it's respective major mode 
+Make tab in code blocks behave like it's respective major mode
 
 #+begin_src emacs-lisp
 
@@ -1153,7 +1153,7 @@ My capture template includes a link section for external links (like wikipedia)
              :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+author: E.M. From\n#+startup: overview\n#+date: %U\n#+title: ${title}")
              :unnarrowed t)
             ))
-    
+
     (setq org-link-frame-setup
           '((file . find-file)        ;; Open files in the same window
             (default . same-window))) ;; Default behavior is to open in the same window
@@ -1167,7 +1167,7 @@ My capture template includes a link section for external links (like wikipedia)
   	(lambda ()
   	  (not (member "drill" (org-get-tags)))))
 
-    
+
     ;; Fire up roam
     (org-roam-setup)
 
@@ -1183,7 +1183,7 @@ My capture template includes a link section for external links (like wikipedia)
     ;; Turn autosync on after the re-check so we dont run modified date on the file
     (org-roam-db-autosync-mode)
 
-    
+
     ;; Apply 'overview' setting specifically to org-roam buffers
     ;;
     (add-hook 'org-roam-find-file-hook
@@ -1218,7 +1218,7 @@ My capture template includes a link section for external links (like wikipedia)
     ;; Turn word under point into the corresponding roam node
     ;;
     (defun emf/insert-org-roam-link ()
-      "Insert an Org-roam link for the word under the cursor after removing it. 
+      "Insert an Org-roam link for the word under the cursor after removing it.
   The link title is the original word, while the node lookup is case-insensitive."
       (interactive)
       (let ((word (thing-at-point 'word t)))  ;; Get the word at point
@@ -1259,7 +1259,7 @@ I use a list of directories so I can change it by adding the following to =.dir-
 ((org-mode . ((eval . (add-to-list 'emf/org-babel-autotangle-dirs (file-name-directory (or load-file-name buffer-file-name)))))))
 
 The default auto-tangle are my dotfiles directory and emacs directory
-  
+
 #+begin_src emacs-lisp
 
   ;; Define a customizable list for directories to tangle automatically
@@ -1281,7 +1281,7 @@ The default auto-tangle are my dotfiles directory and emacs directory
   (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'emf/org-babel-tangle-config)))
 
 
-  ;; These help with auto tangling in some cases 
+  ;; These help with auto tangling in some cases
   ;; (setq org-babel-min-lines-for-block-output 0)
   ;; (setq max-buffer-size (* 1024 1024 1024))
 
@@ -1291,14 +1291,14 @@ The default auto-tangle are my dotfiles directory and emacs directory
 *** org-drill
 Use org-drill to study repetitive facts. I add them as a "Flashcard" heading with a :drill: tag
 
-Have altered the way org-drill-scope is set and added the two advice functions to open all roam files and 
+Have altered the way org-drill-scope is set and added the two advice functions to open all roam files and
 
 [[id:82f67afe-241c-4385-8164-8de40e69c57a][org-drill]]
 
 #+begin_src emacs-lisp
 
   ;;
-  ;; Org-drill for flashcard spaced repetition 
+  ;; Org-drill for flashcard spaced repetition
   ;;
   (use-package org-drill
     :after org-roam
@@ -1313,7 +1313,7 @@ Have altered the way org-drill-scope is set and added the two advice functions t
   ;; To get the cache to load properly and org-drill work, open all the buffers
   ;;  that has :drill: tags in the org roam directory
   ;; This function now set's the scope variabel as well so that new entries are included
-  ;; 
+  ;;
   (defun emf/org-drill-open-all-roam-files ()
     "Open all .org files in the ~/opt/org-mode/roam/ directory and close those without :drill:. Set org-drill-scope to the valid files."
     (let ((drill-files '()))
@@ -1335,7 +1335,7 @@ Have altered the way org-drill-scope is set and added the two advice functions t
     "Save and close all buffers that point to files in the ~/opt/org-mode/roam/ directory."
     (dolist (buffer (buffer-list))
       (when (and (buffer-file-name buffer)
-                 (string-prefix-p (expand-file-name "~/opt/org-mode/roam/") 
+                 (string-prefix-p (expand-file-name "~/opt/org-mode/roam/")
                                   (expand-file-name (buffer-file-name buffer))))
         (with-current-buffer buffer
           (save-buffer)
@@ -1414,7 +1414,7 @@ Everything else goes into the gnus-secondary-select-methods list
   (setq gnus-home-directory "~/etc/emacs/gnus/")
   (setq smime-certificate-directory "~/etc/emacs/gnus/mail/certs/")
   (setq smtpmail-queue-dir "~/etc/emacs/gnus/mail/queued-mail/")
-  (setq gnus-internal-registry-spool-current-method 
+  (setq gnus-internal-registry-spool-current-method
         '(nnfolder "archive"
   		 (nnfolder-directory nnfolder-directory)
   		 (nnfolder-active-file nnfolder-active-file)
@@ -1454,7 +1454,7 @@ Everything else goes into the gnus-secondary-select-methods list
                         (nnimap-authinfo-file "~/etc/authinfo.gpg")))
 
   ;; Old yahoo
-  ;; 
+  ;;
   ;; (add-to-list 'gnus-secondary-select-methods
   ;;              '(nnimap "Yahoo"
   ;;                       (nnimap-address "imap.mail.yahoo.com")
@@ -1524,7 +1524,7 @@ M-/ comments out the line
   ;;
   ;; Evil nerd commenting, bound to M-/
   ;;
-  (use-package evil-nerd-commenter	
+  (use-package evil-nerd-commenter
     :bind ("M-/" . evilnc-comment-or-uncomment-lines))
 
 #+end_src
@@ -1581,7 +1581,7 @@ LSP Mode to connect to language servers like clangd
   	("<tab>" . company-complete-selection)
   	("TAB" . company-complete-selection)  ; Ensure Tab key works in different terminals
           ("RET" . nil) ;; Unbind Enter to prevent completion acceptance
-  	("<return>" . nil)) 
+  	("<return>" . nil))
     (:map lsp-mode-map
   	("<tab>" . (lambda ()
                        (interactive)
@@ -1598,7 +1598,7 @@ LSP Mode to connect to language servers like clangd
     (with-eval-after-load 'company
       (define-key company-active-map (kbd "<tab>") 'company-complete-selection)
       (define-key company-active-map (kbd "TAB") 'company-complete-selection)))
-    
+
 
   ;; Ensure the required packages are installed
 
@@ -1654,7 +1654,7 @@ A mode for coding in rust
               (lambda () (prettify-symbols-mode)))
 
     ;; Tell lsp to fire up
-    (add-hook 'rust-mode-hook #'lsp)) 
+    (add-hook 'rust-mode-hook #'lsp))
 
 
   ;; Make sure rust is in path
@@ -1697,9 +1697,9 @@ GNU version of scheme
     :config
     ;; Set Geiser implementation
     (setq geiser-active-implementations '(guile)))
-  
 
-       
+
+
 #+end_src
 
 ** Productivity tools
@@ -1721,10 +1721,10 @@ NOTE: How to make it better at restoring a saved session
     (setq pomidor-seconds 1800)
     (setq pomido-break-seconds 600)
     (setq pomidor-long-break 1200)
-         
+
     :bind
         :bind ("<f12>" . pomidor))
-    
+
 
   ;;(add-hook 'kill-emacs-hook 'pomidor-save-session)
   ;; how to remove interactive, how to load the session
@@ -1809,7 +1809,7 @@ Dired is a built-in file manager for Emacs that does some pretty amazing things!
 - =*= - Lots of other auto-marking functions
 - =k= / =K= - "Kill" marked items (refresh buffer with =g= / =g r= to get them back)
 - Many operations can be done on a single file if there are no active marks!
- 
+
 ***** Copying and Renaming files
 
 - =C= - Copy marked files (or if no files are marked, the current file)
@@ -1844,7 +1844,7 @@ Dired is a built-in file manager for Emacs that does some pretty amazing things!
 
 **** Configuration
 
-Based on David wilson and Matthew Graybosch 
+Based on David wilson and Matthew Graybosch
 
 #+begin_src emacs-lisp
     (use-package dired
@@ -1868,8 +1868,8 @@ Based on David wilson and Matthew Graybosch
       	  dired-clean-up-buffers-too t))
 
   ;;    (bind-key "q"
-   ;; 	      (lambda () 
-    		  ;; (interactive) 
+   ;; 	      (lambda ()
+    		  ;; (interactive)
     		  ;; (kill-buffer (current-buffer))
     		  ;; dired-mode-map)))
 
@@ -1916,8 +1916,8 @@ Testing out persistent scratch buffer
 
 #+begin_src emacs-lisp
   ;;
-  ;; persistent scratch buffer 
-  ;; 
+  ;; persistent scratch buffer
+  ;;
 
 
   (setq scratch-file "~/etc/emacs/scratch") ; Set the file to save the scratch buffer.
@@ -2018,18 +2018,18 @@ Hate hitting insert by mistake, worse than caps-lock
 **** Kill buffer(s)
 #+begin_src emacs-lisp
 
-  ;; Kill buffer and window 
-  (global-set-key (kbd "s-k") 
-  		(lambda () 
-  		  (interactive) 
-  		  (kill-buffer (current-buffer)) 
+  ;; Kill buffer and window
+  (global-set-key (kbd "s-k")
+  		(lambda ()
+  		  (interactive)
+  		  (kill-buffer (current-buffer))
   		  (unless (one-window-p)
   		    (delete-window))))
 
   ;; Kill buffer
-  (global-set-key (kbd "C-c k") 
-  		(lambda () 
-  		  (interactive) 
+  (global-set-key (kbd "C-c k")
+  		(lambda ()
+  		  (interactive)
   		  (kill-buffer (current-buffer))))
 
   ;; Normal ibuffer killing
@@ -2037,7 +2037,7 @@ Hate hitting insert by mistake, worse than caps-lock
 
 #+end_src
 
-*** Server 
+*** Server
 This is the client-server model for emacs.
 
 #+begin_src emacs-lisp
@@ -2062,7 +2062,7 @@ This is the client-server model for emacs.
 *** Show on startup
 What to show at startup
 
-This has be come the catch all place where I dump all the "last moment" stuff and things I'm trying out. 
+This has be come the catch all place where I dump all the "last moment" stuff and things I'm trying out.
 
 Haha, I'm not running windows anymore :)
 //This takes a long time, a very long time. About 5-10s, but it's worth it otherwise I would never look at the thing. The other views like todos take about the same time, it's the opening, collating and extracting info from the org files that takes time.//
@@ -2174,7 +2174,7 @@ Stuff to launch (old-fashioned way)
   protonmail-brige &> /dev/null &
 
   # Maybe dropbox?
-  
+
 
 
 
@@ -2183,7 +2183,7 @@ Stuff to launch (old-fashioned way)
 
 *** startup
 #+begin_src shell :tangle ./exwm/start-exwm.sh :mkdirp yes
-  #!/bin/bash 
+  #!/bin/bash
   #
   # Script to launch EXWM from emacs
   # Auto-generated from Emacs.org (do not edit)
@@ -2202,7 +2202,7 @@ Stuff to launch (old-fashioned way)
   	while IFS= read -r line ; do
   	    # Ignore empty lines and comments
   	    [[ -z "$line" || "$line" =~ ^# ]] && continue
-  	    
+
   	    # Check if the line is in the format XXX=yyy
   	    if [[ "$line" =~ ^([a-zA-Z_][a-zA-Z0-9_]*)=(.*)$ ]] ; then
   		export "$line"
@@ -2269,7 +2269,7 @@ Run applications or such after exwm-init
      (start-process-shell-command "pasystray" nil "pasystray")
      (start-process-shell-command "nm-applet" nil "nm-applet")
 
-     
+
      ;; Make workspace 1 be the one where we land at startup
      (exwm-workspace-switch-create 1)
 
@@ -2296,7 +2296,7 @@ Not using this, it crashes emacs for some reason
 
  #+end_src
 
- 
+
 **** Buffer names
 Changes the name in the buffer list to the X class name of the window
 
@@ -2304,7 +2304,7 @@ Changes the name in the buffer list to the X class name of the window
    (defun efs/exwm-update-class ()
      (exwm-workspace-rename-buffer exwm-class-name))
  #+end_src
- 
+
 
 *** EXWM Proper
 Loads the exwm mode
@@ -2366,7 +2366,7 @@ Loads the exwm mode
             ;; Switch workspace
             ([?\s-w] . exwm-workspace-switch)
 
-            ;; Workspace 0 on s-` 
+            ;; Workspace 0 on s-`
             ([?\s-`] . (lambda () (interactive)
                          (exwm-workspace-switch-create 0)))
 
@@ -2419,4 +2419,3 @@ Loads the exwm mode
        (desktop-environment-brightness-normal-decrement "5%-"))
 
 #+end_src
-       
