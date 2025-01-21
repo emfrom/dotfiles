@@ -425,7 +425,7 @@ TODO Why do I have to explicitly check that it's the scratch buffer? Should retu
     (when (and (not (minibufferp))
                (buffer-modified-p)
                (buffer-file-name (current-buffer))
-;;               (not (string= (buffer-string) ""))  
+;;               (not (string= (buffer-string) ""))  <- What did I think here, makes no sense
                (not (string= (buffer-name) "*scratch*")))  ;; Exclude *scratch*
       (save-buffer)))
 
