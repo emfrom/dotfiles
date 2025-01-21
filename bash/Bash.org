@@ -392,6 +392,15 @@ Also, add the current directory to the end of the path. (this is unsafe if you d
   export PATH=$PATH:.
 
 #+end_src
+
+*** Haskell path
+#+begin_src shell :tangle ./bashrc :mkdirp yes
+
+  if [[ ! -z $GHCUP_INSTALL_BASE_PREFIX ]] ; then
+    export PATH=$PATH:$GHCUP_INSTALL_BASE_PREFIX/.ghcup/bin
+  fi
+
+#+end_src
 ** Source helper files
 Load the content of the helper files
 
