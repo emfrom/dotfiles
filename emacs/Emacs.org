@@ -2422,3 +2422,12 @@ Loads the exwm mode
        (desktop-environment-brightness-normal-decrement "5%-"))
 
 #+end_src
+
+*** Enable clipboard
+#+begin_src emacs-lisp
+;; Use the clipboard for cut, copy, and paste
+(setq select-enable-clipboard t)
+(setq select-enable-primary t)
+
+
+#+end_src
