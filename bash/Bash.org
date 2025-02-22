@@ -1550,7 +1550,7 @@ For some reason -B doesnt always work, so I added an --ignore=*~
   # top / htop
   #
   if command -v htop &> /dev/null ; then
-      alias top=htop
+      alias top='htop --sort-key=PERCENT_NORM_CPU'
   fi
 #+end_src
 ** which
