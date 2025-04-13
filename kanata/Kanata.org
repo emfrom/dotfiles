@@ -78,7 +78,7 @@ The mapping of the meny key (ralt here) to Hyper is done via xmodmap
      grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
     @tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
     @caps @a   @s   @d   @f   @g   h    @j   @k   @l   @;    '   ret
-     @nav z    x    c    v    b    n    m    ,    .    /    @nav
+    lsft z    x    c    v    b    n    m    ,    .    /    rsft
      lctl lmet ret           spc            @game rmet rctl
    )
 
@@ -101,7 +101,7 @@ The mapping of the meny key (ralt here) to Hyper is done via xmodmap
      )
 
 
-  
+
 #+end_src
 QWFPBJLUY;[]
 
