@@ -11,7 +11,7 @@ Currently loaded by bashrc, emacs init.el and nu.env
   # Dont edit this file, edit Environment.org
   
   PAGER=less
-  EDITOR=emacs
+  EDITOR=emacsclient -nw
 #+end_src
 
 * Rust
@@ -78,20 +78,19 @@ LC_MEASUREMENT=metric might now be supported everywhere
   #
   # Load enivronment defaults
   #
+
   for file in *.env ; do
-      if [[ -f $file ]] ; then
-  	while IFS= read -r line ; do
-  	    # Ignore empty lines and comments
-  	    [[ -z "$line" || "$line" =~ ^# ]] && continue
-  	    
-  	    # Check if the line is in the format XXX=yyy
-  	    if [[ "$line" =~ ^([a-zA-Z_][a-zA-Z0-9_]*)=(.*)$ ]] ; then
-  		export "$line"
-  	    else
-  		echo "Ignored malformatted line: $line"
-  	    fi
-  	done < "$file"
-      fi
+      [[ -f $file ]] || continue
+      while IFS= read -r line ; do
+  	# Ignore empty lines and comments
+          [[ -z "$line" || "$line" =~ ^# ]] && continue
+
+          if [[ "$line" =~ ^[a-zA-Z_][a-zA-Z0-9_]*=(.*)$ ]]; then
+              eval "export $line"
+          else
+              echo "Ignored malformatted line: $line"
+          fi
+      done < "$file"
   done
 
 #+end_src
