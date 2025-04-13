@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Directory to work in
-DIR="~/opt/org-mode"
+DIR="$HOME/opt/org-mode"
 
 # Navigate to the directory
 cd "$DIR" || exit
