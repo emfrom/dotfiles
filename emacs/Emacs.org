@@ -1458,14 +1458,13 @@ Everything else goes into the gnus-secondary-select-methods list
 
   ;; Old yahoo
   ;;
-  ;; (add-to-list 'gnus-secondary-select-methods
-  ;;              '(nnimap "Yahoo"
-  ;;                       (nnimap-address "imap.mail.yahoo.com")
-  ;;                       (nnimap-server-port 993)
-  ;;                       (nnimap-stream ssl)
-  ;;                       (nnimap-authinfo-file "~/etc/authinfo.gpg")
-  ;;   		    (nnimap-inbox "Inbox")))
-
+  (add-to-list 'gnus-secondary-select-methods
+               '(nnimap "Yahoo"
+                        (nnimap-address "imap.mail.yahoo.com")
+                        (nnimap-server-port 993)
+                        (nnimap-stream ssl)
+                        (nnimap-authinfo-file "~/etc/authinfo.gpg")
+    		    (nnimap-inbox "Inbox")))
 
   ;; RSS reader
   ;;
@@ -1475,6 +1474,14 @@ Everything else goes into the gnus-secondary-select-methods list
                '(nnrss "RSS"
                        (nnrss-directory "~/etc/emacs/gnus/rss") ;; Directory to store RSS feeds
                        (nnrss-use-rss-cache t))) ;; Use caching for feeds
+  (setq nnrss-articles-file "~/etc/emacs/etc/gnus/nnrss-articles")
+;;  (setq gnus-activate-level 2)
+  
+  ;; Save info
+  ;;
+  (setq gnus-save-newsrc-file t)
+  (setq gnus-read-newsrc-file t)
+  (setq gnus-use-dribble-file t)
 
 
 #+end_src
