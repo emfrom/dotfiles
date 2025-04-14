@@ -11,7 +11,7 @@ Currently loaded by bashrc, emacs init.el and nu.env
   # Dont edit this file, edit Environment.org
   
   PAGER=less
-  EDITOR=emacsclient -nw
+  EDITOR=emacsclient
 #+end_src
 
 * Rust
