@@ -245,10 +245,10 @@ Is needed for no littering and also nice to do
 
   (define-key key-translation-map (kbd "<pause>") (kbd "C-c"))
 #+end_src
-**** ESC always quits
+**** ESC/C-g always quits
 This is useful for other modes like evil mode
 
-It's also useful in termux because the ESC key is visible at all times
+It also causes less problems in EXWM
 
 #+begin_src emacs-lisp
 
@@ -256,7 +256,7 @@ It's also useful in termux because the ESC key is visible at all times
   ;; Make ESC quit prompts
   ;;
   (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
-
+  (global-set-key (kbd "C-g") 'keyboard-escape-quit)
 
 #+end_src
 **** Alt-TAB to switch buffer
