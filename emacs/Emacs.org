@@ -1639,12 +1639,24 @@ I dont load lsp manually anymore, that seems to solve the problem
   ;;
   ;; Haskell mode
   ;;
+
+  ;; Custom save and reload function
+  ;;  behaves just like save-buffer if haskell things are not in order
+  (defun emf/haskell-save-and-reload ()
+    "Save buffer and, if in Haskell mode, reload the REPL."
+    (interactive)
+    (save-buffer)
+    (when (and (eq major-mode 'haskell-mode)
+               (fboundp 'haskell-process-load-file)) ; How was I thinking here?
+      (haskell-process-load-file)))
+
   (use-package haskell-mode
     :ensure t
     :hook
     (haskell-mode . interactive-haskell-mode)
 
     :config
+    
     ;; Check if ghcup bin directory is already in the PATH
     ;;  , add it if not
     (let ((ghcup-bin "/home/emfrom/opt/haskell/.ghcup/bin"))
@@ -1656,36 +1668,17 @@ I dont load lsp manually anymore, that seems to solve the problem
       (unless (member ghcup-bin exec-path)
         (add-to-list 'exec-path ghcup-bin)))
 
-    ;; Custom save and reload function
-    ;;  behaves just like save-buffer if haskell things are not in order
-    (defun emf/haskell-save-and-reload ()
-      "Save buffer and, if in Haskell mode, reload the REPL."
-      (interactive)
-      (save-buffer)
-      (when (and (eq major-mode 'haskell-mode)
-                 (fboundp 'haskell-process-load-file)) ; How was I thinking here?
-        (haskell-process-load-file)))
 
-    (defun haskell-setup-repl-window ()
-      "Open or focus Haskell REPL in a window to the right of the source."
-      (interactive)
-      (let ((repl-buffer (haskell-session-interactive-buffer (haskell-session))))
-        (unless (get-buffer-window repl-buffer)
-  	(split-window-right))
-        (let ((repl-window (display-buffer-in-side-window repl-buffer '((side . right)))))
-  	(select-window (get-mru-window nil nil t))))
+    ;; Config haskell-mode 
+    (setq haskell-process-type 'cabal-repl
+  	haskell-process-auto-import-loaded-modules t
+  	haskell-process-log t
+  	haskell-process-use-presentation-mode nil
+  	haskell-interactive-popup-errors nil)
+    
+    :bind (:map haskell-mode-map
+                ("C-x C-s" . emf/haskell-save-and-reload)))
 
-      ;; Configuration
-      (setq haskell-process-type 'cabal-repl
-  	  haskell-process-auto-import-loaded-modules t
-  	  haskell-process-log t
-  	  haskell-process-use-presentation-mode nil
-  	  haskell-interactive-popup-errors nil)
-
-      :bind (:map haskell-mode-map
-  		("C-x C-s" . emf/haskell-save-and-reload)
-  		("C-c h s" . emf/haskell-save-and-reload)
-  		("C-c h r" . emf/haskell-setup-repl-window))))
 
 #+end_src
 
