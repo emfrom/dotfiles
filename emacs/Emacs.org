@@ -35,6 +35,20 @@ Each emacs-lisp section in here needs to tangle to that target
 
 #+end_src
 
+** Path
+
+#+begin_src emacs-lisp :tangle ./early-init.el :mkdirp yes
+  ;;
+  ;; Make sure home bin is in path
+  ;;
+  (let ((home-bin "/home/emfrom/bin"))
+    (unless (string-match-p (regexp-quote home-bin) (getenv "PATH"))
+      (setenv "PATH" (concat home-bin ":" (getenv "PATH"))))
+    (unless (member home-bin exec-path)
+      (add-to-list 'exec-path home-bin)))
+#+end_src
+
+
 ** Debug during startup
 
 From https://github.com/opsnull/emacs/blob/master/early-init.el
