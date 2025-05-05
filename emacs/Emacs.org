@@ -1597,14 +1597,24 @@ LSP Mode to connect to language servers like clangd
 
 #+end_src
 
-*** Electric mode
+*** Parenthesis
+**** Electric mode
 #+begin_src emacs-lisp
 ;;
 ;; Enable matching () {} [] insertion
 ;;
-(electric-pair-mode 1)
+;;(electric-pair-mode 1)
 
-#+end_src>
+#+end_src
+**** Paredit
+#+begin_src emacs-lisp
+(use-package paredit
+  :ensure t
+  :hook ((emacs-lisp-mode . paredit-mode)
+         (scheme-mode . paredit-mode)
+         (clojure-mode . paredit-mode)))
+#+end_src
+         
 *** Company
 #+begin_src emacs-lisp
   (use-package company
@@ -1779,7 +1789,6 @@ GNU version of scheme
 
 
 #+end_src
-
 ** Productivity tools
 Things that make life easier
 
