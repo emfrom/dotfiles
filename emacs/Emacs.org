@@ -867,7 +867,8 @@ Emacs builtin recently opened files system
 #+begin_src emacs-lisp
 (recentf-mode 1)
 (setq recentf-max-saved-items 1024)
-(global-set-key (kbd "C-c C-f") 'recentf-open-files)```
+(global-set-key (kbd "C-c C-f") 'recentf-open-files)
+
 #+end_src
 
 ** ORG Mode
