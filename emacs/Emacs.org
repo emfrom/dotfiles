@@ -393,6 +393,7 @@ Make it easier to answer questions.
 
 
 *** Save what we are doing
+
 **** Sessions
 
 #+begin_src emacs-lisp
@@ -422,6 +423,7 @@ From: Sasha Chua https://github.com/sachac/.emacs.d/blob/gh-pages/Sacha.org
 
 #+end_src
 **** Backups
+
 This stops backup files and auto-save files from piling up everywhere
 
 The no-littering package takes care of the rest
