@@ -1543,22 +1543,6 @@ I actually understand this one
   (bind-key "C-c m" 'magit-status global-map)
 #+end_src
 
-*** Rainbow delimiters
-Make emacs lisp more readable by coloring the parenthesis
-
-Note: Not sure this helps me very much
-#+begin_src emacs-lisp
-
-  ;;
-  ;; Rainbow delimiters for emacs lisp
-  ;;
-  (use-package rainbow-delimiters
-    :hook (prog-mode . rainbow-delimiters-mode))
-
-#+end_src
-**** TODO Maybe I can change the colors
-not high prio, but it would be nice if it could be done
-
 *** Commenting
 Better commenting
 
@@ -1620,13 +1604,34 @@ LSP Mode to connect to language servers like clangd
 #+end_src
 **** Paredit
 #+begin_src emacs-lisp
-(use-package paredit
-  :ensure t
-  :hook ((emacs-lisp-mode . paredit-mode)
-         (scheme-mode . paredit-mode)
-         (clojure-mode . paredit-mode)))
+  ;;
+  ;; Paredit
+  ;; 
+    (use-package paredit
+      :ensure t
+      :hook ((emacs-lisp-mode . paredit-mode)
+             (scheme-mode . paredit-mode)
+             (clojure-mode . paredit-mode))
+      :bind (("C-c p" . paredit-mode)))
+    
 #+end_src
          
+**** Rainbow delimiters
+Make emacs lisp more readable by coloring the parenthesis
+
+Note: Not sure this helps me very much
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Rainbow delimiters for emacs lisp
+  ;;
+  (use-package rainbow-delimiters
+    :hook (prog-mode . rainbow-delimiters-mode))
+
+#+end_src
+***** TODO Maybe I can change the colors
+not high prio, but it would be nice if it could be done
+
 *** Company
 #+begin_src emacs-lisp
   (use-package company
