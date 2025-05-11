@@ -618,6 +618,16 @@ Just to keep gnus from littering all over the place
       eval "$(zoxide init --cmd cd bash)"
   fi
 #+end_src
+*** python venv
+Use a per user venv for python
+ubuntu package management for python is an absolute nightmare
+
+#+begin_src shell :tangle ./bashrc :mkdirp yes
+if [ -f  $HOME/opt/python/bin/activate  ] ; then
+  source $HOME/opt/python/bin/activate
+fi 
+#+END_SRC
+
 ** Prompt
 *** Static prompt
 This is the static part of setting the prompt
