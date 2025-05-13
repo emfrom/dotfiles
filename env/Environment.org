@@ -12,7 +12,8 @@ Currently loaded by bashrc, emacs init.el and nu.env
 
   PAGER=less
   EDITOR=emacsclient
-  LD_LIBRARY_PATH=$HOME/lib:/usr/local/lib
+  LD_LIBRARY_PATH=/usr/local/lib
+
 #+end_src
 
 * Rust
