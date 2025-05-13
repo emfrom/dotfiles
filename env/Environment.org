@@ -9,9 +9,10 @@ Currently loaded by bashrc, emacs init.el and nu.env
 * Shell
 #+begin_src shell :tangle ./shell.env
   # Dont edit this file, edit Environment.org
-  
+
   PAGER=less
   EDITOR=emacsclient
+  LD_LIBRARY_PATH=$HOME/lib:/usr/local/lib
 #+end_src
 
 * Rust
