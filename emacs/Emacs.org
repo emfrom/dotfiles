@@ -1680,8 +1680,34 @@ not high prio, but it would be nice if it could be done
   (add-hook 'after-init-hook #'global-flycheck-mode)
 #+end_src
 
-*** Languages
+*** Languagaes
 
+**** Python
+#+begin_src emacs-lisp
+  ;;
+  ;; Python
+  ;; 
+  ;; Skeleton only setup to get lsp servers to autoinstall
+
+
+  (use-package pyvenv
+    :ensure t
+    :config
+    (pyvenv-activate "/home/emfrom/opt/python/bin"))
+
+
+    ;; ;; Check if python bin directory is already in the PATH
+    ;; ;;  , add it if not
+    ;; (let ((python-bin "/home/emfrom/opt/python/bin"))
+    ;;   (unless (string-match-p (regexp-quote python-bin) (getenv "PATH"))
+    ;;     (setenv "PATH" (concat python-bin ":" (getenv "PATH"))))
+
+    ;;   ;; Check if python bin directory is already in exec-path
+    ;;   ;;  ,add it if not
+    ;;   (unless (member python-bin exec-path)
+    ;;     (add-to-list 'exec-path python-bin)))
+
+#+end_src
 **** Haskell
 
 Does a lot of dancing to get Haskell, repl and lsp to work the way I want. LSP seems to break on updates somehow.
