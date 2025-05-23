@@ -1577,6 +1577,13 @@ LSP Mode to connect to language servers like clangd
     (lsp-headerline-breadcrumb-mode)
     :hook (lsp-mode . efs/lsp-mode-setup))
 
+  (with-eval-after-load 'lsp-mode
+  (add-to-list 'lsp-language-id-configuration
+               '(autoconf-mode . "autoconf")))
+(with-eval-after-load 'lsp-mode
+  (add-to-list 'lsp-language-id-configuration
+               '(makefile-automake-mode . "makefile")))
+
   (use-package lsp-ui
     :hook (lsp-mode . lsp-ui-mode))
 
