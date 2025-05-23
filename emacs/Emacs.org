@@ -452,13 +452,13 @@ TODO Why do I have to explicitly check that it's the scratch buffer? Should retu
 **** Window stuff
 
 #+begin_src emacs-lisp
-(defun emf/increase-current-window-width ()
-  (interactive)
-  (let ((current-width (window-total-width)))
-    (unless (one-window-p t)
-      (enlarge-window-horizontally (floor (* current-width 0.33))))))
+  (defun emf/increase-current-window-width ()
+    (interactive)
+    (let ((current-width (window-total-width)))
+      (unless (one-window-p t)
+        (enlarge-window-horizontally (floor (* current-width 0.33))))))
 
-(global-set-key (kbd "C-c `") 'emf/increase-current-window-width)
+  (global-set-key (kbd "C-c `") 'emf/increase-current-window-width)
 #+end_src
 
 ** Package managers
