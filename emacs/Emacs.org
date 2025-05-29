@@ -1643,40 +1643,45 @@ not high prio, but it would be nice if it could be done
 
 *** Company
 #+begin_src emacs-lisp
-  (use-package company
-    :after lsp-mode
-    :hook (prog-mode . company-mode)
-    :bind
-    (:map company-active-map
-  	("<tab>" . company-complete-selection)
-  	("TAB" . company-complete-selection)  ; Ensure Tab key works in different terminals
+
+  (defun emf/lsp-tab-handler ()
+    "Complete selection if company tooltip is visible, otherwise indent or complete."
+    (interactive)
+    (if (and (bound-and-true-p company-mode)
+             (company-tooltip-visible-p))
+        (company-complete-selection)
+      (company-indent-or-complete-common nil)))
+
+
+     (use-package company
+        :after lsp-mode
+        :hook (prog-mode . company-mode)
+        :bind
+        (:map company-active-map
           ("RET" . nil) ;; Unbind Enter to prevent completion acceptance
-  	("<return>" . nil))
-    (:map lsp-mode-map
-  	("<tab>" . (lambda ()
-                       (interactive)
-                       (if (company-tooltip-visible-p)
-  			 (company-complete-selection)
-                         (company-indent-or-complete-common)))))
-    :custom
-    (company-minimum-prefix-length 1)
-    (company-idle-delay 0.0))
+      	("<return>" . nil))
+        (:map lsp-mode-map
+      	("<tab>" . emf/lsp-tab-handler))
+        :custom
+        (company-minimum-prefix-length 1)
+        (company-idle-delay 0.0))
 
-  (use-package company-box
-    :hook (company-mode . company-box-mode)
-    :config
-    (with-eval-after-load 'company
-      (define-key company-active-map (kbd "<tab>") 'company-complete-selection)
-      (define-key company-active-map (kbd "TAB") 'company-complete-selection)))
+      (use-package company-box
+        :hook (company-mode . company-box-mode)
+        :config
+        (with-eval-after-load 'company
+          (define-key company-active-map (kbd "<tab>") 'company-complete-common-or-cycle)
+          (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
+  	(define-key company-active-map (kbd "<backtab>") #'company-complete-selection)))
 
 
-  ;; Ensure the required packages are installed
+      ;; Ensure the required packages are installed
 
-  ;; Activate company mode globally
-  (add-hook 'after-init-hook 'global-company-mode)
+      ;; Activate company mode globally
+      (add-hook 'after-init-hook 'global-company-mode)
 
-  ;; Enable company mode in scheme buffers
-  (add-hook 'scheme-mode-hook (lambda () (company-mode)))
+      ;; Enable company mode in scheme buffers
+      (add-hook 'scheme-mode-hook (lambda () (company-mode)))
 
 
 #+end_src
