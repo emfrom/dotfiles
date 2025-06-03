@@ -1692,7 +1692,25 @@ not high prio, but it would be nice if it could be done
   (add-hook 'after-init-hook #'global-flycheck-mode)
 #+end_src
 
-*** Languagaes
+*** Languages
+
+**** C
+
+
+#+begin_src emacs-lisp
+(defun emf/cc-style ()
+  (c-set-style "k&r")
+  (setq c-basic-offset 2)
+  (setq indent-tabs-mode nil)
+  (setq tab-width 2)
+  (c-set-offset 'do-while-closure 0)
+  (c-set-offset 'else-clause 0)
+  (c-set-offset 'arglist-intro 0)
+  (setq c-cleanup-list (remove 'comment-intro c-cleanup-list)))
+
+
+(add-hook 'c-mode-hook #'emf/cc-style)
+#+end_src 
 
 **** Python
 #+begin_src emacs-lisp
