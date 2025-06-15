@@ -741,6 +741,8 @@ I dont know why 2.0 cant be satisfied with the XDG directories but here we are
   # Guix user packages (installed via guix install)
   [ -f "$HOME/.guix-profile/etc/profile" ] && source "$HOME/.guix-profile/etc/profile"
 
+  export GUIX_LOCPATH="$HOME/.guix-profile/lib/locale"
+
 #+end_src
 * Bash logout
 This is a weird file, sourced only when a login shell exits
