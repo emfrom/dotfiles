@@ -876,6 +876,7 @@ Cant find the package
 #+end_src
 
 *** recentf
+
 Emacs builtin recently opened files system
 
 #+begin_src emacs-lisp
@@ -885,6 +886,21 @@ Emacs builtin recently opened files system
 
 #+end_src
 
+*** pdf-tools
+#+begin_src emacs-lisp
+  ;;
+  ;; pdf-tools for pdfs
+  ;; 
+  (use-package pdf-tools
+    :ensure t
+    :config
+    ;; Install and configure PDF Tools
+    (pdf-tools-install)
+
+    ;; Use pdf-view-mode for PDF files
+    (add-to-list 'auto-mode-alist '("\\.pdf\\'" . pdf-view-mode)))
+
+#+end_src
 ** ORG Mode
 The almighty org mode life, stuff and everything organizer
 https://orgmode.org/
