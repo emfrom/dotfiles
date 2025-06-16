@@ -1441,107 +1441,112 @@ Everything else goes into the gnus-secondary-select-methods list
 
 #+begin_src emacs-lisp
 
-  ;;
-  ;; GNUS for email and rss
-  ;;
-  (require 'gnus)
+    ;;
+    ;; GNUS for email and rss
+    ;;
+    (require 'gnus)
 
-  ;; Stops pointless confirmation prompts
-  ;;
-  (setq gnus-expert-user t)
-
-
-  ;; Keybinding to start gnus
-  ;;
-  (global-set-key (kbd "s-g") 'gnus)
-
-  ;; Always retry
-  (setq gnus-retry-on-startup t)
-
-  ;;
-  ;; Stopping gnus from making a ~/Mail directory
-  ;; (Most of this is probably not necessary)
-  ;;
-  (setq gnus-newsrc-file "~/etc/emacs/gnus/newsrc.eld")
-  (setq gnus-directory "~/etc/emacs/gnus/news/")
-  (setq gnus-home-directory "~/etc/emacs/gnus/")
-  (setq gnus-data-directory "~/etc/emacs/gnus/data/")
-  (setq gnus-cache-directory "~/opt/cache/gnus/")
-  (setq mail-source-directory "~/etc/emacs/gnus/mail/")
-  (setq nnmail-directory "~/etc/emacs/gnus/mail/")
-  (setq nnml-directory "~/etc/emacs/gnus/mail/")
-  (setq message-directory "~/etc/emacs/gnus/mail/")
-  (setq nnfolder-directory "~/etc/emacs/gnus/mail/archive/")
-  (setq nnfolder-nov-directory "~/etc/emacs/gnus/mail/archive/")
-  (setq nnfolder-active-file "~/etc/emacs/gnus/mail/archive/active")
-  (setq gnus-home-directory "~/etc/emacs/gnus/")
-  (setq smime-certificate-directory "~/etc/emacs/gnus/mail/certs/")
-  (setq smtpmail-queue-dir "~/etc/emacs/gnus/mail/queued-mail/")
-  (setq gnus-internal-registry-spool-current-method
-        '(nnfolder "archive"
-  		 (nnfolder-directory nnfolder-directory)
-  		 (nnfolder-active-file nnfolder-active-file)
-  		 (nnfolder-get-new-mail nil)
-  		 (nnfolder-inhibit-expiry t)))
+    ;; Stops pointless confirmation prompts
+    ;;
+    (setq gnus-expert-user t)
 
 
+    ;; Keybinding to start gnus
+    ;;
+    (global-set-key (kbd "s-g") 'gnus)
 
-  ;; Main email account <vertlaforet@protonmail.com
-  ;;
-  (setq gnus-select-method
-        '(nnimap "ProtonMail"
-                 (nnimap-address "127.0.0.1")     ;; IMAP address from Bridge
-                 (nnimap-server-port 1143)        ;; IMAP port from Bridge
-                 (nnimap-stream network)          ;; Network connection
-                 (nnimap-authinfo-file "~/etc/authinfo.gpg"))) ;; For secure login
+    ;; Always retry
+    (setq gnus-retry-on-startup t)
 
-  ;; With default SMTP
-  (setq send-mail-function 'smtpmail-send-it
-        message-send-mail-function 'smtpmail-send-it
-        smtpmail-smtp-server "127.0.0.1"          ;; SMTP address from Bridge
-        smtpmail-smtp-service 1025                ;; SMTP port from Bridge
-        smtpmail-stream-type 'plain
-        smtpmail-auth-credentials "~/etc/authinfo.gpg") ;; For secure login
+    ;;
+    ;; Stopping gnus from making a ~/Mail directory
+    ;; (Most of this is probably not necessary)
+    ;;
+    (setq gnus-newsrc-file "~/etc/emacs/gnus/newsrc.eld")
+    (setq gnus-directory "~/etc/emacs/gnus/news/")
+    (setq gnus-home-directory "~/etc/emacs/gnus/")
+    (setq gnus-data-directory "~/etc/emacs/gnus/data/")
+    (setq gnus-cache-directory "~/opt/cache/gnus/")
+    (setq mail-source-directory "~/etc/emacs/gnus/mail/")
+    (setq nnmail-directory "~/etc/emacs/gnus/mail/")
+    (setq nnml-directory "~/etc/emacs/gnus/mail/")
+    (setq message-directory "~/etc/emacs/gnus/mail/")
+    (setq nnfolder-directory "~/etc/emacs/gnus/mail/archive/")
+    (setq nnfolder-nov-directory "~/etc/emacs/gnus/mail/archive/")
+    (setq nnfolder-active-file "~/etc/emacs/gnus/mail/archive/active")
+    (setq gnus-home-directory "~/etc/emacs/gnus/")
+    (setq smime-certificate-directory "~/etc/emacs/gnus/mail/certs/")
+    (setq smtpmail-queue-dir "~/etc/emacs/gnus/mail/queued-mail/")
+    (setq gnus-internal-registry-spool-current-method
+          '(nnfolder "archive"
+    		 (nnfolder-directory nnfolder-directory)
+    		 (nnfolder-active-file nnfolder-active-file)
+    		 (nnfolder-get-new-mail nil)
+    		 (nnfolder-inhibit-expiry t)))
 
-  ;;
-  ;;   (setq gnus-secondary-select-methods nil)
-  ;;
 
-  ;; Gmail
-  ;;
+
+    ;; Main email account <vertlaforet@protonmail.com
+    ;;
+    (setq gnus-select-method
+          '(nnimap "ProtonMail"
+                   (nnimap-address "127.0.0.1")     ;; IMAP address from Bridge
+                   (nnimap-server-port 1143)        ;; IMAP port from Bridge
+                   (nnimap-stream network)          ;; Network connection
+                   (nnimap-authinfo-file "~/etc/authinfo.gpg"))) ;; For secure login
+
+    ;; With default SMTP
+    (setq send-mail-function 'smtpmail-send-it
+          message-send-mail-function 'smtpmail-send-it
+          smtpmail-smtp-server "127.0.0.1"          ;; SMTP address from Bridge
+          smtpmail-smtp-service 1025                ;; SMTP port from Bridge
+          smtpmail-stream-type 'plain
+          smtpmail-auth-credentials "~/etc/authinfo.gpg") ;; For secure login
+
+    ;;
+    ;;   (setq gnus-secondary-select-methods nil)
+    ;;
+
+    ;; Gmail
+    ;;
+    (add-to-list 'gnus-secondary-select-methods
+                 '(nnimap "Gmail"
+                          (nnimap-address "imap.gmail.com")
+                          (nnimap-server-port 993)
+                          (nnimap-stream ssl)
+                          (nnimap-authinfo-file "~/etc/authinfo.gpg")))
+
+    ;; Old yahoo
+    ;;
+    (add-to-list 'gnus-secondary-select-methods
+                 '(nnimap "Yahoo"
+                          (nnimap-address "imap.mail.yahoo.com")
+                          (nnimap-server-port 993)
+                          (nnimap-stream ssl)
+                          (nnimap-authinfo-file "~/etc/authinfo.gpg")
+      		    (nnimap-inbox "Inbox")))
+
+   ;; Local mail
   (add-to-list 'gnus-secondary-select-methods
-               '(nnimap "Gmail"
-                        (nnimap-address "imap.gmail.com")
-                        (nnimap-server-port 993)
-                        (nnimap-stream ssl)
-                        (nnimap-authinfo-file "~/etc/authinfo.gpg")))
-
-  ;; Old yahoo
-  ;;
-  (add-to-list 'gnus-secondary-select-methods
-               '(nnimap "Yahoo"
-                        (nnimap-address "imap.mail.yahoo.com")
-                        (nnimap-server-port 993)
-                        (nnimap-stream ssl)
-                        (nnimap-authinfo-file "~/etc/authinfo.gpg")
-    		    (nnimap-inbox "Inbox")))
-
-  ;; RSS reader
-  ;;
-  (require 'nnrss)
-  (setq nnrss-directory "~/etc/emacs/gnus/rss/")
-  (add-to-list 'gnus-secondary-select-methods
-               '(nnrss "RSS"
-                       (nnrss-directory "~/etc/emacs/gnus/rss") ;; Directory to store RSS feeds
-                       (nnrss-use-rss-cache t))) ;; Use caching for feeds
-  (setq nnrss-articles-file "~/etc/emacs/etc/gnus/nnrss-articles")
-;;  (setq gnus-activate-level 2)
+             '(nnmbox "local-mail"
+                      (nnmbox-mbox-file "/var/mail/emfrom")))
   
-  ;; Save info
-  ;;
-  (setq gnus-save-newsrc-file t)
-  (setq gnus-read-newsrc-file t)
-  (setq gnus-use-dribble-file t)
+    ;; RSS reader
+    ;;
+    (require 'nnrss)
+    (setq nnrss-directory "~/etc/emacs/gnus/rss/")
+    (add-to-list 'gnus-secondary-select-methods
+                 '(nnrss "RSS"
+                         (nnrss-directory "~/etc/emacs/gnus/rss") ;; Directory to store RSS feeds
+                         (nnrss-use-rss-cache t))) ;; Use caching for feeds
+    (setq nnrss-articles-file "~/etc/emacs/etc/gnus/nnrss-articles")
+  ;;  (setq gnus-activate-level 2)
+    
+    ;; Save info
+    ;;
+    (setq gnus-save-newsrc-file t)
+    (setq gnus-read-newsrc-file t)
+    (setq gnus-use-dribble-file t)
 
 
 #+end_src
