@@ -880,9 +880,18 @@ Cant find the package
 Emacs builtin recently opened files system
 
 #+begin_src emacs-lisp
-(recentf-mode 1)
-(setq recentf-max-saved-items 1024)
-(global-set-key (kbd "C-c C-f") 'recentf-open-files)
+   (use-package recentf
+     :ensure nil  ; recentf is built-in
+     :init
+     (setq recentf-max-saved-items 1024
+           recentf-auto-cleanup 'never
+           recentf-save-file (expand-file-name "var/recentf-save.el" user-emacs-directory))
+     :config
+     (recentf-mode 1)
+     (recentf-load-list)
+     (recentf-cleanup)
+     (advice-add 'recentf-add-file :after (lambda (&rest _) (recentf-save-list)))
+     (global-set-key (kbd "C-c f") #'recentf-open-files))
 
 #+end_src
 
@@ -1504,9 +1513,8 @@ Everything else goes into the gnus-secondary-select-methods list
           smtpmail-auth-credentials "~/etc/authinfo.gpg") ;; For secure login
 
     ;;
-    ;;   (setq gnus-secondary-select-methods nil)
-    ;;
-
+    (setq gnus-secondary-select-methods nil)
+    
     ;; Gmail
     ;;
     (add-to-list 'gnus-secondary-select-methods
