@@ -40,3 +40,6 @@
 	blame = blame -w -C -C -C
 [pull]
 	rebase = true
+[pager]
+	branch = false
+	core = false
