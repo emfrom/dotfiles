@@ -880,18 +880,29 @@ Cant find the package
 Emacs builtin recently opened files system
 
 #+begin_src emacs-lisp
-   (use-package recentf
-     :ensure nil  ; recentf is built-in
-     :init
+ 
+     (defvar emf/recentf-save-timer nil
+       "Timer for debounced saving of recentf list.")
+
+     (defun emf/debouncedf-save ()
+       "Debounced version of `recentf-save-list`."
+       (when emf/recentf-save-timer
+         (cancel-timer emf/recentf-save-timer))
+       (setq emf/recentf-save-timer
+             (run-with-timer 2 nil #'recentf-save-list)))
+  
      (setq recentf-max-saved-items 1024
            recentf-auto-cleanup 'never
            recentf-save-file (expand-file-name "var/recentf-save.el" user-emacs-directory))
-     :config
+
      (recentf-mode 1)
      (recentf-load-list)
      (recentf-cleanup)
-     (advice-add 'recentf-add-file :after (lambda (&rest _) (recentf-save-list)))
-     (global-set-key (kbd "C-c f") #'recentf-open-files))
+     (global-set-key (kbd "C-c f") #'recentf-open-files)
+
+     ;; Advice using lambda to absorb args
+     (advice-add 'recentf-add-file :after (lambda (&rest _) (emf/debouncedf-save)))
+
 
 #+end_src
 
