@@ -1380,53 +1380,106 @@ Have altered the way org-drill-scope is set and added the two advice functions t
 
 #+begin_src emacs-lisp
 
-  ;;
-  ;; Org-drill for flashcard spaced repetition
-  ;;
-  (use-package org-drill
-    :after org-roam
-    :config
-    (setq org-drill-maximum-items-per-session 20
-         	org-drill-interval-factor 2.5))
+    ;;
+    ;; Org-drill for flashcard spaced repetition
+    ;;
+    (use-package org-drill
+      :after org-roam
+      :config
+      (setq org-drill-maximum-items-per-session 20
+           	org-drill-interval-factor 2.5))
 
-  ;; Use the `org-roam-directory` variable for org-drill scope
-  ;; (setq org-drill-scope (directory-files-recursively "/home/emfrom/opt/org-mode/roam/" "\\.org$"))
+    ;; Use the `org-roam-directory` variable for org-drill scope
+    ;; (setq org-drill-scope (directory-files-recursively "/home/emfrom/opt/org-mode/roam/" "\\.org$"))
 
-  ;;
-  ;; To get the cache to load properly and org-drill work, open all the buffers
-  ;;  that has :drill: tags in the org roam directory
-  ;; This function now set's the scope variabel as well so that new entries are included
-  ;;
-  (defun emf/org-drill-open-all-roam-files ()
-    "Open all .org files in the ~/opt/org-mode/roam/ directory and close those without :drill:. Set org-drill-scope to the valid files."
-    (let ((drill-files '()))
-      (dolist (file (directory-files "~/opt/org-mode/roam/" t "\\.org$"))
-        (find-file file)
-        (if (save-excursion
-              (goto-char (point-min))
-              (search-forward ":drill:" nil t))
-            (push file drill-files)
-          (kill-buffer)))
-      (setq org-drill-scope drill-files)))
+    ;;
+    ;; To get the cache to load properly and org-drill work, open all the buffers
+    ;;  that has :drill: tags in the org roam directory
+    ;; This function now set's the scope variabel as well so that new entries are included
+    ;;
+    (defun emf/org-drill-open-all-roam-files ()
+      "Open all .org files in the ~/opt/org-mode/roam/ directory and close those without :drill:. Set org-drill-scope to the valid files."
+      (let ((drill-files '()))
+        (dolist (file (directory-files "~/opt/org-mode/roam/" t "\\.org$"))
+          (find-file file)
+          (if (save-excursion
+                (goto-char (point-min))
+                (search-forward ":drill:" nil t))
+              (push file drill-files)
+            (kill-buffer)))
+        (setq org-drill-scope drill-files)))
 
-  (advice-add 'org-drill :before #'emf/org-drill-open-all-roam-files)
-  ;;
-  ;; Close all roam buffers
-  ;; This is of course a bit dangerous but it works. I only drill once or twice per day, GEFN
-  ;;
-  (defun emf/org-drill-save-and-close-roam-buffers ()
-    "Save and close all buffers that point to files in the ~/opt/org-mode/roam/ directory."
-    (dolist (buffer (buffer-list))
-      (when (and (buffer-file-name buffer)
-                 (string-prefix-p (expand-file-name "~/opt/org-mode/roam/")
-                                  (expand-file-name (buffer-file-name buffer))))
-        (with-current-buffer buffer
-          (save-buffer)
-          (kill-buffer)))))
+    (advice-add 'org-drill :before #'emf/org-drill-open-all-roam-files)
+    ;;
+    ;; Close all roam buffers
+    ;; This is of course a bit dangerous but it works. I only drill once or twice per day, GEFN
+    ;;
+    (defun emf/org-drill-save-and-close-roam-buffers ()
+      "Save and close all buffers that point to files in the ~/opt/org-mode/roam/ directory."
+      (dolist (buffer (buffer-list))
+        (when (and (buffer-file-name buffer)
+                   (string-prefix-p (expand-file-name "~/opt/org-mode/roam/")
+                                    (expand-file-name (buffer-file-name buffer))))
+          (with-current-buffer buffer
+            (save-buffer)
+            (kill-buffer)))))
 
-  (advice-add 'org-drill :after #'emf/org-drill-save-and-close-roam-buffers)
+    (advice-add 'org-drill :after #'emf/org-drill-save-and-close-roam-buffers)
 
-  (global-set-key (kbd "C-c d") 'org-drill)
+    (global-set-key (kbd "C-c d") 'org-drill)
+
+
+    ;;
+    ;;
+    ;; Use LLM to generate org-drill questions inside a roam entry
+    ;;
+    ;;
+    (defvar emf/org-drill-prompt
+    (concat
+     "Under the '* Flashcards' heading at the end of this org-roam file, generate 1–3 new spaced repetition entries.\n\n"
+     "Each entry must consist of a short, factual question and its correct answer, based strictly on the text above the '* Flashcards' heading.\n\n"
+     "Format each entry exactly as follows:\n\n"
+     "** Question :drill:\n"
+     "<<insert question here>>\n\n"
+     "*** Answer\n"
+     "<<insert answer here>>\n\n"
+     "Do not include the '* Flashcards' heading itself.\n"
+     "Do not repeat or paraphrase existing questions already under that heading.\n"
+     "Do not add any explanations, commentary, symbols, or extra formatting.\n"
+     "Only return properly formatted org-drill entries in the structure shown above.\n\n"
+     "RETURN NO OTHER TEXT OR SYMBOLS THAN CORRECTLY FORMATTED QUIESTIONS\n"
+     "DO NOT DEVIATE FROM THE PROSCRIBED FORMAT\n")
+    "Prompt used to generate org-drill questions via.")
+
+
+  (defun emf/generate-org-drill-questions ()
+    "Generate and append org-drill questions under the '* Flashcards' heading."
+    (interactive)
+    (if (save-excursion
+          (goto-char (point-min))
+          (re-search-forward "^\\* Flashcards\\b" nil t))
+        (let* ((buf (current-buffer))
+               (prompt emf/org-drill-prompt)
+               (input (concat
+                       (buffer-substring-no-properties (point-min) (point-max))
+                       "\n\n" prompt)))
+          (gptel-request
+           input
+           :callback
+           (lambda (response _info)
+             (with-current-buffer buf
+               (save-excursion
+                 (goto-char (point-min))
+                 (when (re-search-forward "^\\* Flashcards\\b" nil t)
+                   (forward-line 1)
+                   ;; Skip drawers
+                   (while (looking-at "^:") (forward-line 1))
+                   (insert "\n" (string-trim response) "\n")
+                   (save-buffer)))))))
+      nil))
+
+  (with-eval-after-load 'org
+  (define-key org-mode-map (kbd "C-c n d") #'emf/generate-org-drill-questions))
 #+end_src
 
 
