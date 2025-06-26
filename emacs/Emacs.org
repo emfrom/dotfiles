@@ -1194,145 +1194,6 @@ Make tab in code blocks behave like it's respective major mode
 
 #+end_src
 
-*** ORG Roam
-This is the ORG Roam zettlekasten implementation
-
-It is a database that fills with interdependacy links between org tiles with an id property in the specified org roam directory.
-
-My config is based on this great intro: [[https://www.youtube.com/watch?v=AyhPmypHDEw&list=PLEoMzSkcN8oN3x3XaZQ-AXFKv52LZzjqD]]
-
-I have my
-
-As I try keep a lot of info in my roam notes, other than the atomic notes that is, I've added a hook to fold the note on startup. This was necessary as roam does not respect the #+STARTUP in nodes
-
-My capture template includes a link section for external links (like wikipedia)
-
-#+begin_src emacs-lisp
-
-
-  ;;
-  ;; ORG Roam, database of files
-  ;;
-  (use-package org-roam
-    :ensure t
-    :init
-    (setq org-roam-v2-ack t)
-    :custom
-    (org-roam-directory "~/opt/org-mode/roam/")
-    (setq org-roam-db-location "~/opt/org-mode/org-roam.db")
-
-    (org-roam-completion-everywhere t)
-
-    :bind (("C-c n l" . org-roam-buffer-toggle)
-           ("C-c n f" . org-roam-node-find)
-           ("C-c n i" . org-roam-node-insert)
-  	 ("C-c n j" . emf/insert-org-roam-link)
-  	 :map org-mode-map
-           ("C-M-i" . completion-at-point))
-    :config
-    (setq org-roam-capture-templates
-          '(("d" "default" plain
-             "\n%?\n\n\n\n* Links\n** External\n\n** Internal\n\n* Flashcards\n** Question :drill:\n*** answer\n\n"
-             :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+author: E.M. From\n#+startup: overview\n#+date: %U\n#+title: ${title}")
-             :unnarrowed t)
-            ))
-
-    (setq org-link-frame-setup
-          '((file . find-file)        ;; Open files in the same window
-            (default . same-window))) ;; Default behavior is to open in the same window
-    (setq display-buffer-reuse-frames t) ;; Use the same frame for displaying buffers
-    (setq pop-up-frames nil)               ;; Disable opening new frames
-
-
-    ;; Make sure roam ignores the id's of the org-drill headers
-    ;; Has to be done before the db init or roam will mess up
-    (setq org-roam-db-node-include-function
-  	(lambda ()
-  	  (not (member "drill" (org-get-tags)))))
-
-
-    ;; Fire up roam
-    (org-roam-setup)
-
-    ;; Clear and re-sync the db on first boot every day(ish)
-    (let* ((db-file org-roam-db-location)
-  	 (last-modified (nth 5 (file-attributes db-file))))
-      (unless (and last-modified
-  		 (time-less-p (time-subtract (current-time) last-modified)
-                                (seconds-to-time (* 6 3600)))))
-      (org-roam-db-clear-all)
-      (org-roam-db-sync))
-
-    ;; Turn autosync on after the re-check so we dont run modified date on the file
-    (org-roam-db-autosync-mode)
-
-
-    ;; Apply 'overview' setting specifically to org-roam buffers
-    ;;
-    (add-hook 'org-roam-find-file-hook
-              (lambda () (org-overview)))
-
-    ;;
-    ;; Set a filename and internal name convention in org-roam to replace spaces with _
-    ;;
-    (defun emf/org-roam-title-to-slug (title)
-      "Convert TITLE to a slug by replacing spaces with underscores."
-      (let ((slug (downcase (replace-regexp-in-string " " "_" title))))
-        slug))
-
-    (setq org-roam-title-to-slug #'emf/org-roam-title-to-slug)
-
-    ;;
-    ;; But then display them as spaces
-    ;;
-
-    (defun emf/org-roam-display-title (title)
-      "Display TITLE by replacing underscores with spaces."
-      (replace-regexp-in-string "_" " " title))
-
-    (defun emf/org-roam-display-title-hook ()
-      "Hook to display Org Roam titles with spaces."
-      (let ((title (emf/org-roam-get-title)))  ; Example function to get title
-        (emf/org-roam-display-title title)))
-
-    (add-hook 'org-roam-after-insert-hook 'emf/org-roam-display-title-hook)
-
-    ;;
-    ;; Turn word under point into the corresponding roam node
-    ;;
-    (defun emf/insert-org-roam-link ()
-      "Insert an Org-roam link for the word under the cursor after removing it.
-  The link title is the original word, while the node lookup is case-insensitive."
-      (interactive)
-      (let ((word (thing-at-point 'word t)))  ;; Get the word at point
-        (if word
-            (progn
-              (backward-word)  ;; Move cursor to the start of the word
-              (kill-word 1)    ;; Kill the entire word
-              (org-roam-node-insert
-               (lambda (node)
-                 ;; Use downcase for case-insensitive comparison
-                 (string= (downcase (org-roam-node-title node)) (downcase word)))
-               :templates '(("d" "default" plain "%?" :unnarrowed t)) ;; Optional: specify a template for the link
-               :info (list :title word))  ;; Use original word as title
-              )
-  	(message "No word at point."))))
-
-
-    ;;
-    ;; Save and kill roam buffers when I leave them using the org ring
-    ;;
-    (defun emf/save-and-close-roam-buffer (&rest _args)
-      "Save and kill the buffer if it belongs to the Org-roam directory."
-      (when (and (buffer-file-name)
-                 (string-prefix-p (expand-file-name org-roam-directory)
-                                  (buffer-file-name)))
-        (save-buffer)
-        (kill-buffer (current-buffer))))
-    (advice-add 'org-mark-ring-goto :before 'emf/save-and-close-roam-buffer))
-
-#+end_src
-
 *** Auto-tangle
 **** This file
 
@@ -1371,6 +1232,193 @@ The default auto-tangle are my dotfiles directory and emacs directory
 #+end_src
 
 
+*** ORG Roam
+This is the ORG Roam zettlekasten implementation
+
+It is a database that fills with interdependacy links between org tiles with an id property in the specified org roam directory.
+
+My config is based on this great intro: [[https://www.youtube.com/watch?v=AyhPmypHDEw&list=PLEoMzSkcN8oN3x3XaZQ-AXFKv52LZzjqD]]
+
+I have my
+
+As I try keep a lot of info in my roam notes, other than the atomic notes that is, I've added a hook to fold the note on startup. This was necessary as roam does not respect the #+STARTUP in nodes
+
+My capture template includes a link section for external links (like wikipedia)
+
+#+begin_src emacs-lisp
+
+
+      ;;
+      ;; ORG Roam, database of files
+      ;;
+      (use-package org-roam
+        :ensure t
+        :init
+        (setq org-roam-v2-ack t)
+        :custom
+        (org-roam-directory "~/opt/org-mode/roam/")
+        (setq org-roam-db-location "~/opt/org-mode/org-roam.db")
+
+        (org-roam-completion-everywhere t)
+
+        :bind (("C-c n l" . org-roam-buffer-toggle)
+               ("C-c n f" . org-roam-node-find)
+               ("C-c n i" . org-roam-node-insert)
+      	 ("C-c n j" . emf/insert-org-roam-link)
+      	 :map org-mode-map
+               ("C-M-i" . completion-at-point))
+        :config
+        (setq org-roam-capture-templates
+              '(("d" "default" plain
+                 "\n%?\n\n\n\n* Links\n\n\n* Flashcards\n\n\n"
+                 :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+author: E.M. From\n#+startup: overview\n#+date: %U\n#+title: ${title}")
+                 :unnarrowed t)
+                ))
+
+        (setq org-link-frame-setup
+              '((file . find-file)        ;; Open files in the same window
+                (default . same-window))) ;; Default behavior is to open in the same window
+        (setq display-buffer-reuse-frames t) ;; Use the same frame for displaying buffers
+        (setq pop-up-frames nil)               ;; Disable opening new frames
+
+
+        ;; Make sure roam ignores the id's of the org-drill headers
+        ;; Has to be done before the db init or roam will mess up
+        (setq org-roam-db-node-include-function
+      	(lambda ()
+      	  (not (member "drill" (org-get-tags)))))
+
+
+        ;; Fire up roam
+        (org-roam-setup)
+
+        ;; Clear and re-sync the db on first boot every day(ish)
+        (let* ((db-file org-roam-db-location)
+      	 (last-modified (nth 5 (file-attributes db-file))))
+          (unless (and last-modified
+      		 (time-less-p (time-subtract (current-time) last-modified)
+                                    (seconds-to-time (* 6 3600)))))
+          (org-roam-db-clear-all)
+          (org-roam-db-sync))
+
+        ;; Turn autosync on after the re-check so we dont run modified date on the file
+        (org-roam-db-autosync-mode)
+
+
+        ;; Apply 'overview' setting specifically to org-roam buffers
+        ;;
+        (add-hook 'org-roam-find-file-hook
+                  (lambda () (org-overview)))
+
+        ;;
+        ;; Set a filename and internal name convention in org-roam to replace spaces with _
+        ;;
+        (defun emf/org-roam-title-to-slug (title)
+          "Convert TITLE to a slug by replacing spaces with underscores."
+          (let ((slug (downcase (replace-regexp-in-string " " "_" title))))
+            slug))
+
+        (setq org-roam-title-to-slug #'emf/org-roam-title-to-slug)
+
+        ;;
+        ;; But then display them as spaces
+        ;;
+
+        (defun emf/org-roam-display-title (title)
+          "Display TITLE by replacing underscores with spaces."
+          (replace-regexp-in-string "_" " " title))
+
+        (defun emf/org-roam-display-title-hook ()
+          "Hook to display Org Roam titles with spaces."
+          (let ((title (emf/org-roam-get-title)))  ; Example function to get title
+            (emf/org-roam-display-title title)))
+
+        (add-hook 'org-roam-after-insert-hook 'emf/org-roam-display-title-hook)
+
+        ;;
+        ;; Turn word under point into the corresponding roam node
+        ;;
+        (defun emf/insert-org-roam-link ()
+          "Insert an Org-roam link for the word under the cursor after removing it.
+      The link title is the original word, while the node lookup is case-insensitive."
+          (interactive)
+          (let ((word (thing-at-point 'word t)))  ;; Get the word at point
+            (if word
+                (progn
+                  (backward-word)  ;; Move cursor to the start of the word
+                  (kill-word 1)    ;; Kill the entire word
+                  (org-roam-node-insert
+                   (lambda (node)
+                     ;; Use downcase for case-insensitive comparison
+                     (string= (downcase (org-roam-node-title node)) (downcase word)))
+                   :templates '(("d" "default" plain "%?" :unnarrowed t)) ;; Optional: specify a template for the link
+                   :info (list :title word))  ;; Use original word as title
+                  )
+      	(message "No word at point."))))
+
+
+        ;;
+        ;; Save and kill roam buffers when I leave them using the org ring
+        ;;
+        (defun emf/save-and-close-roam-buffer (&rest _args)
+          "Save and kill the buffer if it belongs to the Org-roam directory."
+          (when (and (buffer-file-name)
+                     (string-prefix-p (expand-file-name org-roam-directory)
+                                      (buffer-file-name)))
+            (save-buffer)
+            (kill-buffer (current-buffer))))
+        (advice-add 'org-mark-ring-goto :before 'emf/save-and-close-roam-buffer))
+
+
+      ;;
+      ;; Automatic wiki links in roam docs
+      ;; 
+      (defvar emf/org-roam-autowiki-prompt
+        (concat
+         "This file has a title and tags on the form:\n"
+         "#+title: xxx (yyy)\n\n"
+         "Where xxx is the tile and yyy are tags defining the area of focus of the title.\n\n"
+         "Do a proper search on wikipedia and see if there is an article that matches this exact title in the correct focus area. "
+         "Review the content of the wikipedia article and see if it matches what is written in this arcticle.\n\n"
+         "If you find such an article reply with the link, if not do find one not reply anything.\n"
+         "Very important, do not reply anything other than the link or nothing.\n"
+         "No commentary, thinking process or anything else. Just the link, or nothing.\n")
+        "LLM prompt used to automatically add Wikipedia links to Org-roam files.")
+
+      (defun emf/org-roam-autowiki ()
+      "Ask an LLM for a relevant Wikipedia link and insert it under the '* Links' heading."
+      (interactive)
+      (if (save-excursion
+            (goto-char (point-min))
+            (re-search-forward "^\\* Links\\b" nil t))
+          (let* ((buf (current-buffer))
+                 (prompt emf/org-roam-autowiki-prompt)
+                 (input (concat
+                         (buffer-substring-no-properties (point-min) (point-max))
+                         "\n\n" prompt)))
+            (gptel-request
+             input
+             :callback
+             (lambda (response _info)
+               (with-current-buffer buf
+                 (save-excursion
+                   (goto-char (point-min))
+                   (when (re-search-forward "^\\* Links\\b" nil t)
+                     (forward-line 1)
+                     ;; Skip drawers
+                     (while (looking-at "^:") (forward-line 1))
+                     (insert "\n" (string-trim response) "\n")
+                     (save-buffer)))))))
+        (message "No Links heading in buffer")))
+      
+    (with-eval-after-load 'org
+      (define-key org-mode-map (kbd "C-c n w") #'emf/org-roam-autowiki))
+
+
+      
+        
+#+end_src
+
 *** org-drill
 Use org-drill to study repetitive facts. I add them as a "Flashcard" heading with a :drill: tag
 
@@ -1380,61 +1428,61 @@ Have altered the way org-drill-scope is set and added the two advice functions t
 
 #+begin_src emacs-lisp
 
-    ;;
-    ;; Org-drill for flashcard spaced repetition
-    ;;
-    (use-package org-drill
-      :after org-roam
-      :config
-      (setq org-drill-maximum-items-per-session 20
-           	org-drill-interval-factor 2.5))
+  ;;
+  ;; Org-drill for flashcard spaced repetition
+  ;;
+  (use-package org-drill
+    :after org-roam
+    :config
+    (setq org-drill-maximum-items-per-session 20
+          org-drill-interval-factor 2.5))
 
-    ;; Use the `org-roam-directory` variable for org-drill scope
-    ;; (setq org-drill-scope (directory-files-recursively "/home/emfrom/opt/org-mode/roam/" "\\.org$"))
+  ;; Use the `org-roam-directory` variable for org-drill scope
+  ;; (setq org-drill-scope (directory-files-recursively "/home/emfrom/opt/org-mode/roam/" "\\.org$"))
 
-    ;;
-    ;; To get the cache to load properly and org-drill work, open all the buffers
-    ;;  that has :drill: tags in the org roam directory
-    ;; This function now set's the scope variabel as well so that new entries are included
-    ;;
-    (defun emf/org-drill-open-all-roam-files ()
-      "Open all .org files in the ~/opt/org-mode/roam/ directory and close those without :drill:. Set org-drill-scope to the valid files."
-      (let ((drill-files '()))
-        (dolist (file (directory-files "~/opt/org-mode/roam/" t "\\.org$"))
-          (find-file file)
-          (if (save-excursion
-                (goto-char (point-min))
-                (search-forward ":drill:" nil t))
-              (push file drill-files)
-            (kill-buffer)))
-        (setq org-drill-scope drill-files)))
+  ;;
+  ;; To get the cache to load properly and org-drill work, open all the buffers
+  ;;  that has :drill: tags in the org roam directory
+  ;; This function now set's the scope variabel as well so that new entries are included
+  ;;
+  (defun emf/org-drill-open-all-roam-files ()
+    "Open all .org files in the ~/opt/org-mode/roam/ directory and close those without :drill:. Set org-drill-scope to the valid files."
+    (let ((drill-files '()))
+      (dolist (file (directory-files "~/opt/org-mode/roam/" t "\\.org$"))
+        (find-file file)
+        (if (save-excursion
+              (goto-char (point-min))
+              (search-forward ":drill:" nil t))
+            (push file drill-files)
+          (kill-buffer)))
+      (setq org-drill-scope drill-files)))
 
-    (advice-add 'org-drill :before #'emf/org-drill-open-all-roam-files)
-    ;;
-    ;; Close all roam buffers
-    ;; This is of course a bit dangerous but it works. I only drill once or twice per day, GEFN
-    ;;
-    (defun emf/org-drill-save-and-close-roam-buffers ()
-      "Save and close all buffers that point to files in the ~/opt/org-mode/roam/ directory."
-      (dolist (buffer (buffer-list))
-        (when (and (buffer-file-name buffer)
-                   (string-prefix-p (expand-file-name "~/opt/org-mode/roam/")
-                                    (expand-file-name (buffer-file-name buffer))))
-          (with-current-buffer buffer
-            (save-buffer)
-            (kill-buffer)))))
+  (advice-add 'org-drill :before #'emf/org-drill-open-all-roam-files)
+  ;;
+  ;; Close all roam buffers
+  ;; This is of course a bit dangerous but it works. I only drill once or twice per day, GEFN
+  ;;
+  (defun emf/org-drill-save-and-close-roam-buffers ()
+    "Save and close all buffers that point to files in the ~/opt/org-mode/roam/ directory."
+    (dolist (buffer (buffer-list))
+      (when (and (buffer-file-name buffer)
+                 (string-prefix-p (expand-file-name "~/opt/org-mode/roam/")
+                                  (expand-file-name (buffer-file-name buffer))))
+        (with-current-buffer buffer
+          (save-buffer)
+          (kill-buffer)))))
 
-    (advice-add 'org-drill :after #'emf/org-drill-save-and-close-roam-buffers)
+  (advice-add 'org-drill :after #'emf/org-drill-save-and-close-roam-buffers)
 
-    (global-set-key (kbd "C-c d") 'org-drill)
+  (global-set-key (kbd "C-c d") 'org-drill)
 
 
-    ;;
-    ;;
-    ;; Use LLM to generate org-drill questions inside a roam entry
-    ;;
-    ;;
-    (defvar emf/org-drill-prompt
+  ;;
+  ;;
+  ;; Use LLM to generate org-drill questions inside a roam entry
+  ;;
+  ;;
+  (defvar emf/org-drill-prompt
     (concat
      "Under the '* Flashcards' heading at the end of this org-roam file, generate 1–3 new spaced repetition entries.\n\n"
      "Each entry must consist of a short, factual question and its correct answer, based strictly on the text above the '* Flashcards' heading.\n\n"
@@ -1446,13 +1494,14 @@ Have altered the way org-drill-scope is set and added the two advice functions t
      "Do not include the '* Flashcards' heading itself.\n"
      "Do not repeat or paraphrase existing questions already under that heading.\n"
      "Do not add any explanations, commentary, symbols, or extra formatting.\n"
+     "Do not make any questions about document metadata like creation date, author or the like. Only make questions based on content."
      "Only return properly formatted org-drill entries in the structure shown above.\n\n"
      "RETURN NO OTHER TEXT OR SYMBOLS THAN CORRECTLY FORMATTED QUIESTIONS\n"
      "DO NOT DEVIATE FROM THE PROSCRIBED FORMAT\n")
     "Prompt used to generate org-drill questions via.")
 
 
-  (defun emf/generate-org-drill-questions ()
+  (defun emf/org-drill-autoquestions ()
     "Generate and append org-drill questions under the '* Flashcards' heading."
     (interactive)
     (if (save-excursion
@@ -1464,22 +1513,28 @@ Have altered the way org-drill-scope is set and added the two advice functions t
                        (buffer-substring-no-properties (point-min) (point-max))
                        "\n\n" prompt)))
           (gptel-request
-           input
-           :callback
-           (lambda (response _info)
-             (with-current-buffer buf
-               (save-excursion
-                 (goto-char (point-min))
-                 (when (re-search-forward "^\\* Flashcards\\b" nil t)
-                   (forward-line 1)
-                   ;; Skip drawers
-                   (while (looking-at "^:") (forward-line 1))
-                   (insert "\n" (string-trim response) "\n")
-                   (save-buffer)))))))
+              input
+            :callback
+            (lambda (response _info)
+              (with-current-buffer buf
+                (save-excursion
+                  (goto-char (point-min))
+                  (when (re-search-forward "^\\* Flashcards\\b" nil t)
+                    (forward-line 1)
+                    ;; Skip drawers
+                    (while (looking-at "^:") (forward-line 1))
+                    (insert "\n" (string-trim response) "\n")
+                    (save-buffer)))))))
       nil))
 
-  (with-eval-after-load 'org
-  (define-key org-mode-map (kbd "C-c n d") #'emf/generate-org-drill-questions))
+  (defun emf/org-roam-autoeverything ()
+    (interactive)
+    (progn
+      (emf/org-drill-autoquestions)
+      (emf/org-roam-autowiki)))
+
+  (define-key org-mode-map (kbd "C-c n d") #'emf/org-drill-autoquestions)
+  (define-key org-mode-map (kbd "C-c n a") #'emf/org-roam-autoeverything)
 #+end_src
 
 
