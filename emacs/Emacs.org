@@ -880,28 +880,40 @@ Cant find the package
 Emacs builtin recently opened files system
 
 #+begin_src emacs-lisp
- 
-     (defvar emf/recentf-save-timer nil
-       "Timer for debounced saving of recentf list.")
 
-     (defun emf/debouncedf-save ()
-       "Debounced version of `recentf-save-list`."
-       (when emf/recentf-save-timer
-         (cancel-timer emf/recentf-save-timer))
-       (setq emf/recentf-save-timer
-             (run-with-timer 2 nil #'recentf-save-list)))
+  (defvar emf/recentf-save-timer nil
+    "Timer for debounced saving of recentf list.")
+
+  (defun emf/debouncedf-save ()
+    "Debounced version of `recentf-save-list`, suppressing messages."
+    (when emf/recentf-save-timer
+      (cancel-timer emf/recentf-save-timer))
+    (setq emf/recentf-save-timer
+          (run-with-timer
+           2 nil
+           (lambda ()
+             (let ((inhibit-message t))
+               (recentf-save-list))))))
+
+  (setq recentf-max-saved-items 1024
+        recentf-auto-cleanup 'never
+        recentf-save-file (expand-file-name "var/recentf-save.el" user-emacs-directory))
+
+(setq recentf-exclude
+      '("\\/org-mode\\/roam\\/"       ;; match any path containing /org/roam/
+        "\\.cache/"                ;; example: exclude cache files
+        "/tmp/"                    ;; exclude temp files
+        "^/sudo:"                  ;; exclude sudo/tramp files
+        ))
+
   
-     (setq recentf-max-saved-items 1024
-           recentf-auto-cleanup 'never
-           recentf-save-file (expand-file-name "var/recentf-save.el" user-emacs-directory))
+  (recentf-mode 1)
+  (recentf-load-list)
+  (recentf-cleanup)
+  (global-set-key (kbd "C-c f") #'recentf-open-files)
 
-     (recentf-mode 1)
-     (recentf-load-list)
-     (recentf-cleanup)
-     (global-set-key (kbd "C-c f") #'recentf-open-files)
-
-     ;; Advice using lambda to absorb args
-     (advice-add 'recentf-add-file :after (lambda (&rest _) (emf/debouncedf-save)))
+  ;; Advice using lambda to absorb args
+  (advice-add 'recentf-add-file :after (lambda (&rest _) (emf/debouncedf-save)))
 
 
 #+end_src
