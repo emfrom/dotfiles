@@ -918,6 +918,7 @@ Emacs builtin recently opened files system
 #+end_src
 
 *** pdf-tools
+
 #+begin_src emacs-lisp
   ;;
   ;; pdf-tools for pdfs
@@ -938,6 +939,18 @@ Emacs builtin recently opened files system
 
 
 #+end_src
+
+*** termux
+#+begin_src emacs-lisp
+
+(defun emf/running-in-termux-p ()
+  "Return non-nil if Emacs is running inside Termux."
+  (and (getenv "PREFIX")
+       (string-prefix-p "/data/data/com.termux/" (or (getenv "HOME") ""))))
+
+#+end_src
+
+
 ** ORG Mode
 The almighty org mode life, stuff and everything organizer
 https://orgmode.org/
@@ -2369,21 +2382,20 @@ Hate hitting insert by mistake, worse than caps-lock
 This is the client-server model for emacs.
 
 #+begin_src emacs-lisp
-
+  ;;
   ;; Emacsclient server
-  (require 'server)
+  ;;
+  (unless (emf/running-in-termux-p)
+    (progn
+      (require 'server)
 
-  ;;
-  ;; Setting the tcp port for windows
-  (when (eq system-type 'windows-nt)
-    (setq server-port 666)
-    (setq server-host "localhost"))
+      (when (eq system-type 'windows-nt)
+        (setq server-port 666)
+        (setq server-host "localhost"))
 
-  ;;
-  ;; Start the server
-  ;;
-  (unless (server-running-p)
-    (server-start))
+      (unless (server-running-p)
+        (server-start))))
+
 
 #+end_src
 **** TODO Why does the terminal emacs mode break/crash if the server is run in the EXWM instance?
