@@ -1576,7 +1576,7 @@ For some reason -B doesnt always work, so I added an --ignore=*~
   fi
 #+end_src
 ** which
-A =which= alias for old people
+A =which= alias for us old people
 
 #+begin_src shell :tangle ./aliases :mkdirp yes
   #
