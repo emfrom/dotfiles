@@ -1558,7 +1558,11 @@ For some reason -B doesnt always work, so I added an --ignore=*~
   #
   # Safe(r) rm
   #
-  alias rm='rm -I'
+  if command -v safe-rm >/dev/null 2>&1; then
+      alias rm='safe-rm'
+  else
+      alias rm='rm -I'
+  fi
 
 #+end_src
 
