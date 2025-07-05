@@ -1625,8 +1625,8 @@ Completions are placed in [[file:completions][completions]]
   #
 
   # We trust the system-wide to do all the work for us
-  if [[ -f /usr/share/bash_completion/bash_completion ]] ; then
-      source /usr/share/bash_completion/bash_completion
+  if [[ -f /etc/bash_completion ]] ; then
+      source /etc/bash_completion
   fi
 
   # Add completions installed in home directory
