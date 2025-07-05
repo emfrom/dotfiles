@@ -336,10 +336,10 @@ This that only matter if we are not in a terminal
   (when (display-graphic-p)
     (set-fringe-mode 10)       ; Give some breathing room
     (tooltip-mode -1)           ; Disable tooltips
+    (scroll-bar-mode -1)        ; Disable visible scrollbar
+    (tool-bar-mode -1)          ; Disable the toolbar
     )
 
-  (scroll-bar-mode -1)        ; Disable visible scrollbar
-  (tool-bar-mode -1)          ; Disable the toolbar
   (menu-bar-mode -1)        ; Disable the menu bar
 
 #+end_src
