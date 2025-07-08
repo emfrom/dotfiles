@@ -75,27 +75,31 @@ LC_MEASUREMENT=metric might now be supported everywhere
 
 ** Shell script to load the files
 
-#+begin_src shell :tangle ./load-env.sh
-  #!/bin/bash
-  #
-  # Load enivronment defaults
-  #
+#+begin_src bash
+#!/bin/bash
+#
+# Load environment defaults
+#
 
-  for file in *.env ; do
-      [[ -f $file ]] || continue
-      while IFS= read -r line ; do
-  	# Ignore empty lines and comments
-          [[ -z "$line" || "$line" =~ ^# ]] && continue
+for file in *.env ; do
+    [[ -f $file ]] || continue
+    while IFS= read -r line ; do
+        # Ignore empty lines and comments
+        [[ -z "$line" || "$line" =~ ^# ]] && continue
 
-          if [[ "$line" =~ ^[a-zA-Z_][a-zA-Z0-9_]*=(.*)$ ]]; then
-              eval "export $line"
-          else
-              echo "Ignored malformatted line: $line"
-          fi
-      done < "$file"
-  done
+        # Replace variables in the line
+        line=$(eval "echo \"$line\"")
 
+        if [[ "$line" =~ ^[a-zA-Z_][a-zA-Z0-9_]*=(.*)$ ]]; then
+            eval "export $line"
+        else
+            echo "Ignored malformatted line: $line"
+        fi
+    done < "$file"
+done
 #+end_src
+
+
 
 ** Tangle on save
 Lastly, setup org babel to auto-tangle in this directory
