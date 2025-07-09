@@ -20,29 +20,29 @@ Currently loaded by bashrc, emacs init.el and nu.env
 #+begin_src shell :tangle ./rust.env
   # Dont edit this file, edit Environment.org
   
-  CARGO_TARGET_DIR=/home/emfrom/opt/rust/cargo/target
-  CARGO_HOME=/home/emfrom/opt/rust/cargo
+  CARGO_TARGET_DIR=$HOME/opt/rust/cargo/target
+  CARGO_HOME=$HOME/opt/rust/cargo
   CARGO_BUILD_JOBS=8
-  RUSTUP_HOME=/home/emfrom/opt/rust/rustup
+  RUSTUP_HOME=$HOME/opt/rust/rustup
   RUST_BACKTRACE=1
 #+end_src
 
 * Haskell
 #+begin_src shell :tangle ./haskell.env
-GHCUP_INSTALL_BASE_PREFIX=/home/emfrom/opt/haskell
-CABAL_DIR=/home/emfrom/opt/haskell/cabal
-STACK_ROOT=/home/emfrom/opt/haskell/stack
+GHCUP_INSTALL_BASE_PREFIX=$HOME/opt/haskell
+CABAL_DIR=$HOME/opt/haskell/cabal
+STACK_ROOT=$HOME/opt/haskell/stack
 #+END_SRC
 
 * XDG Setting
 #+begin_src shell :tangle ./xdg.env
   # Dont edit this file, edit Environment.org
   
-  XDG_DATA_HOME=/home/emfrom/share
-  XDG_CONFIG_HOME=/home/emfrom/etc
-  XDG_CACHE_HOME=/home/emfrom/opt/cache
-  XDG_STATE_HOME=/home/emfrom/opt/state
-  XDG_RUNTIME_DIR=/run/user/1000
+  XDG_DATA_HOME=$HOME/share
+  XDG_CONFIG_HOME=$HOME/etc
+  XDG_CACHE_HOME=$HOME/opt/cache
+  XDG_STATE_HOME=$HOME/opt/state
+  XDG_RUNTIME_DIR=$HOME/opt/cache/run
 #+END_SRC
 
 * Locale
