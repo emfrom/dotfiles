@@ -1459,7 +1459,7 @@ Have altered the way org-drill-scope is set and added the two advice functions t
   (use-package org-drill
     :after org-roam
     :config
-    (setq org-drill-maximum-items-per-session 20
+    (setq org-drill-maximum-items-per-session nil
           org-drill-interval-factor 2.5))
 
   ;; Use the `org-roam-directory` variable for org-drill scope
