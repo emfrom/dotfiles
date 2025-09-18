@@ -2744,7 +2744,7 @@ Loads the exwm mode
   ;;
   ;; Sometimes exwm doesnt start properly without this, running it again wont do any harm
   ;;
-  (exwm-init)
+  (exwm-wm-mode)
 #+end_src
 
 *** Desktop Environment
