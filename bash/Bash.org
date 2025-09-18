@@ -1515,12 +1515,15 @@ For some reason -B doesnt always work, so I added an --ignore=*~
   #
   # Use $LS_OPTIONS so we can change on the fly
   #
+  # lss = ls without any options
+  alias lls=`which ls`
 
   # Options as described above 
   export LS_OPTIONS="-BlGhoH --group-directories-first --dereference-command-line-symlink-to-dir --ignore=#* --ignore=.#* --ignore=*~"
 
   # Standard aliases for ls
-  alias lls='\ls $LS_OPTIONS --color=$COLOUR'
+  alias lss='lls $LS_OPTIONS --color=$COLOUR'
+  alias lsa='lss -A'
 
   # exa
   alias ls='eza $EZA_OPTIONS --colour=$COLOUR --width=$COLUMNS'
