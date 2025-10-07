@@ -1842,10 +1842,17 @@ This needs to be at the very end so we dont clobber any guix variables
   #
   # GUIX
   #
-  export GUIX_PROFILE="$HOME/.guix-profile"
+  if command -v guix >/dev/null 2>&1; then
+      # command profile (apparently not always superflous)
+      export GUIX_PROFILE="$HOME/etc/guix/current"
+      . "$GUIX_PROFILE/etc/profile"
 
-  [ -f "$GUIX_PROFILE/etc/profile" ] && source "$GUIX_PROFILE/etc/profile"
+      # user profile
+      export GUIX_PROFILE="$HOME/.guix-profile"
+      [ -f "$GUIX_PROFILE/etc/profile" ] && source "$GUIX_PROFILE/etc/profile"
 
+      hash -r
+  fi
 
 #+end_src
 * Tangle on save
