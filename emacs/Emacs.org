@@ -871,7 +871,7 @@ Cant find the package
 *** ansi-term
 #+begin_src emacs-lisp
 
- (bind-key "C-c t" (lambda () (interactive) (ansi-term "/bin/bash")))
+ (bind-key "C-c t" (lambda () (interactive) (ansi-term "/usr/bin/env bash")))
 
 #+end_src
 
@@ -2488,7 +2488,7 @@ Support shell scripts to launch a crafted exwm session
 Stuff to launch (old-fashioned way)
 
 #+begin_src shell :tangle ./exwm/services.sh :mkdirp yes
-  #!/bin/bash
+  #!/usr/bin/env bash
   #
   # This script is intended to be launched by emacs to start services during desktop launch
   #
@@ -2527,7 +2527,7 @@ Stuff to launch (old-fashioned way)
 
 *** startup
 #+begin_src shell :tangle ./exwm/start-exwm.sh :mkdirp yes
-  #!/bin/bash
+  #!/usr/bin/env bash
   #
   # Script to launch EXWM from emacs
   # Auto-generated from Emacs.org (do not edit)
