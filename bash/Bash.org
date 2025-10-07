@@ -728,22 +728,6 @@ I dont know why 2.0 cant be satisfied with the XDG directories but here we are
 #+end_src
 *** TODO How do I do this?
 
-** GUIX
-
-#+begin_src shell
-  #
-  # GUIX
-  #
-  export GUIX_PROFILE="$HOME/.guix-profile"
-
-  [ -f "$GUIX_PROFILE/etc/profile" ] && source "$GUIX_PROFILE/etc/profile"
-
-  # Guix user packages (installed via guix install)
-  [ -f "$HOME/.guix-profile/etc/profile" ] && source "$HOME/.guix-profile/etc/profile"
-
-  export GUIX_LOCPATH="$HOME/.guix-profile/lib/locale"
-
-#+end_src
 * Bash logout
 This is a weird file, sourced only when a login shell exits
 
@@ -1851,6 +1835,19 @@ Colours are given as ansi colours. Extended and truecolour sequences works if yo
 
 
 
+* GUIX
+This needs to be at the very end so we dont clobber any guix variables
+
+#+begin_src shell
+  #
+  # GUIX
+  #
+  export GUIX_PROFILE="$HOME/.guix-profile"
+
+  [ -f "$GUIX_PROFILE/etc/profile" ] && source "$GUIX_PROFILE/etc/profile"
+
+
+#+end_src
 * Tangle on save
 Lastly, setup org babel to auto-tangle in this directory
 
