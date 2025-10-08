@@ -1122,11 +1122,15 @@ conf still feels clunky
     (setq org-startup-with-inline-images t) ; Enables inline images
     (org-display-inline-images) ; Displays images inline
 
+    ; Some random keys
+    (define-key org-mode-map (kbd "M-]") #'org-next-visible-heading)
+    (define-key org-mode-map (kbd "M-[") #'org-previous-visible-heading)
+
 
     (define-key global-map (kbd "C-c c")
                 (lambda () (interactive) (org-capture)))
 
-    (global-set-key (kbd "C-c e") #'org-set-effort))
+    (define-key org-mode-map (kbd "C-c e") #'org-set-effort))
 #+end_src
 
 *** Agenda side pane
