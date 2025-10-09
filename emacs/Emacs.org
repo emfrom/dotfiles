@@ -2040,14 +2040,13 @@ GNU version of scheme
 
 ***** Geiser
 #+begin_src emacs-lisp
-  ;;
-  ;; User geiser for scheme repl in emacs
-  ;;
-  (use-package geiser
-    :config
-    ;; Set Geiser implementation
-    (setq geiser-active-implementations '(guile)))
-
+      ;;
+      ;; User geiser for scheme repl in emacs
+      ;;
+      (use-package geiser
+        :config
+        ;; Set Geiser implementation
+        (setq geiser-active-implementations '(guile)))
 
 
 #+end_src
@@ -2537,29 +2536,15 @@ Stuff to launch (old-fashioned way)
   # Auto-generated from Emacs.org (do not edit)
   #
 
+  #
   # Set config dir before doing anything
-  if [[ -z XDG_CONFIG_HOME ]] ; then
-      export XDG_CONFIG_HOME=$HOME/etc
-  fi
+  #
+  [[ -z XDG_CONFIG_HOME ]] && export XDG_CONFIG_HOME=$HOME/etc
 
   #
   # Load enviornment
   #
-  for file in $XDG_CONFIG_HOME/env/* ; do
-      if [[ -f $file ]] ; then
-  	while IFS= read -r line ; do
-  	    # Ignore empty lines and comments
-  	    [[ -z "$line" || "$line" =~ ^# ]] && continue
-
-  	    # Check if the line is in the format XXX=yyy
-  	    if [[ "$line" =~ ^([a-zA-Z_][a-zA-Z0-9_]*)=(.*)$ ]] ; then
-  		export "$line"
-  	    else
-  		echo "Ignored malformatted line: $line"
-  	    fi
-  	done < "$file"
-      fi
-  done
+  [[ -f $XDG_CONFIG_HOME/env/load-env.sh ]] && source $XDG_CONFIG_HOME/env/load-env.sh
 
 
   # Compositor

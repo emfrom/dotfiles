@@ -50,26 +50,34 @@ STACK_ROOT=/home/emfrom/opt/haskell/stack
 LC_MEASUREMENT=metric might now be supported everywhere
 
 #+begin_src shell :tangle ./locale.env
-  # Dont edit this file, edit Environment.org
-  
-  LC_ADDRESS=en_GB.UTF-8
-  LC_NAME=en_GB.UTF-8
-  LC_MONETARY=en_GB.UTF-8
-  LC_PAPER=A4
-  LC_IDENTIFICATION=en_GB.UTF-8
-  LC_TELEPHONE=en_GB.UTF-8
-  LC_MEASUREMENT=metric
-  LC_TIME=en_GB.UTF-8
-  LC_NUMERIC=en_GB.UTF-8
-  LANGUAGE=en_GB:en
-  GDM_LANG=en_GB
-  LANG=en_GB.UTF-8
-  XTERM_LOCALE=en_GB.UTF-8
-  PAPERSIZE=A4
-  LC_ALL=en_GB.UTF-8
+   # Dont edit this file, edit Environment.org
+   
+   LC_ADDRESS=en_GB.UTF-8
+   LC_NAME=en_GB.UTF-8
+   LC_MONETARY=en_GB.UTF-8
+   LC_PAPER=en_GB.UTF-8
+   LC_IDENTIFICATION=en_GB.UTF-8
+   LC_TELEPHONE=en_GB.UTF-8
+   LC_MEASUREMENT=en_GB.UTF-8
+   LC_TIME=en_GB.UTF-8
+   LC_NUMERIC=en_GB.UTF-8
+   LANGUAGE=en_GB:en
+   GDM_LANG=en_GB
+   LANG=en_GB.UTF-8
+   XTERM_LOCALE=en_GB.UTF-8
+   PAPERSIZE=a4
+
+   # LC_ALL=en_GB.UTF-8
 
 #+END_SRC
 
+* GUIX
+#+begin_src shell :tangle ./locale.env
+
+GUIX_PROFILE=$HOME/.guix-profile
+GUIX_LOCPATH=$HOME/.guix-profile/lib/locale
+
+#+END_SRC
 
 * Scripts and emacs stuff
 
