@@ -1839,20 +1839,24 @@ Colours are given as ansi colours. Extended and truecolour sequences works if yo
 This needs to be at the very end so we dont clobber any guix variables
 
 #+begin_src shell
-  #
-  # GUIX
-  #
-  if command -v guix >/dev/null 2>&1; then
-      # command profile (apparently not always superflous)
-      export GUIX_PROFILE="$HOME/etc/guix/current"
-      . "$GUIX_PROFILE/etc/profile"
+    #
+    # GUIX
+    #
+    if command -v guix >/dev/null 2>&1 ; then
+        # command profile (apparently not always superflous)
+        export GUIX_SYSTEM_PROFILE="$HOME/etc/guix/current"
+        [ -f "$GUIX_SYSTEM_PROFILE/etc/profile" ] && source "$GUIX_SYSTEM_PROFILE/etc/profile"
 
-      # user profile
-      export GUIX_PROFILE="$HOME/.guix-profile"
-      [ -f "$GUIX_PROFILE/etc/profile" ] && source "$GUIX_PROFILE/etc/profile"
+        # user profile
+        export GUIX_PROFILE="$HOME/.guix-profile"
+        [ -f "$GUIX_PROFILE/etc/profile" ] && source "$GUIX_PROFILE/etc/profile"
 
-      hash -r
-  fi
+        # Locale dir
+        export GUIX_LOCPATH="$HOME/.guix-profile/lib/locale"
+
+        # rehash
+        hash -r
+    fi
 
 #+end_src
 * Tangle on save
