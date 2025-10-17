@@ -286,6 +286,7 @@ I've changed the order here as it makes more sense to cycle in the other directi
 
 #+end_src
 **** Universal argument
+
 C-u is not on the home row and it's awkward to hit fast
 C-: is not is any keymap (at the time of writing) at all
 
@@ -299,6 +300,32 @@ Bug: It doesn't work for repeated presses, why?
   (global-set-key (kbd "C-:") #'universal-argument)
   
 #+end_src
+**** Find keybindings
+Find all maps that bind a key 
+#+begin_src emacs-lisp
+  (defun emf/find-key-in-all-maps (key)
+    "Prompt for a KEY and list all keymaps that bind it, neatly aligned."
+    (interactive "kFind key in all maps: ")
+    (let (results)
+      (mapatoms
+       (lambda (sym)
+         (when (and (boundp sym)
+                    (keymapp (symbol-value sym)))
+           (let ((cmd (lookup-key (symbol-value sym) key)))
+             (when (and cmd (commandp cmd))
+               (push (cons (symbol-name sym) (symbol-name cmd)) results))))))
+      (with-current-buffer (get-buffer-create "*Key Search*")
+        (erase-buffer)
+        (insert (format "%-40s %s\n" "Keymap" "Command"))
+        (insert (make-string 60 ?-) "\n")
+        (dolist (pair (sort results (lambda (a b) (string< (car a) (car b)))))
+          (insert (format "%-40s %s\n" (car pair) (cdr pair))))
+        (display-buffer (current-buffer)))))
+
+  ;; Override default help key 
+  (global-set-key (kbd "C-h K") #'emf/find-key-in-all-maps)
+
+      #+END_SRC
 *** Line numbers
 Turn on linenumbers globally but disable for listed modes
 
@@ -1880,9 +1907,6 @@ not high prio, but it would be nice if it could be done
           (define-key company-active-map (kbd "<backtab>") 'company-complete-common-or-cycle)
           ;; (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
   	(define-key company-active-map (kbd "<tab>") #'company-complete-selection)))
-
-
-      ;; Ensure the required packages are installed
 
       ;; Activate company mode globally
       (add-hook 'after-init-hook 'global-company-mode)
