@@ -322,8 +322,8 @@ Find all maps that bind a key
           (insert (format "%-40s %s\n" (car pair) (cdr pair))))
         (display-buffer (current-buffer)))))
 
-  ;; Override default help key 
-  (global-set-key (kbd "C-h K") #'emf/find-key-in-all-maps)
+  ;; ;; Override default help key 
+  ;; (global-set-key (kbd "C-h K") #'emf/find-key-in-all-maps)
 
       #+END_SRC
 *** Line numbers
