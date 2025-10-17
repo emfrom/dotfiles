@@ -295,7 +295,14 @@ Turn on linenumbers globally but disable for listed modes
   ;; Line numbers
   ;;
   (column-number-mode)
+
+  ;; Set numbering type *first*
+  (setq-default display-line-numbers-type 'visual)
+
+
   (global-display-line-numbers-mode t)
+
+
 
   ;; Disable line numbers for some modes
   (dolist (mode '(org-mode-hook
