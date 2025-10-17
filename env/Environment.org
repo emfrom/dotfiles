@@ -64,8 +64,8 @@ LC_MEASUREMENT=metric might now be supported everywhere
 * GUIX
 #+begin_src shell :tangle ./locale.env
 
-GUIX_PROFILE=$HOME/.guix-profile
-GUIX_LOCPATH=$HOME/.guix-profile/lib/locale
+GUIX_PROFILE=/home/emfrom/.guix-profile
+GUIX_LOCPATH=/home/emfrom/.guix-profile/lib/locale
 
 #+END_SRC
 
