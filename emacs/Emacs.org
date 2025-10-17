@@ -1244,6 +1244,8 @@ Change where org mode displays text
 *** Tempo for code blocks
 Enables templeate expansion of <el TAB to an emacs-lisp code section
 
+TODO: Fix conflict with completions 
+
 #+begin_src emacs-lisp
 
   ;;
