@@ -274,7 +274,6 @@ It also causes less problems in EXWM
 
 #+end_src
 **** Alt-TAB to switch buffer
-
 I've changed the order here as it makes more sense to cycle in the other direction
 
 #+begin_src emacs-lisp
@@ -286,7 +285,21 @@ I've changed the order here as it makes more sense to cycle in the other directi
   (bind-key "M-<iso-lefttab>" 'switch-to-next-buffer global-map)
 
 #+end_src
-**** Line numbers
+**** Universal argument
+C-u is not on the home row and it's awkward to hit fast
+C-: is not is any keymap (at the time of writing) at all
+
+Bug: It doesn't work for repeated presses, why?
+
+#+begin_src emacs-lisp
+
+  ;;
+  ;; Bind C-: to universal argument
+  ;;
+  (global-set-key (kbd "C-:") #'universal-argument)
+  
+#+end_src
+*** Line numbers
 Turn on linenumbers globally but disable for listed modes
 
 #+begin_src emacs-lisp
