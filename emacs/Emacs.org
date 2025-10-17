@@ -475,22 +475,20 @@ This stops backup files and auto-save files from piling up everywhere
 
 The no-littering package takes care of the rest
 
-TODO Why do I have to explicitly check that it's the scratch buffer? Should return nil from buffer-file-name 
- 
 #+begin_src emacs-lisp
   ;; Disable auto-save files
   (setq auto-save-default nil)
 
   ;; Disable backup files
   (setq make-backup-files nil)
+
+  ;; Save all modified buffers
   (defun emf/auto-save-all-buffers ()
-    "Save all modified buffers, excluding non-file and empty buffers."
-    (when (and (not (minibufferp))
-               (buffer-modified-p)
-               (buffer-file-name (current-buffer))
-;;               (not (string= (buffer-string) ""))  <- What did I think here, makes no sense
-               (not (string= (buffer-name) "*scratch*")))  ;; Exclude *scratch*
-      (save-buffer)))
+  "Save all modified buffers that visit a file."
+  (when (and (buffer-modified-p)
+             (buffer-file-name)
+             (not (minibufferp)))
+    (save-buffer)))
 
   ;; Set a timer to auto-save every 3 seconds
   (run-with-idle-timer 3 t 'emf/auto-save-all-buffers)
