@@ -510,30 +510,9 @@ Emacs shell needs some help in not being braindead
   #
   # Setting up rust toolchain
   #
-  if [[ -z $ ]] ; then
-      export 
-  fi
-
-    if [[ -z $ ]] ; then
-      export 
-  fi
-
-      if [[ -z $ ]] ; then
-      export 
-  fi
-
-        if [[ -z $ ]] ; then
-      export 
-  fi
-
-          if [[ -z $ ]] ; then
-      export 
-  fi
-
   export CARGO_HOME="$HOME/opt/rust/cargo"
   export RUSTUP_HOME="$HOME/opt/rust/rustup"
   export CARGO_BUILD_JOBS=8
-  export CARGO_TARGET_DIR="$HOME/opt/rust/cargo/target"
   export RUST_BACKTRACE=1
   # export RUSTC_WRAPPER='sccache cargo install {package}'
 
