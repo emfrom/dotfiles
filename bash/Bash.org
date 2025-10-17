@@ -885,13 +885,13 @@ for example, cd /vr/lgo/apaache would find /var/log/apache
 No longer needed since I use zoxide
 
 #+begin_src shell :tangle ./options :mkdirp yes
-  #
-  # When changing directory small typos can be ignored by bash
-  #
-  if ! command -v zoxide &> /dev/null ; then
-    shopt -s cdspell
-  fi
-  
+  # #
+  # # When changing directory small typos can be ignored by bash
+  # #
+  # if ! command -v zoxide &> /dev/null ; then
+  #   shopt -s cdspell
+  # fi
+
 #+end_src
 
 * Functions
