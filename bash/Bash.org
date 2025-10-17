@@ -1286,12 +1286,56 @@ Suitable for use in the prompt
 
 #+begin_src shell :tangle ./functions :mkdirp yes
   #
-  # This strips off symlink targets, requires the alias lls to be set
+  # My remplacemetn ls function
+  #
+  # It checks for -l and applies formats accordingly
+  # For long options, it strips away symlink targets
+  #
+  # alias ls_func to use
   #
 
   ls_func() {
-      /usr/bin/ls ${LS_OPTIONS} --color=always "$@" | cut -d '>' -f 1 | sed 's/ -$//'
+
+      local base_opts="-B --group-directories-first \
+      --dereference-command-line-symlink-to-dir \
+      --ignore=#* --ignore=.#* --ignore=*~"
+
+      local long_opts="-GhoH"
+
+      local long_format=false
+      for arg in "$@"; do
+          case "$arg" in
+              -[!-]*l*|-l*|--format=long)
+      long_format=true
+      break
+      ;;
+      esac
+      done
+
+
+      # Use sed to strip out symlink targets (too much clutter)
+      # Hav to set colour manually
+      if $long_format; then
+  	local local_colour="$COLOUR"          
+
+  	# output is tty?
+  	if [ "$COLOUR" = "auto" ]; then
+  	    if [ -t 1 ]; then
+  		local_colour="always"
+  	    else
+  		local_colour="no"
+  	    fi
+  	fi
+
+  	# Long form ls
+          command ls $base_opts $long_opts --color="$local_colour" "$@" | sed 's/ -> .*//' 
+      else
+
+  	# Short form ls
+          command ls $base_opts --color="${COLOUR}" -C "$@"
+      fi
   }
+   
 
 #+end_src 
 * Aliases
@@ -1501,13 +1545,16 @@ For some reason -B doesnt always work, so I added an --ignore=*~
   #
 
   # Options as described above 
-  export LS_OPTIONS="-BlGhoH --group-directories-first --dereference-command-line-symlink-to-dir --ignore=#* --ignore=.#* --ignore=*~"
-
+  # export LS_OPTIONS="-BGhoH --group-directories-first --dereference-command-line-symlink-to-dir --ignore=#* --ignore=.#* --ignore=*~"
+  export LS_OPTIONS="-- LS_OPTIONS IS NOT USED -- Check ls_func"
+  
   # Standard aliases for ls
-  alias lls='\ls $LS_OPTIONS --color=$COLOUR'
+  # alias ls='\ls $LS_OPTIONS --color=$COLOUR'
+  alias ls=ls_func
 
-  # exa
-  alias ls='eza $EZA_OPTIONS --colour=$COLOUR --width=$COLUMNS'
+  # # exa
+  # alias ls='eza $EZA_OPTIONS --colour=$COLOUR --width=$COLUMNS'
+  alias exa='eza $EZA_OPTIONS --colour=$COLOUR --width=$COLUMNS'
 
 #+end_src
 ** make
