@@ -1260,6 +1260,12 @@ Suitable for use in the prompt
   }
 #+end_src 
 
+** less
+#+begin_src shell :tangle ./functions :mkdirp yesj
+lesspipe() {
+    "$@" | less
+}
+#+END_SRC
 ** ls_func
 
 #+begin_src shell :tangle ./functions :mkdirp yes
@@ -1499,7 +1505,14 @@ Old school
 
 #+end_src
 
-** ls 
+** l
+#+begin_src shell :tangle ./aliases :mkdirp yes
+  # lesspipe
+  alias l=lesspipe
+
+#+end_src
+
+** ls
 Set and use the variable LS_OPTIONS to change ls behaviour
 
 =TL;DR= No superflous information and pretty

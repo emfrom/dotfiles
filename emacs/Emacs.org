@@ -1974,48 +1974,48 @@ Does a lot of dancing to get Haskell, repl and lsp to work the way I want. LSP s
 I dont load lsp manually anymore, that seems to solve the problem 
 
 #+begin_src emacs-lisp
-  ;;
-  ;; Haskell mode
-  ;;
+  ;; ;;
+  ;; ;; Haskell mode
+  ;; ;;
 
-  ;; Custom save and reload function
-  ;;  behaves just like save-buffer if haskell things are not in order
-  (defun emf/haskell-save-and-reload ()
-    "Save buffer and, if in Haskell mode, reload the REPL."
-    (interactive)
-    (save-buffer)
-    (when (and (eq major-mode 'haskell-mode)
-               (fboundp 'haskell-process-load-file)) ; How was I thinking here?
-      (haskell-process-load-file)))
+  ;; ;; Custom save and reload function
+  ;; ;;  behaves just like save-buffer if haskell things are not in order
+  ;; (defun emf/haskell-save-and-reload ()
+  ;;   "Save buffer and, if in Haskell mode, reload the REPL."
+  ;;   (interactive)
+  ;;   (save-buffer)
+  ;;   (when (and (eq major-mode 'haskell-mode)
+  ;;              (fboundp 'haskell-process-load-file)) ; How was I thinking here?
+  ;;     (haskell-process-load-file)))
 
-  (use-package haskell-mode
-    :ensure t
-    :hook
-    (haskell-mode . interactive-haskell-mode)
+  ;; (use-package haskell-mode
+  ;;   :ensure t
+  ;;   :hook
+  ;;   (haskell-mode . interactive-haskell-mode)
 
-    :config
+  ;;   :config
     
-    ;; Check if ghcup bin directory is already in the PATH
-    ;;  , add it if not
-    (let ((ghcup-bin "/home/emfrom/opt/haskell/.ghcup/bin"))
-      (unless (string-match-p (regexp-quote ghcup-bin) (getenv "PATH"))
-        (setenv "PATH" (concat ghcup-bin ":" (getenv "PATH"))))
+  ;;   ;; Check if ghcup bin directory is already in the PATH
+  ;;   ;;  , add it if not
+  ;;   (let ((ghcup-bin "/home/emfrom/opt/haskell/.ghcup/bin"))
+  ;;     (unless (string-match-p (regexp-quote ghcup-bin) (getenv "PATH"))
+  ;;       (setenv "PATH" (concat ghcup-bin ":" (getenv "PATH"))))
 
-      ;; Check if ghcup bin directory is already in exec-path
-      ;;  ,add it if not
-      (unless (member ghcup-bin exec-path)
-        (add-to-list 'exec-path ghcup-bin)))
+  ;;     ;; Check if ghcup bin directory is already in exec-path
+  ;;     ;;  ,add it if not
+  ;;     (unless (member ghcup-bin exec-path)
+  ;;       (add-to-list 'exec-path ghcup-bin)))
 
 
-    ;; Config haskell-mode 
-    (setq haskell-process-type 'cabal-repl
-  	haskell-process-auto-import-loaded-modules t
-  	haskell-process-log t
-  	haskell-process-use-presentation-mode nil
-  	haskell-interactive-popup-errors nil)
+  ;;   ;; Config haskell-mode 
+  ;;   (setq haskell-process-type 'cabal-repl
+  ;; 	haskell-process-auto-import-loaded-modules t
+  ;; 	haskell-process-log t
+  ;; 	haskell-process-use-presentation-mode nil
+  ;; 	haskell-interactive-popup-errors nil)
     
-    :bind (:map haskell-mode-map
-                ("C-x C-s" . emf/haskell-save-and-reload)))
+  ;;   :bind (:map haskell-mode-map
+  ;;               ("C-x C-s" . emf/haskell-save-and-reload)))
 
 
 #+end_src
@@ -2102,22 +2102,22 @@ NOTE: How to make it better at restoring a saved session
 
 #+begin_src emacs-lisp
 
-  ;;
-  ;; Pomidor, pomodoro time tracker
-  ;;
-  (use-package pomidor
-    :config
-    (setq pomidor-sound-tick nil)
-    (setq pomidor-seconds 1800)
-    (setq pomido-break-seconds 600)
-    (setq pomidor-long-break 1200)
+  ;; ;;
+  ;; ;; Pomidor, pomodoro time tracker
+  ;; ;;
+  ;; (use-package pomidor
+  ;;   :config
+  ;;   (setq pomidor-sound-tick nil)
+  ;;   (setq pomidor-seconds 1800)
+  ;;   (setq pomido-break-seconds 600)
+  ;;   (setq pomidor-long-break 1200)
 
-    :bind
-        :bind ("<f12>" . pomidor))
+  ;;   :bind
+  ;;       :bind ("<f12>" . pomidor))
 
 
-  ;;(add-hook 'kill-emacs-hook 'pomidor-save-session)
-  ;; how to remove interactive, how to load the session
+  ;; ;;(add-hook 'kill-emacs-hook 'pomidor-save-session)
+  ;; ;; how to remove interactive, how to load the session
 
 #+end_src
 
