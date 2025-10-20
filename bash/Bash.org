@@ -1441,6 +1441,15 @@ Remove last element in PATH
   alias du='du -h'
 
 #+end_src
+** e
+#+begin_src shell :tangle ./aliases :mkdirp yes
+  #
+  # mdma
+  #
+
+  alias e="$EDITOR"
+
+#+END_SRC
 ** emacs
 #+begin_src shell :tangle ./aliases :mkdirp yes
   #
