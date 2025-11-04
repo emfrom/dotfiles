@@ -1932,18 +1932,28 @@ not high prio, but it would be nice if it could be done
 
 
 #+begin_src emacs-lisp
-(defun emf/cc-style ()
-  (c-set-style "k&r")
-  (setq c-basic-offset 2)
-  (setq indent-tabs-mode nil)
-  (setq tab-width 2)
-  (c-set-offset 'do-while-closure 0)
-  (c-set-offset 'else-clause 0)
-  (c-set-offset 'arglist-intro 0)
-  (setq c-cleanup-list (remove 'comment-intro c-cleanup-list)))
+  (defun emf/cc-style ()
+    (c-set-style "k&r")
+    (setq c-basic-offset 2)
+    (setq indent-tabs-mode nil)
+    (setq tab-width 2)
+    (c-set-offset 'do-while-closure 0)
+    (c-set-offset 'else-clause 0)
+    (c-set-offset 'arglist-intro 0)
+    (setq c-cleanup-list (remove 'comment-intro c-cleanup-list)))
 
 
-(add-hook 'c-mode-hook #'emf/cc-style)
+  (add-hook 'c-mode-hook #'emf/cc-style)
+
+  (defun emf/c-hide-tests ()
+  (interactive)
+  (hs-minor-mode 1)
+  (save-excursion
+    (goto-char (point-min))
+  (while (re-search-forward "^TEST(.+)[ ]*{" nil t)
+    (hs-hide-block))))
+
+(add-hook 'c-mode-hook  'emf/c-hide-tests)
 #+end_src 
 
 **** Python
