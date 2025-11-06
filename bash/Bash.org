@@ -1908,6 +1908,18 @@ This needs to be at the very end so we dont clobber any guix variables
     fi
 
 #+end_src
+
+* PATH cleanup
+#+begin_src shell
+  #
+  # Clean up PATH
+  # Remove duplicates and non-existent dirs
+  #
+  # This is more for readability
+
+  export PATH="$(printf "%s" "$PATH" | tr ':' '\n' | awk '!x[$0]++ && system("[ -d \""$0"\" ]")==0' | paste -sd: -)"
+
+#+end_src
 * Tangle on save
 Lastly, setup org babel to auto-tangle in this directory
 
