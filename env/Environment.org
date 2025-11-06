@@ -61,14 +61,6 @@ LC_MEASUREMENT=metric might now be supported everywhere
 
 #+END_SRC
 
-* GUIX
-#+begin_src shell :tangle ./locale.env
-
-GUIX_PROFILE=/home/emfrom/.guix-profile
-GUIX_LOCPATH=/home/emfrom/.guix-profile/lib/locale
-
-#+END_SRC
-
 * Scripts and emacs stuff
 
 ** Shell script to load the files

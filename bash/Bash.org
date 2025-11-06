@@ -316,29 +316,7 @@ This all is a byproduct of the idiotic login shell distinction.
 #+end_src
 
 The reason for this is so that we can save things with preexisting commands and utilities
-*** GUIX Stuff
-#+begin_src shell :tangle ./bash_profile :mkdirp yes
-  # #######
-  # #
-  # # GUIX Stuff
-  # #
 
-  # # Set up Guix Home profile
-
-  # export GUIX_PROFILE=${HOME}/.guix-profile
-
-  # # Merge search-paths from multiple profiles, the order matters.
-  # eval "$(guix package --search-paths \
-      #             -p $HOME/etc/guix/current \
-      #             -p $HOME/.guix-home/profile \
-      #             -p $HOME/.guix-profile \
-      #             -p /run/current-system/profile)"
-
-  # # Prepend setuid programs.
-  # export PATH=/run/setuid-programs:$PATH
-
-
-#+end_src
 *** tmp directory
 This creates some problems under both termux and guix
 #+begin_src shell
