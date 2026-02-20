@@ -377,17 +377,22 @@ This that only matter if we are not in a terminal
 ***** Disable gui elements
 #+begin_src emacs-lisp
 
-  ;;
-  ;; Disable GUI elements
-  ;;
-  (when (display-graphic-p)
-    (set-fringe-mode 10)       ; Give some breathing room
-    (tooltip-mode -1)           ; Disable tooltips
-    (scroll-bar-mode -1)        ; Disable visible scrollbar
-    (tool-bar-mode -1)          ; Disable the toolbar
-    )
+      ;;
+      ;; Disable GUI elements
+      ;;
+  (defun emf/gui-setup (frame)
+    "Disable GUI elements for each new FRAME."
+    (with-selected-frame frame
+      (when (display-graphic-p frame)
+        (set-fringe-mode 10)       ; Give some breathing room
+        (tooltip-mode -1)          ; Disable tooltips
+        (scroll-bar-mode -1)       ; Disable visible scrollbar
+        (tool-bar-mode -1)         ; Disable the toolbar
+        (menu-bar-mode -1))))      ; Disable the menu bar
 
-  (menu-bar-mode -1)        ; Disable the menu bar
+  (add-hook 'after-make-frame-functions 'emf/gui-setup)
+
+  (emf/gui-setup (selected-frame))
 
 #+end_src
 
