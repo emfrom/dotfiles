@@ -1203,7 +1203,7 @@ Removes the lolcow (and anything else)
 #+begin_src shell :tangle ./functions :mkdirp yes
   preexec()
   {
-      echo -e "\033[J"  # Clear from cursor to end of screen
+      echo -e "\e[J"  # Clear from cursor to end of screen
   }
 #+end_src
 
