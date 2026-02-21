@@ -53,11 +53,11 @@ LC_MEASUREMENT=metric might now be supported everywhere
   # Dont edit this file, edit Environment.org
 
 
-  LANGUAGE=en_GB:en
-  LANG=en_GB.UTF-8
-  XTERM_LOCALE=en_GB.UTF-8
+  LANGUAGE=C
+  LANG=C.UTF-8
+  LC_ALL=C.UTF-8
+  XTERM_LOCALE=C.UTF-8
   PAPERSIZE=a4
-  LC_ALL=en_GB.UTF-8
 
 #+END_SRC
 
