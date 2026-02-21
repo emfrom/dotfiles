@@ -1583,6 +1583,13 @@ For some reason -B doesnt always work, so I added an --ignore=*~
       alias top='htop --sort-key=PERCENT_NORM_CPU'
   fi
 #+end_src
+** unice
+#+begin_src shell :tangle ./aliases :mkdirp yes
+  #
+  # unice for maximum prio reduction
+  #
+  alias unice='ionice -c3 nice -n 19'
+#+end_src
 ** which
 A =which= alias for us old people
 
