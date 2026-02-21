@@ -30,12 +30,56 @@
 
 [fetch]
 	writeCommitGraph = true
-[alias]
+	[alias]
 	co = checkout
 	br = branch
 	st = status
 	ci = commit
-	unstage = reset HEAD --
+	# Commit helpers
+	cm = commit -m
+	ca = commit --amend
+	aa = add .
+	ad = add
+
+# Push / Pull
+ps = push
+pl = pull
+fe = fetch
+cl = clone
+
+# Branch switching
+sw = switch
+sc = switch -c
+
+# Merging / Rebasing
+me = merge
+rb = rebase
+cp = cherry-pick
+
+# History / Inspection
+lg = log --oneline --graph --decorate --all
+df = diff
+sh = show
+bl = blame
+rl = reflog
+
+# Reset / Restore
+re = reset
+rh = reset --hard
+rs = restore
+
+# Stash
+ss = stash
+sp = stash pop
+
+# Remote
+rm = remote
+rv = remote -v
+pa = push --all
+pt = push --tags
+
+# old ones
+unstage = reset HEAD --
 	last = log -1 HEAD
 	blame = blame -w -C -C -C
 [pull]

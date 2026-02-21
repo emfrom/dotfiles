@@ -1453,7 +1453,15 @@ Remove last element in PATH
   alias eng='env | grep -i'
 
 #+end_src
-** grep 
+** g
+#+begin_src shell :tangle ./aliases :mkdirp yes
+  #
+  # git gets a letter of it's owna
+  #
+  alias g=git
+  
+#+end_src
+** grep
 Readability
 
 I used color=always for awhile but it is completely useless when redirecting output to files, so "auto" it is even if it screwes with emacs shell mode sometimes
