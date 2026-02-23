@@ -408,18 +408,6 @@ Load the content of the helper files
 
 #+end_src
 
-*** Source aliases
-#+begin_src shell :tangle ./bashrc :mkdirp yes
-
-  #
-  # Aliases
-  #
-  if [[ -f "${XDG_CONFIG_HOME}/bash/aliases" ]] ; then
-      source "${XDG_CONFIG_HOME}/bash/aliases"
-  fi
-
-#+end_src
-
 *** Source completions
 #+begin_src shell :tangle ./bashrc :mkdirp yes
 
@@ -439,6 +427,18 @@ Load the content of the helper files
   fi
 
 
+
+#+end_src
+
+*** Source aliases
+#+begin_src shell :tangle ./bashrc :mkdirp yes
+
+  #
+  # Aliases
+  #
+  if [[ -f "${XDG_CONFIG_HOME}/bash/aliases" ]] ; then
+      source "${XDG_CONFIG_HOME}/bash/aliases"
+  fi
 
 #+end_src
 
@@ -1454,12 +1454,15 @@ Remove last element in PATH
 
 #+end_src
 ** g
+The completions work really bad with alias, use a function instead
+
 #+begin_src shell :tangle ./aliases :mkdirp yes
   #
   # git gets a letter of it's owna
   #
-  alias g=git
-  
+  #alias g=git
+  g() { git "$@"; }
+  __git_complete g __git_main
 #+end_src
 ** grep
 Readability
@@ -1662,6 +1665,25 @@ Completions are placed in [[file:completions][completions]]
 
 #+end_src
 
+** Git
+Force load git 
+#+begin_src shell :tangle ./completions :mkdirp yes
+# Load git's bash completion from common locations
+for f in \
+  /usr/share/bash-completion/completions/git \
+  /usr/share/git/completion/git-completion.bash \
+  /etc/bash_completion.d/git \
+  /usr/local/etc/bash_completion.d/git-completion.bash \
+  /opt/homebrew/etc/bash_completion.d/git-completion.bash \
+  ~/.local/share/bash-completion/completions/git
+do
+  if [ -r "$f" ]; then
+    source "$f"
+    break
+  fi
+done
+
+#+end_src
 * Dircolours
 These are the colours that =ls= uses.
 
