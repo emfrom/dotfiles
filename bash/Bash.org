@@ -575,6 +575,12 @@ Just to keep gnus from littering all over the place
       eval "$(zoxide init --cmd cd bash)"
   fi
 #+end_src
+*** st
+#+begin_src shell :tangle ./bashrc :mkdirp yes
+  if [[ "$TERM" == "st-256color" ]]; then
+    export TERM=xterm-256color
+fi
+#+END_SRC
 *** python venv
 Use a per user venv for python
 ubuntu package management for python is an absolute nightmare
