@@ -599,20 +599,17 @@ Prompt command function adds more glam
 #+begin_src shell :tangle ./bashrc :mkdirp yes
 
 
-  #
-  # Set the prompt (This seems to screw up xterm sometimes) 
-  #
-  # case $TERM in
-  #     xterm*)
-  #         export PS1='\[\033]0;xterm: \w\007\]\e[0m'
-  #         ;;
-  #     *)
-  #         export PS1='\e[0m'
-  #         ;;
-  # esac
 
-  # Start with a fresh prompt
-  export PS1='\e[0m'
+  # Set the prompt 
+
+  case $TERM in
+      xterm*)
+          export PS1='\[\033]0;term: \w\007\]\e[0m'
+          ;;
+      ,*)
+          export PS1='\e[0m'
+          ;;
+  esac
 
   # HH:MM bright yellow 
   PS1=$PS1'\[\e[01;33m\]\A '
@@ -896,31 +893,6 @@ Does nothing
 
 ** Prompt Command
 This are the functions that are called by the prompt_command functions, which in turn is called by bash every time the prompt returns
-
-*** settitle
-Set title of xterm
-
-I'm using the PS1 method under [[Prompt]] instead since this doesnt work properly in mintty
-
-#+begin_src shell :tangle ./functions :mkdirp yes
-  # #
-  # # Set title of an xterm
-  # # 
-  # settitle () 
-  #  { 
-  #    echo -ne "\[\033]0;\u@\w\007;\]" 
-  #  }
-  # NOTE: I'm not using this method
-  function settitle()
-  {
-      do_nothing
-  }
-
-#+end_src
-**** TODO Doesnt work with mintty, seems to be echo giving problems again
-This is a bug in mintty or echo
-For echo specifically echo -e which really doesnt work in mintty
-Report it at some point
 
 *** ansi_heart
 Prints a red heart by coloring the background differntly and printing spaces
