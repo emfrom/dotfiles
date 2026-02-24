@@ -1462,7 +1462,16 @@ I used color=always for awhile but it is completely useless when redirecting out
   # I dont trust rg (yet) for serious stuff
   #alias grep='rg --colors match:fg:magenta --color=$COLOUR'
 
-  alias grep='grep -Hn --color=$COLOUR'
+  # Old grep alias 
+  # alias grep='grep -Hn --color=$COLOUR'
+  grep() {
+      if [ -t 0 ]; then
+  	command grep -Hn --color="$COLOUR" "$@"
+      else
+  	command grep -hn --color="$COLOUR" "$@"
+      fi
+  }
+
   alias egrep='grep -E '
   alias fgrep='grep -F '
 
