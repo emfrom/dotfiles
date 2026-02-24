@@ -1,0 +1,22 @@
+#+TITLE: Config for ripgrep
+#+AUTOR: E.M. From
+#+STARTUP: overview
+
+tiny config for ripgrep
+
+* Config
+
+Set match colour, adding red for match itself. What my GREP_COLOURS variable does at time of writing
+
+#+begin_src shell :tangle ./config :mkdirp yes
+--colors match:style:bold
+--colors match:fg:red
+#+end_src
+
+* Tangle on save
+Lastly, setup org babel to auto-tangle in this directory
+
+#+begin_src emacs-lisp :tangle ./.dir-locals.el :mkdirp yes
+  ((org-mode . ((eval . (add-to-list 'emf/org-babel-autotangle-dirs (file-name-directory (or load-file-name buffer-file-name)))))))
+#+end_src
+
