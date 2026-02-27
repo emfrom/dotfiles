@@ -1226,6 +1226,91 @@ lesspipe() {
     "$@" | less
 }
 #+END_SRC
+** guile_bg_repl
+Aboslutely ridiculous way to have direct lisp execution from the shell
+
+#+begin_src shell :tangle ./functions :mkdirp yes
+
+      _guile_bg_start() {
+          if [[ -z "${GUILE_BG_PID:-}" ]] || ! kill -0 "$GUILE_BG_PID" 2>/dev/null; then
+              local guile_bootstrap
+              guile_bootstrap="$(cat <<'SCM'
+          (use-modules (ice-9 rdelim) (ice-9 string-fun))
+
+          (define (safe-eval str)
+            (catch #t
+              (lambda ()
+                (let ((form (read (open-input-string str))))
+                  (let ((v (eval form (interaction-environment))))
+                    (write v)
+                    (newline))))
+              (lambda (key . args)
+                (display "ERROR: ")
+                (write key)
+                (newline))))
+
+          (let loop ()
+            (let ((line (read-line)))
+              (if (eof-object? line)
+                  (exit 0)
+                  (begin
+                    (let ((t (string-trim-both line)))
+                      (unless (string-null? t)
+                        (safe-eval t)))
+                    (display "<<<END>>>")
+                    (newline)
+                    (force-output)
+                    (loop)))))
+  SCM
+          )"
+
+              coproc GUILE_BG { guile -q -c "$guile_bootstrap"; }
+              GUILE_BG_PID=$!
+          fi
+      }
+
+      # Send one Scheme expression (single line) to Guile
+      guile_it() {
+          _guile_bg_start
+
+          local expr="$*"
+
+          # Send to Guile
+          printf '%s\n' "$expr" >&"${GUILE_BG[1]}"
+
+          # Read until end marker
+          local out
+          while IFS= read -r out <&"${GUILE_BG[0]}"; do
+      	[[ "$out" == "<<<END>>>" ]] && break
+      	printf '%s\n' "$out"
+          done
+      }
+
+      # Readline handler: Ctrl-J sends current line to Guile
+      __guile_accept_line() {
+          local line="$READLINE_LINE"
+
+          # Ignore empty / whitespace-only lines
+          if [[ -z "${line//[[:space:]]/}" ]]; then
+      	READLINE_LINE=""
+      	READLINE_POINT=0
+      	return 0
+          fi
+  	
+  	printf '%s\n' "$line"     # Make the line visible in scrollback
+  	history -s "$line"          # add to history list
+          guile_it "$line"
+
+          # Clear input line after evaluation
+          READLINE_LINE=""
+          READLINE_POINT=0
+          return 0
+      }
+
+      # Bind Ctrl-J to "send line to Guile"
+      bind -x '"\C-j":__guile_accept_line'
+
+#+END_SRC
 ** ls_func
 
 #+begin_src shell :tangle ./functions :mkdirp yes
@@ -1471,7 +1556,7 @@ I used color=always for awhile but it is completely useless when redirecting out
   	command grep -hn --color="$COLOUR" "$@"
       fi
   }
-
+  
   alias egrep='grep -E '
   alias fgrep='grep -F '
 
@@ -1932,4 +2017,7 @@ Lastly, setup org babel to auto-tangle in this directory
 #+begin_src emacs-lisp :tangle ./.dir-locals.el :mkdirp yes
   ((org-mode . ((eval . (add-to-list 'emf/org-babel-autotangle-dirs (file-name-directory (or load-file-name buffer-file-name)))))))
 #+end_src
+
+
+
 
