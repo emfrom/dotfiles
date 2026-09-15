@@ -2580,7 +2580,7 @@ Stuff to launch (old-fashioned way)
   echo "SSH_AUTH_SOCK="$SSH_AUTH_SOCK >> $ENV_FILE
 
   #Fire up onedrive
-  onedrive -m --enable-logging --log-dir=/home/emfrom/share/onedrive/ &> /dev/null  &
+  onedrive -m --enable-logging --log-dir=/home/emfrom/.local/share/onedrive/ &> /dev/null  &
 
   #Fire up protonmail
   protonmail-brige &> /dev/null &

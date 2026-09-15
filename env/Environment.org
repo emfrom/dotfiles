@@ -38,10 +38,10 @@ STACK_ROOT=/home/emfrom/opt/haskell/stack
 #+begin_src shell :tangle ./xdg.env
   # Dont edit this file, edit Environment.org
   
-  XDG_DATA_HOME=/home/emfrom/share
+  XDG_DATA_HOME=/home/emfrom/.local/share
   XDG_CONFIG_HOME=/home/emfrom/etc
-  XDG_CACHE_HOME=/home/emfrom/opt/cache
-  XDG_STATE_HOME=/home/emfrom/opt/state
+  XDG_CACHE_HOME=/home/emfrom/.cache
+  XDG_STATE_HOME=/home/emfrom/.local/state
   XDG_RUNTIME_DIR=/run/user/1000
 #+END_SRC
 

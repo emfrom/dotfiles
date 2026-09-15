@@ -230,15 +230,15 @@ This quits if the shell is not interactive
 
   #      Where user-specific non-essential (cached) data should be written (analogous to /var/cache).
   #      Should default to $HOME/.cache.
-  export XDG_CACHE_HOME=$HOME/opt/cache
+  export XDG_CACHE_HOME=$HOME/.cache
 
   #      Where user-specific data files should be written (analogous to /usr/share).
   #      Should default to $HOME/.local/share.
-  export XDG_DATA_HOME=$HOME/share
+  export XDG_DATA_HOME=$HOME/.local/share
 
   #      Where user-specific state files should be written (analogous to /var/lib).
   #      Should default to $HOME/.local/state.
-  export XDG_STATE_HOME=$HOME/opt/state
+  export XDG_STATE_HOME=$HOME/.local/state
 
 #+end_src
 
@@ -1732,8 +1732,8 @@ Completions are placed in [[file:completions][completions]]
   fi
 
   # Add completions installed in home directory
-  if [[ -d  $HOME/share/bash-completion/completions ]] ; then
-      for COMP_FILE in $HOME/share/bash-completion/completions/* ; do
+  if [[ -d  $HOME/.local/share/bash-completion/completions ]] ; then
+      for COMP_FILE in $HOME/.local/share/bash-completion/completions/* ; do
           source $COMP_FILE
       done
   fi
