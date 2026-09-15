@@ -521,21 +521,22 @@ Setup the package managers for emacs and more repositories
 
 #+begin_src emacs-lisp
 
-  ;;
-  ;; Initialize package sources
-  ;;
-  (require 'package)
+    ;;
+    ;; Initialize package sources
+    ;;
+    (require 'package)
 
-  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                           ("elpa" . "https://elpa.gnu.org/packages/")
-  			 ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
+    (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                             ("elpa" . "https://elpa.gnu.org/packages/")
+    			 ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
 
-  (package-initialize)
+  ;; No longer needed aparently
+  ;;  (package-initialize)
 
-  ;; Reload package archives
-  ;; Is this what takes forever on startup?
-  (unless package-archive-contents
-    (package-refresh-contents))
+    ;; Reload package archives
+    ;; Is this what takes forever on startup?
+    (unless package-archive-contents
+      (package-refresh-contents))
 
 
 #+end_src
