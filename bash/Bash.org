@@ -352,31 +352,33 @@ Also, add the current directory to the end of the path. (this is unsafe if you d
   # Check path sanity
   #
 
-  # TODO: Make this guix compatible(ish)
-
-  if ! echo $PATH | grep "usr/bin" > /dev/null ; then
-      export PATH=$PATH:/usr/bin
-  fi
-
-  if ! echo $PATH | grep "usr/local/bin" > /dev/null ; then
-      export PATH=$PATH:/usr/local/bin
-  fi
-
-  if ! echo $PATH | grep "usr/games/bin" > /dev/null ; then
-      export PATH=$PATH:/usr/games/bin
-  fi
+  export PATH=$PATH:/usr/bin
+  export PATH=$PATH:/usr/local/bin
+  export PATH=$PATH:/usr/games/bin
 
   # Add mise paths
   if [ -x "$HOME/.local/bin/mise" ] ; then
-      eval "$("$HOME/.local/bin/mise" activate bash)"  
-  fi
-  
-  if ! echo $PATH | grep "$HOME/bin" > /dev/null ; then
-      export PATH=$HOME/bin:$PATH
+      eval "$("$HOME/.local/bin/mise" activate bash)"  > /dev/null
   fi
 
+  # Prepend home/bin
+  export PATH=$HOME/bin:$PATH
+
+  # Current dir last
   export PATH=$PATH:.
 
+  
+  path_temp=""
+  for p in ${PATH//:/ } ; do
+      if ! echo "$path_temp" | grep -qw -- "$p" > /dev/null ; then
+  	if [ -z "$path_temp" ] ; then
+  	    path_temp="$p"
+  	else
+  	    path_temp="$path_temp:$p"
+  	fi
+      fi
+  done
+  export PATH="$path_temp"
 #+end_src
 
 *** Haskell path
