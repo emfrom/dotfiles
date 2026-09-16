@@ -686,12 +686,12 @@ Modes and mini modes that help getting stuff done
 *** Encryption
 #+begin_src emacs-lisp
   (use-package auth-source
-    :ensure t
+    :ensure nil
     :config
     (setq auth-sources '("~/etc/authinfo.gpg")))
 
   (use-package epa
-    :ensure t
+    :ensure nil
     :config
     (epa-file-enable))  ;; Enable automatic decryption of files
 
