@@ -1306,8 +1306,8 @@ The default auto-tangle are my dotfiles directory and emacs directory
 
   ;; Function to use the customizable list
   (defun emf/org-babel-tangle-config ()
-    (when (member (file-name-directory (buffer-file-name))
-                  emf/org-babel-autotangle-dirs)
+    (when (member (file-truename (file-name-directory (buffer-file-name)))
+                  (mapcar #'file-truename emf/org-babel-autotangle-dirs))
       (let ((org-confirm-babel-evaluate nil))
         (org-babel-tangle))))
 
