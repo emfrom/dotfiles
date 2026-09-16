@@ -1419,7 +1419,7 @@ Aliases is tangled to [[file:aliases][aliases]]
 #+begin_src shell :tangle ./aliases :mkdirp yes
   # Trying out bat instead of cat  (very bad idea !!)
   # .. 2nd try 
-  alias cat='bat --style=plain --color "$COLOUR"'
+  #alias cat='bat --style=plain --color "$COLOUR"'
 
 #+end_src
 
