@@ -362,15 +362,15 @@ Also, add the current directory to the end of the path. (this is unsafe if you d
   fi
 
   # Prepend home/bin
-  export PATH=$HOME/bin:$PATH
+  export PATH="$HOME/bin:$PATH"
 
   # Current dir last
-  export PATH=$PATH:.
+  #export "PATH=$PATH:."
 
-  
+
   path_temp=""
   for p in ${PATH//:/ } ; do
-      if ! echo "$path_temp" | grep -qw -- "$p" > /dev/null ; then
+      if ! echo -n "$path_temp" | grep -qw -- "$p" > /dev/null ; then
   	if [ -z "$path_temp" ] ; then
   	    path_temp="$p"
   	else
@@ -636,12 +636,12 @@ Prompt command function adds more glam
       PS1=$PS1'\n> '
   fi
 
-  # Set PS0 to clear after the line our prompt was
-  # Also moves the cursor down one (the B escape)
-  PS0=$PS0'\e[J\e[B\e[0m'
-
   # Set PS2 to clean the screen below first
-  PS2='\e[J\e[0m> '
+  PS2='\[\e[J\]\[\e[0m\]> '                                      
+
+  # Clear PS0, to stop dumb stuff
+  PS0=""
+
 
 #+end_src
 
@@ -1197,7 +1197,7 @@ Removes the lolcow (and anything else)
 #+begin_src shell :tangle ./functions :mkdirp yes
   preexec()
   {
-      echo -e "\e[J"  # Clear from cursor to end of screen
+      printf '\e[J'  # Clear from cursor to end of screen without adding a newline
   }
 #+end_src
 
