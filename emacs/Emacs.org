@@ -1826,7 +1826,9 @@ LSP Mode to connect to language servers like clangd
                  '(autoconf-mode . "autoconf")))
   (with-eval-after-load 'lsp-mode
     (add-to-list 'lsp-language-id-configuration
-                 '(makefile-automake-mode . "makefile")))
+                 '(makefile-automake-mode . "makefile"))
+    (add-to-list 'lsp-language-id-configuration
+                 '(makefile-gmake-mode . "makefile")))
 
   (use-package lsp-ui
     :hook (lsp-mode . lsp-ui-mode))
