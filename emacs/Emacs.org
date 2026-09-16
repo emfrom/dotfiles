@@ -2082,8 +2082,7 @@ A mode for coding in rust
     (add-hook 'rust-mode-hook
               (lambda () (prettify-symbols-mode)))
 
-    ;; Tell lsp to fire up
-    (add-hook 'rust-mode-hook #'lsp))
+    )
 
 
   ;; Make sure rust is in path
@@ -2094,7 +2093,6 @@ A mode for coding in rust
 
   ;; FLycheck integration
   (use-package flycheck-rust)
-  (add-hook 'rust-mode-hook #'flycheck-mode)
   ;;(add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
   (setq flycheck-rust-check-tests t) ; Check test code too
   (setq flycheck-rust-cargo-executable "cargo clippy") ; Use Clippy
