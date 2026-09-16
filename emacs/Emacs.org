@@ -1014,12 +1014,6 @@ Emacs builtin recently opened files system
 ** ORG Mode
 The almighty org mode life, stuff and everything organizer
 https://orgmode.org/
-*** Debugging org mode
-#+begin_src emacs-lisp
-  (setq org-element--cache-self-verify 'backtrace)
-  (message "You have org-mode debugging on!")
-#+end_src
-
 *** ORG Mode
 Life organiser
 
