@@ -108,7 +108,7 @@ NOTE: This does not make any sense, what am I missing
   ;; We handle package initialization explicitly,
   ;; so we must prevent Emacs from doing it early!
   (setq package-enable-at-startup nil)
-  (setq package-quickstart t)
+  (setq package-quickstart nil)
 
 #+end_src
 ** Frame stuff
@@ -521,23 +521,26 @@ Setup the package managers for emacs and more repositories
 
 #+begin_src emacs-lisp
 
-    ;;
-    ;; Initialize package sources
-    ;;
-    (require 'package)
+  ;;
+  ;; Initialize package sources
+  ;;
+  (require 'package)
 
-    (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                             ("elpa" . "https://elpa.gnu.org/packages/")
-    			 ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
+  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                           ("elpa" . "https://elpa.gnu.org/packages/")
+      			 ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
 
-  ;; No longer needed aparently
-  ;;  (package-initialize)
 
-    ;; Reload package archives
-    ;; Is this what takes forever on startup?
-    (unless package-archive-contents
-      (package-refresh-contents))
+  (package-initialize)
+  (require 'seq)
 
+  ;; Reload package archives
+  ;; Is this what takes forever on startup?
+  (unless package-archive-contents
+    (package-refresh-contents))
+
+  ;; Always upgrade builtins
+  (setq package-install-upgrade-built-in t)
 
 #+end_src
 
@@ -639,13 +642,15 @@ Use a pretty modeline instead of the default one
 
 #+begin_src emacs-lisp
 
-  ;;
-  ;; doom modeline
-  ;;
+    ;;
+    ;; doom modeline
+    ;;
   (use-package doom-modeline
     :ensure t
-    :init (doom-modeline-mode 1)
-    :custom ((doom-modeline-height 8)))
+    :custom
+    (doom-modeline-height 8)
+    :config
+    (doom-modeline 1))
 
 #+end_src
 
@@ -655,11 +660,14 @@ Use a doom theme instead of a normal emacs theme since it covers more modes
 
 #+begin_src emacs-lisp
 
-  ;;
-  ;; Use doom themes and load Acario dark
-  ;;
-  (use-package doom-themes
-    :init (load-theme 'doom-acario-dark t))
+    ;;
+    ;; Use doom themes and load Acario dark
+    ;;
+    (use-package doom-themes
+    :ensure t
+    :demand t
+    :config
+    (load-theme 'doom-acario-dark t))
 
 #+end_src
 **** Customization
@@ -705,6 +713,8 @@ Swiper is the search document function bound to C-s
   ;; Better context stuff with IVY
   ;;
   (use-package ivy
+    :ensure t
+    :demand t
     :diminish
     :bind (("C-s" . swiper)
            :map ivy-minibuffer-map
@@ -722,9 +732,6 @@ Swiper is the search document function bound to C-s
            ("C-d" . ivy-reverse-i-search-kill))
     :config
     (ivy-mode 1))
-
-  ;; for some reason above dont work
-  (ivy-mode)
 
   ;;
   ;; Different interface for Ivy's switch buffer
@@ -1680,7 +1687,7 @@ Everything else goes into the gnus-secondary-select-methods list
     (setq gnus-directory "~/etc/emacs/gnus/news/")
     (setq gnus-home-directory "~/etc/emacs/gnus/")
     (setq gnus-data-directory "~/etc/emacs/gnus/data/")
-    (setq gnus-cache-directory "~/opt/cache/gnus/")
+    (setq gnus-cache-directory "~/.local/cache/gnus/")
     (setq mail-source-directory "~/etc/emacs/gnus/mail/")
     (setq nnmail-directory "~/etc/emacs/gnus/mail/")
     (setq nnml-directory "~/etc/emacs/gnus/mail/")
@@ -1930,8 +1937,21 @@ not high prio, but it would be nice if it could be done
 
 *** Flycheck
 #+begin_src emacs-lisp
+  (use-package flycheck
+  :ensure t
+  :hook ((emacs-lisp-mode . flycheck-mode)
+         (lisp-interaction-mode . flycheck-mode))
+  :config
+  (put 'emacs-lisp 'flycheck-enabled
+       (lambda ()
+         (and (flycheck--emacs-lisp-enabled-p)
+  	    
+              (or (trusted-content-p)
+                  (and (eq major-mode 'lisp-interaction-mode)
+                       (null buffer-file-name))))))
 
-  (add-hook 'after-init-hook #'global-flycheck-mode)
+  (global-flycheck-mode 1))
+
 #+end_src
 
 *** Languages
