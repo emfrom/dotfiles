@@ -1387,7 +1387,7 @@ My capture template includes a link section for external links (like wikipedia)
   		  (time-subtract (current-time) last-modified)
   		  (seconds-to-time (* 6 3600))))
         (org-roam-db-clear-all)
-        (org-roam-db-sync))
+        (org-roam-db-sync)))
 
       ;; Turn autosync on after the re-check so we dont run modified date on the file
       (org-roam-db-autosync-mode)
