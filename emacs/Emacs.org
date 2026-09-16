@@ -2095,7 +2095,7 @@ A mode for coding in rust
   (use-package flycheck-rust)
   ;;(add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
   (setq flycheck-rust-check-tests t) ; Check test code too
-  (setq flycheck-rust-cargo-executable "cargo clippy") ; Use Clippy
+  (setq flycheck-rust-cargo-executable "cargo")
 #+end_src
 
 **** Guile
