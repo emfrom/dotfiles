@@ -674,6 +674,11 @@ This removes all the glitter printed after the prompt
 
 #+end_src
 
+** Set terminal
+Disable the terminal locking
+#+begin_src shell
+  stty -ixon
+#+end_src
 ** GTK-2.0
 I dont know why 2.0 cant be satisfied with the XDG directories but here we are
 
