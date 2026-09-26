@@ -426,11 +426,13 @@ Load the content of the helper files
       source "${XDG_CONFIG_HOME}/bash/completions"
   fi
 
-  # Get completions from diretory as well
-  if [[ -d  "${XDG_CONFIG_HOME}/bash/completions.d" ]] ; then
-      for COMP_FILE in "${XDG_CONFIG_HOME}/bash/completions.d/*" ; do
-          source $COMP_FILE
+  # Load command-specific completions as well. Keep the glob outside the
+  # quotes so it expands; the readability check safely handles no matches.
+  if [[ -d "${XDG_CONFIG_HOME}/bash/completions.d" ]] ; then
+      for COMP_FILE in "${XDG_CONFIG_HOME}/bash/completions.d"/* ; do
+          [[ -r "$COMP_FILE" ]] && source "$COMP_FILE"
       done
+      unset COMP_FILE
   fi
 
 
@@ -685,6 +687,12 @@ This removes all the glitter printed after the prompt
 Disable the terminal locking
 #+begin_src shell
   stty -ixon
+#+end_src
+** Hugginface
+#+begin_src shell
+export HF_HOME="$HOME/.cache/huggingface"
+export HUGGINGFACE_HUB_CACHE="$HF_HOME/hub"
+export TRANSFORMERS_CACHE="$HF_HOME/hub"
 #+end_src
 ** GTK-2.0
 I dont know why 2.0 cant be satisfied with the XDG directories but here we are
@@ -1772,6 +1780,223 @@ do
 done
 
 #+end_src
+
+** Pi
+Complete Pi's commands, options, providers, models, and path arguments.
+#+begin_src shell :tangle ./completions.d/pi :mkdirp yes
+_pi_completion()
+{
+    local cur prev sub providers
+    cur=${COMP_WORDS[COMP_CWORD]}
+    prev=${COMP_WORDS[COMP_CWORD-1]}
+    sub=${COMP_WORDS[1]}
+
+    case "$prev" in
+        --provider)
+            providers=$(pi --list-models 2>/dev/null | awk 'NR > 1 {print $1}' | sort -u)
+            COMPREPLY=( $(compgen -W "$providers" -- "$cur") )
+            return
+            ;;
+        --model)
+            COMPREPLY=( $(compgen -W "$(pi --list-models 2>/dev/null | awk 'NR > 1 {print $1 "/" $2}')" -- "$cur") )
+            return
+            ;;
+        --thinking)
+            COMPREPLY=( $(compgen -W 'off minimal low medium high xhigh max' -- "$cur") )
+            return
+            ;;
+        --mode)
+            COMPREPLY=( $(compgen -W 'text json rpc' -- "$cur") )
+            return
+            ;;
+        --tui-mode)
+            COMPREPLY=( $(compgen -W 'regular fullscreen' -- "$cur") )
+            return
+            ;;
+        --extension|--skill|--prompt-template|--theme|--export|--session-dir)
+            COMPREPLY=( $(compgen -f -- "$cur") )
+            return
+            ;;
+    esac
+
+    case "$sub" in
+        install|remove|uninstall|config|list)
+            COMPREPLY=( $(compgen -W '-l --local -a --approve -na --no-approve --help' -- "$cur") )
+            return
+            ;;
+        update)
+            COMPREPLY=( $(compgen -W 'self pi --self --extensions --models --all --extension --force -a --approve -na --no-approve --help' -- "$cur") )
+            return
+            ;;
+        auth)
+            if (( COMP_CWORD == 2 )); then
+                COMPREPLY=( $(compgen -W 'print-api-key print-bearer-token check' -- "$cur") )
+            else
+                COMPREPLY=( $(compgen -W '--provider --model --min-expiry --json --credentials --no-refresh --help' -- "$cur") )
+            fi
+            return
+            ;;
+    esac
+
+    if [[ $cur == @* ]]; then
+        COMPREPLY=( $(compgen -f -- "${cur#@}") )
+        COMPREPLY=( "${COMPREPLY[@]/#/@}" )
+        return
+    fi
+
+    COMPREPLY=( $(compgen -W 'install remove uninstall update list config auth --provider --model --api-key --system-prompt --append-system-prompt --mode --print -p --continue -c --resume -r --session --session-id --fork --session-dir --no-session --name -n --models --no-tools -nt --no-builtin-tools -nbt --tools -t --exclude-tools -xt --thinking --extension -e --no-extensions -ne --skill --no-skills -ns --prompt-template --no-prompt-templates -np --theme --use-theme --no-themes --no-context-files -nc --export --list-models --verbose --tui-mode --approve -a --no-approve -na --offline --help -h --version -v' -- "$cur") )
+}
+complete -o bashdefault -o default -o nosort -F _pi_completion pi
+#+end_src
+
+** Ollama
+Complete Ollama commands and installed model names. Model queries are made only
+when completing an argument that accepts a model.
+#+begin_src shell :tangle ./completions.d/ollama :mkdirp yes
+_ollama_completion()
+{
+    local cur prev sub models
+    cur=${COMP_WORDS[COMP_CWORD]}
+    prev=${COMP_WORDS[COMP_CWORD-1]}
+    sub=${COMP_WORDS[1]}
+
+    if (( COMP_CWORD == 1 )); then
+        COMPREPLY=( $(compgen -W 'serve create show run stop pull push signin signout list ls ps cp rm launch help --help -h --version -v --verbose --nowordwrap' -- "$cur") )
+        return
+    fi
+
+    case "$sub" in
+        show|run|rm|cp)
+            if (( COMP_CWORD == 2 )) || [[ $sub == rm ]]; then
+                models=$(ollama list 2>/dev/null | awk 'NR > 1 {print $1}')
+                COMPREPLY=( $(compgen -W "$models" -- "$cur") )
+                return
+            fi
+            ;;
+        stop)
+            models=$(ollama ps 2>/dev/null | awk 'NR > 1 {print $1}')
+            COMPREPLY=( $(compgen -W "$models" -- "$cur") )
+            return
+            ;;
+        create)
+            case "$prev" in
+                -f|--file) COMPREPLY=( $(compgen -f -- "$cur") ); return ;;
+                -q|--quantize|--draft-quantize)
+                    COMPREPLY=( $(compgen -W 'q2_K q3_K_S q3_K_M q3_K_L q4_0 q4_K_S q4_K_M q5_0 q5_K_S q5_K_M q6_K q8_0' -- "$cur") )
+                    return
+                    ;;
+            esac
+            COMPREPLY=( $(compgen -W '-f --file -q --quantize --draft-quantize --experimental --help -h' -- "$cur") )
+            return
+            ;;
+        show)
+            COMPREPLY+=( $(compgen -W '--license --modelfile --parameters --system --template --verbose -v --help -h' -- "$cur") )
+            ;;
+        run)
+            case "$prev" in
+                --format) COMPREPLY=( $(compgen -W 'json' -- "$cur") ); return ;;
+                --think) COMPREPLY=( $(compgen -W 'true false high medium low' -- "$cur") ); return ;;
+            esac
+            COMPREPLY+=( $(compgen -W '--dimensions --format --hidethinking --insecure --keepalive --nowordwrap --think --truncate --verbose --width --height --steps --seed --negative --help -h' -- "$cur") )
+            ;;
+        pull|push)
+            COMPREPLY=( $(compgen -W '--insecure --help -h' -- "$cur") )
+            ;;
+        launch)
+            if (( COMP_CWORD == 2 )); then
+                COMPREPLY=( $(compgen -W 'claude codex-app codex-desktop codex-gui hermes openclaw clawdbot moltbot opencode codex hermes-desktop copilot copilot-cli omp droid kimi pi pool cline qwen vscode code' -- "$cur") )
+            else
+                COMPREPLY=( $(compgen -W '--config --model --restore --yes -y --help -h' -- "$cur") )
+            fi
+            ;;
+        *)
+            COMPREPLY=( $(compgen -W '--help -h' -- "$cur") )
+            ;;
+    esac
+}
+complete -o bashdefault -o default -o nosort -F _ollama_completion ollama
+#+end_src
+
+** Npm and pip
+Use the completion implementations shipped with npm, pip, or the system's
+bash-completion package rather than duplicating their changing command sets.
+#+begin_src shell :tangle ./completions.d/npm :mkdirp yes
+if [[ -r /usr/share/bash-completion/completions/npm ]]; then
+    source /usr/share/bash-completion/completions/npm
+elif command -v npm >/dev/null 2>&1; then
+    source <(npm completion 2>/dev/null)
+fi
+#+end_src
+
+#+begin_src shell :tangle ./completions.d/pip :mkdirp yes
+# The system _pip file is a lazy-loader helper and cannot be sourced directly,
+# so ask each installed executable for its version-matched completion function.
+if command -v pip >/dev/null 2>&1; then
+    source <(pip completion --bash 2>/dev/null)
+fi
+if command -v pip3 >/dev/null 2>&1; then
+    source <(pip3 completion --bash 2>/dev/null)
+fi
+#+end_src
+
+** Codex
+Codex generates version-matched completions itself.
+#+begin_src shell :tangle ./completions.d/codex :mkdirp yes
+if command -v codex >/dev/null 2>&1; then
+    source <(codex completion bash 2>/dev/null)
+fi
+#+end_src
+
+** Stow
+Complete Stow options, paths, and package directories.
+#+begin_src shell :tangle ./completions.d/stow :mkdirp yes
+_stow_completion()
+{
+    local cur prev stow_dir i
+    cur=${COMP_WORDS[COMP_CWORD]}
+    prev=${COMP_WORDS[COMP_CWORD-1]}
+    stow_dir=$PWD
+
+    for ((i=1; i < COMP_CWORD; i++)); do
+        case "${COMP_WORDS[i]}" in
+            -d|--dir) ((i++)); stow_dir=${COMP_WORDS[i]} ;;
+            --dir=*) stow_dir=${COMP_WORDS[i]#--dir=} ;;
+        esac
+    done
+
+    case "$prev" in
+        -d|--dir|-t|--target) COMPREPLY=( $(compgen -d -- "$cur") ); return ;;
+        --ignore|--defer|--override) return ;;
+        --verbose) COMPREPLY=( $(compgen -W '0 1 2 3 4 5' -- "$cur") ); return ;;
+    esac
+
+    if [[ $cur == -* ]]; then
+        COMPREPLY=( $(compgen -W '-d --dir -t --target -S --stow -D --delete -R --restow --ignore --defer --override --adopt --dotfiles -p --compat -n --no --simulate -v --verbose -V --version -h --help' -- "$cur") )
+    elif [[ -d $stow_dir ]]; then
+        COMPREPLY=( $(compgen -W "$(find "$stow_dir" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null)" -- "$cur") )
+    fi
+}
+complete -o bashdefault -o default -F _stow_completion stow
+#+end_src
+
+** XeLaTeX
+Complete commonly used engine options and TeX input files.
+#+begin_src shell :tangle ./completions.d/xelatex :mkdirp yes
+_xelatex_completion()
+{
+    local cur
+    cur=${COMP_WORDS[COMP_CWORD]}
+    if [[ $cur == -* ]]; then
+        COMPREPLY=( $(compgen -W '-interaction=nonstopmode -interaction=batchmode -interaction=scrollmode -interaction=errorstopmode -halt-on-error -file-line-error -no-file-line-error -output-directory= -jobname= -draftmode -synctex=1 -shell-escape -no-shell-escape -version -help' -- "$cur") )
+    elif declare -F _filedir >/dev/null; then
+        _filedir tex
+    else
+        COMPREPLY=( $(compgen -f -- "$cur") )
+    fi
+}
+complete -o bashdefault -o default -F _xelatex_completion xelatex xetex
+#+end_src
+
 * Dircolours
 These are the colours that =ls= uses.
 
