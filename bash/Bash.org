@@ -111,6 +111,20 @@ Both .profile and .bash_profile should do nothing other than call .bashrc
 
 
 ** Last things
+**** HOME usage
+Print the most recently indexed HOME usage on every login. The duc index is refreshed hourly by =duc-index.timer=.
+
+#+begin_src shell :tangle ./bash_profile :mkdirp yes
+  duc_database="${XDG_STATE_HOME:-${HOME}/.local/state}/duc/home.db"
+  if command -v duc &> /dev/null && [[ -r "$duc_database" ]] ; then
+      home_usage=$(duc ls --database="$duc_database" --directory "$HOME" 2> /dev/null | awk 'NR == 1 { print $1 }')
+      [[ -n "$home_usage" ]] && printf 'HOME usage: %s\n' "$home_usage"
+      unset home_usage
+  fi
+  unset duc_database
+
+#+end_src
+
 **** clear
 Not doing this since motd contains actual info on some systems
 
