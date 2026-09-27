@@ -111,20 +111,6 @@ Both .profile and .bash_profile should do nothing other than call .bashrc
 
 
 ** Last things
-**** HOME usage
-Print the most recently indexed HOME usage on every login. The duc index is refreshed hourly by =duc-index.timer=.
-
-#+begin_src shell :tangle ./bash_profile :mkdirp yes
-  duc_database="${XDG_STATE_HOME:-${HOME}/.local/state}/duc/home.db"
-  if command -v duc &> /dev/null && [[ -r "$duc_database" ]] ; then
-      home_usage=$(duc ls --database="$duc_database" --directory "$HOME" 2> /dev/null | awk 'NR == 1 { print $1 }')
-      [[ -n "$home_usage" ]] && printf 'HOME usage: %s\n' "$home_usage"
-      unset home_usage
-  fi
-  unset duc_database
-
-#+end_src
-
 **** clear
 Not doing this since motd contains actual info on some systems
 
@@ -329,31 +315,6 @@ This all is a byproduct of the idiotic login shell distinction.
 
 #+end_src
 
-The reason for this is so that we can save things with preexisting commands and utilities
-
-*** tmp directory
-This creates some problems under both termux and guix
-#+begin_src shell
-
-  touch /tmp/$BASHPID &> /dev/null
-  chmod 755 /tmp/$BASHPID &> /dev/null
-
-  if [[ -x /tmp/$BASHPID ]] ; then
-      export TMP=/tmp
-      rm -f /tmp/$BASHPID
-  else
-      export TMP=$HOME/opt/tmp
-  fi
-  export TEMP=$TMP
-#+end_src
-*** Termux hostname
-#+begin_src shell
-
-  if [[ $HOSTNAME = "localhost" ]] ; then
-      export HOSTNAME="Android"
-  fi
-
-#+end_src
 ** Path
 Set the path
 
@@ -722,6 +683,45 @@ I dont know why 2.0 cant be satisfied with the XDG directories but here we are
 #+end_src
 *** TODO How do I do this?
 
+** HOME usatge
+Print the most recently indexed HOME usage in every new interactive shell. The duc index is refreshed hourly by =duc-index.timer=.
+
+#+begin_src shell :tangle ./bashrc :mkdirp yes
+  duc_database="${XDG_STATE_HOME:-${HOME}/.local/state}/duc/home.db"
+  if command -v duc &> /dev/null && [[ -r "$duc_database" ]] ; then
+      home_usage=$(duc ls --database="$duc_database" --directory "$HOME" 2> /dev/null | awk 'NR == 1 { print $1 }')
+      [[ -n "$home_usage" ]] && printf 'HOME usage: %s\n' "$home_usage"
+      unset home_usage
+  fi
+  unset duc_database
+
+#+end_src
+
+The reason for this is so that we can save things with preexisting commands and utilities
+
+*** tmp directory
+This creates some problems under both termux and guix
+#+begin_src shell
+
+  touch /tmp/$BASHPID &> /dev/null
+  chmod 755 /tmp/$BASHPID &> /dev/null
+
+  if [[ -x /tmp/$BASHPID ]] ; then
+      export TMP=/tmp
+      rm -f /tmp/$BASHPID
+  else
+      export TMP=$HOME/opt/tmp
+  fi
+  export TEMP=$TMP
+#+end_src
+*** Termux hostname
+#+begin_src shell
+
+  if [[ $HOSTNAME = "localhost" ]] ; then
+      export HOSTNAME="Android"
+  fi
+
+#+end_src
 * Bash logout
 This is a weird file, sourced only when a login shell exits
 
