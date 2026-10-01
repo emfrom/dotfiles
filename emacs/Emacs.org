@@ -688,7 +688,7 @@ Modes and mini modes that help getting stuff done
   (use-package auth-source
     :ensure nil
     :config
-    (setq auth-sources '("~/etc/authinfo.gpg")))
+    (setq auth-sources '("secrets:Password Database")))
 
   (use-package epa
     :ensure nil
@@ -1708,16 +1708,14 @@ Everything else goes into the gnus-secondary-select-methods list
           '(nnimap "ProtonMail"
                    (nnimap-address "127.0.0.1")     ;; IMAP address from Bridge
                    (nnimap-server-port 1143)        ;; IMAP port from Bridge
-                   (nnimap-stream network)          ;; Network connection
-                   (nnimap-authinfo-file "~/etc/authinfo.gpg"))) ;; For secure login
+                   (nnimap-stream network)))        ;; Credentials come from Secret Service
 
     ;; With default SMTP
     (setq send-mail-function 'smtpmail-send-it
           message-send-mail-function 'smtpmail-send-it
           smtpmail-smtp-server "127.0.0.1"          ;; SMTP address from Bridge
           smtpmail-smtp-service 1025                ;; SMTP port from Bridge
-          smtpmail-stream-type 'plain
-          smtpmail-auth-credentials "~/etc/authinfo.gpg") ;; For secure login
+          smtpmail-stream-type 'plain)              ;; Credentials come from Secret Service
 
     ;;
     (setq gnus-secondary-select-methods nil)
@@ -1728,8 +1726,7 @@ Everything else goes into the gnus-secondary-select-methods list
                  '(nnimap "Gmail"
                           (nnimap-address "imap.gmail.com")
                           (nnimap-server-port 993)
-                          (nnimap-stream ssl)
-                          (nnimap-authinfo-file "~/etc/authinfo.gpg")))
+                          (nnimap-stream ssl)))
 
     ;; Old yahoo
     ;;
@@ -1738,7 +1735,6 @@ Everything else goes into the gnus-secondary-select-methods list
                           (nnimap-address "imap.mail.yahoo.com")
                           (nnimap-server-port 993)
                           (nnimap-stream ssl)
-                          (nnimap-authinfo-file "~/etc/authinfo.gpg")
       		    (nnimap-inbox "Inbox")))
 
    ;; Local mail
