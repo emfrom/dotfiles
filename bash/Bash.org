@@ -555,7 +555,7 @@ Just to keep gnus from littering all over the place
 #+end_src
 *** zoxide
 #+begin_src shell :tangle ./bashrc :mkdirp yes
-  if command -v zoxide $> /dev/null ; then
+  if command -v zoxide &> /dev/null ; then
       eval "$(zoxide init --cmd cd bash)"
   fi
 #+end_src
@@ -1006,34 +1006,35 @@ ROOTPID is used by both lolcows and runtime
   if command -v cowsay &> /dev/null  && command -v lolcat &> /dev/null ; then
       function create_lolcow ()
       {
-  	local lolcow_file="$TMP/$USER.lolcow.$ROOTPID"
+      local lolcow_file="${TMP:-/tmp}/$USER.lolcow.$ROOTPID"
   	
   	# Print an affirmation in a lolcow or sometimes a heart
   	if [[ 0 = `shuf -i 0-24 -n 1` ]] ; then
-              ansi_heart > $lolcow_file
+              ansi_heart > "$lolcow_file"
   	else
-  	    affirmation | cowsay | lolcat -f -F 0.2 > $lolcow_file
+          affirmation | cowsay | lolcat -f -F 0.2 > "$lolcow_file"
   	fi
 
       }
   else
       function create_lolcow ()
       {
-  	ansi_heart > $lolcow_file
+      local lolcow_file="${TMP:-/tmp}/$USER.lolcow.$ROOTPID"
+      ansi_heart > "$lolcow_file"
       }
   fi 
 
   function display_lolcow () {
       #stuff
-      local lolcow_file="$TMP/$USER.lolcow.$ROOTPID"
+      local lolcow_file="${TMP:-/tmp}/$USER.lolcow.$ROOTPID"
 
       echo -en "\e[J\n\n\n\n" 
 
-      if [[ -f $lolcow_file ]] ; then 
-          local lolcow_len=$(wc -l ${lolcow_file} | cut -f1 -d' ')
-          cat $lolcow_file
+      if [[ -f "$lolcow_file" ]] ; then
+          local lolcow_len=$(wc -l < "$lolcow_file")
+          cat "$lolcow_file"
           echo -en "\e["
-          echo -en $lolcow_len
+          echo -en "$lolcow_len"
           echo -en "A"
       else
           ansi_heart
@@ -1156,7 +1157,7 @@ Replacing with zoxide, but keep around for systems without.
   #To use it, uncomment it, source this file and try 'cd --'.
   #acd_func 1.0.5, 10-nov-2004
   #Petar Marinov, http:/geocities.com/h2428, this is public domain
-  if ! command -v zoxide ; then
+  if ! command -v zoxide &> /dev/null ; then
       cd_func ()
       {
           local x2 the_new_dir adir index
@@ -1461,7 +1462,7 @@ For the cd_func definition see [[CD Function]]
   #
   # Fallback on cd if no zoxide
   # 
-  if ! command -v zoxide $> /dev/null ; then
+  if ! command -v zoxide &> /dev/null ; then
       #
       # cd
       #
