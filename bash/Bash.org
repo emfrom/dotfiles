@@ -687,7 +687,7 @@ I dont know why 2.0 cant be satisfied with the XDG directories but here we are
 Print the most recently indexed HOME usage in every new interactive shell. The duc index is refreshed hourly by =duc-index.timer=.
 
 #+begin_src shell :tangle ./bashrc :mkdirp yes
-  duc_database="${XDG_STATE_HOME:-${HOME}/.local/state}/duc/home.db"
+  duc_database="${XDG_CACHE_HOME:-${HOME}/.cache}/duc/duc.db"
   if command -v duc &> /dev/null && [[ -r "$duc_database" ]] ; then
       home_usage=$(duc ls --database="$duc_database" --directory "$HOME" 2> /dev/null | awk 'NR == 1 { print $1 }')
       [[ -n "$home_usage" ]] && printf 'HOME usage: %s\n' "$home_usage"
@@ -1711,6 +1711,11 @@ For some reason -B doesnt always work, so I added an --ignore=*~
   # unice for maximum prio reduction
   #
   alias unice='ionice -c3 nice -n 19'
+#+end_src
+
+#+begin_src shell :tangle ./aliases :mkdirp yes
+  # Resume the most recent pi session
+  alias pir='pi --resume'
 #+end_src
 ** which
 A =which= alias for us old people
