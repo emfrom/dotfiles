@@ -680,22 +680,11 @@ I dont know why 2.0 cant be satisfied with the XDG directories but here we are
 
   #export GTK2_RC_FILES=$XDG_CONFIG_HOME/gtk-2.0
 
+  if [ -x /home/emfrom/src/projects/home-db/du.homedb ]; then
+    /home/emfrom/src/projects/home-db/du.homedb -s "$HOME" | awk '{print "HOME usage: " $1}'
+  fi
 #+end_src
 *** TODO How do I do this?
-
-** HOME usatge
-Print the most recently indexed HOME usage in every new interactive shell. The duc index is refreshed hourly by =duc-index.timer=.
-
-#+begin_src shell :tangle ./bashrc :mkdirp yes
-  duc_database="${XDG_CACHE_HOME:-${HOME}/.cache}/duc/duc.db"
-  if command -v duc &> /dev/null && [[ -r "$duc_database" ]] ; then
-      home_usage=$(duc ls --database="$duc_database" --directory "$HOME" 2> /dev/null | awk 'NR == 1 { print $1 }')
-      [[ -n "$home_usage" ]] && printf 'HOME usage: %s\n' "$home_usage"
-      unset home_usage
-  fi
-  unset duc_database
-
-#+end_src
 
 The reason for this is so that we can save things with preexisting commands and utilities
 
