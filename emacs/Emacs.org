@@ -1666,6 +1666,9 @@ Everything else goes into the gnus-secondary-select-methods list
     ;;
     (setq gnus-expert-user t)
 
+    ;; Ignore HTML email colors that conflict with the active Emacs theme.
+    (setq shr-use-colors nil)
+
 
     ;; Keybinding to start gnus
     ;;
