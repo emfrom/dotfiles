@@ -10,7 +10,7 @@ There are no config files in this dotfiles repo, (almost) only org files. Org mo
 
 I highly recommend the youtube playlist [[https://www.youtube.com/watch?v=74zOY-vgkyw&list=PLEoMzSkcN8oPH1au7H6B7bBJ4ZO7BXjSZ][Emacs from scratch]], a very good starting point for Emacs and org mode.
 
-My live config lives in ~/etc (tradition)
+My live config lives in =~/etc= (tradition), with links managed by [[https://www.gnu.org/software/stow/][GNU Stow]].
 
 Big thanks:
 - David Wilson/Systemcrafters
@@ -28,6 +28,11 @@ The whole config is in [[file:bash/Bash.org][Bash.org]] it tangles to the bashrc
 
 Manages my keybindings, including home row modifiers and navigation overlays.
 [[file:kanata/Kanata.org][Kanata.org]]
+
+* KMonad
+
+Haskell version of the keyboard configuration.
+[[file:kmonad/KMonad.org][KMonad.org]]
 
 * Environment
 
