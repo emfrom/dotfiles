@@ -1,0 +1,142 @@
+#+TITLE: KMonad configuration
+#+AUTHOR: E.M. From
+#+STARTUP: overview
+
+Keyboard remapping with home-row modifiers, a navigation overlay, and a gaming
+layer.  This is a KMonad translation of [[file:../kanata/Kanata.org][the Kanata configuration]].
+
+* Config file
+KMonad supports the features used by this layout.  Its =tap-hold= has a single
+timeout; the zero-length tap timeout in the Kanata configuration corresponds to
+KMonad's normal instantaneous tap.  The input path is machine-specific.
+
+#+begin_src lisp :tangle ./config.kbd :mkdirp yes
+  ;; KMonad translation of config.kbd.
+  ;; The input path is machine-specific; update it when changing keyboards.
+  (defcfg
+    input  (device-file "/dev/input/by-id/usb-ITE_Tech._Inc._ITE_Device_8258_-event-kbd"
+                        :ignore-missing true)
+    output (uinput-sink "KMonad keyboard")
+    fallthrough true
+    allow-cmd true)
+
+  (defsrc
+    esc   1    2    3    4    5    6    7    8    9    0    -    =    bspc
+    tab   q    w    e    r    t    y    u    i    o    p    [    ]    \
+    caps  a    s    d    f    g    h    j    k    l    ;    '    ret
+    lsft  z    x    c    v    b    n    m    ,    .    /    rsft
+    lctl  lmet lalt           spc            ralt rmet rctl)
+
+  (defalias
+    ;; Emit a key, then make base the persistent layer. KMonad cannot compose a
+    ;; transparent key with another action, so these replace Kanata's @src.
+    src-esc (around esc (layer-switch base))
+    src-1   (around 1   (layer-switch base))
+    src-2   (around 2   (layer-switch base))
+    src-3   (around 3   (layer-switch base))
+    src-4   (around 4   (layer-switch base))
+    src-5   (around 5   (layer-switch base))
+    src-6   (around 6   (layer-switch base))
+    src-7   (around 7   (layer-switch base))
+    src-8   (around 8   (layer-switch base))
+    src-9   (around 9   (layer-switch base))
+    src-0   (around 0   (layer-switch base))
+    src-q   (around q   (layer-switch base))
+    src-w   (around w   (layer-switch base))
+    src-e   (around e   (layer-switch base))
+    src-r   (around r   (layer-switch base))
+    src-t   (around t   (layer-switch base))
+    src-y   (around y   (layer-switch base))
+    src-u   (around u   (layer-switch base))
+    src-i   (around i   (layer-switch base))
+    src-o   (around o   (layer-switch base))
+    src-p   (around p   (layer-switch base))
+    src-h   (around h   (layer-switch base))
+    src-ret (around ret (layer-switch base))
+    src-z   (around z   (layer-switch base))
+    src-x   (around x   (layer-switch base))
+    src-c   (around c   (layer-switch base))
+    src-v   (around v   (layer-switch base))
+    src-b   (around b   (layer-switch base))
+    src-n   (around n   (layer-switch base))
+    src-m   (around m   (layer-switch base))
+    src-ctl (around lctl (layer-switch base))
+    src-met (around lmet (layer-switch base))
+
+    ;; KMonad's layer-toggle is active only while its key is held.
+    navr (around (layer-toggle nav) (layer-switch base))
+    caps (tap-hold 200 bspc @navr)
+    caps-dictation (cmd-button "/home/emfrom/.local/bin/dictation-start"
+                                 "/home/emfrom/.local/bin/dictation-stop")
+    tab  (tap-hold 200 tab esc)
+    grv  (tap-hold 200 grv esc)
+    a    (tap-hold 200 a @navr)
+    s    (tap-hold 200 s lalt)
+    d    (tap-hold 200 d lsft)
+    f    (tap-hold 200 f lctl)
+    j    (tap-hold 200 j rctl)
+    k    (tap-hold 200 k rsft)
+    l    (tap-hold 200 l ralt)
+    scl  (tap-hold 200 ; lmet)
+    g    (tap-hold 200 g lmet)
+
+    up    (tap-hold 200 up rctl)
+    left  (tap-hold 200 left rsft)
+    right (tap-hold 200 right ralt)
+    down  (tap-hold 200 down lmet)
+
+    game     (tap-hold 1000 tab (layer-switch game))
+    gameback (tap-hold 1000 tab (layer-switch base))
+
+    nav  (layer-switch nav)
+    base (layer-switch base))
+
+  (deflayer base
+    @grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+    @tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
+    @caps-dictation @a   @s   @d   @f   @g   h    @j   @k   @l   @scl  '    ret
+    lsft  z    x    c    v    b    n    m    ,    .    /    rsft
+    lctl  lmet lalt           spc            ralt rctl rctl)
+
+  (deflayer nav
+    @src-esc @src-1 @src-2 @src-3 @src-4 @src-5 @src-6 @src-7 @src-8 @src-9 @src-0 - = bspc
+    @tab @src-q @src-w @src-e @src-r @src-t @src-y @src-u @src-i @src-o @src-p [ ] \
+    @caps @a @s @d @f @g @src-h @up @left @right @down ' @src-ret
+    @base @src-z @src-x @src-c @src-v @src-b @src-n @src-m , . up @base
+    @src-ctl @src-met ret      spc             left rctl right)
+
+  (deflayer game
+    esc   1    2    3    4    5    6    7    8    9    0    -    =    bspc
+    tab   q    w    e    r    t    y    u    i    o    p    [    ]    \
+    caps  a    s    d    f    g    h    j    k    l    ;    '    ret
+    lsft  z    x    c    v    b    n    m    ,    .    /    rsft
+    lctl  lmet lalt           spc            @gameback rctl rctl)
+#+end_src
+
+Run =kmonad -d ~/etc/kmonad/config.kbd= to validate the configuration,
+then run it without =-d=.  KMonad needs read access to the input device and
+write access to =/dev/uinput=.
+
+* Systemd entry
+The service is enabled for the user session but is not started when this file is
+tangled.  A fresh login is required after changing input-group membership.
+
+#+begin_src systemd :tangle ~/etc/systemd/user/kmonad.service :mkdirp yes
+[Unit]
+Description=KMonad keyboard remapper
+Documentation=https://github.com/kmonad/kmonad
+
+[Service]
+Type=simple
+ExecStart=/home/emfrom/bin/kmonad /home/emfrom/etc/kmonad/config.kbd
+Restart=on-failure
+RestartSec=1
+
+[Install]
+WantedBy=default.target
+#+end_src
+
+* Tangle on save
+#+begin_src emacs-lisp :tangle ./.dir-locals.el :mkdirp yes
+((org-mode . ((eval . (add-to-list 'emf/org-babel-autotangle-dirs (file-name-directory (or load-file-name buffer-file-name)))))))
+#+end_src
