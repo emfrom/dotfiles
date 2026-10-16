@@ -217,6 +217,9 @@ This quits if the shell is not interactive
     return
   fi
 
+  # Require repeated Ctrl-D to exit an interactive shell.
+  IGNOREEOF=3
+
   # Disable terminal software flow control (Ctrl-S/Ctrl-Q remain available).
   if [[ -t 0 ]]; then
     stty -ixon
