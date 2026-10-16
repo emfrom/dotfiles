@@ -1,0 +1,63 @@
+_pi_completion()
+{
+    local cur prev sub providers
+    cur=${COMP_WORDS[COMP_CWORD]}
+    prev=${COMP_WORDS[COMP_CWORD-1]}
+    sub=${COMP_WORDS[1]}
+
+    case "$prev" in
+        --provider)
+            providers=$(pi --list-models 2>/dev/null | awk 'NR > 1 {print $1}' | sort -u)
+            COMPREPLY=( $(compgen -W "$providers" -- "$cur") )
+            return
+            ;;
+        --model)
+            COMPREPLY=( $(compgen -W "$(pi --list-models 2>/dev/null | awk 'NR > 1 {print $1 "/" $2}')" -- "$cur") )
+            return
+            ;;
+        --thinking)
+            COMPREPLY=( $(compgen -W 'off minimal low medium high xhigh max' -- "$cur") )
+            return
+            ;;
+        --mode)
+            COMPREPLY=( $(compgen -W 'text json rpc' -- "$cur") )
+            return
+            ;;
+        --tui-mode)
+            COMPREPLY=( $(compgen -W 'regular fullscreen' -- "$cur") )
+            return
+            ;;
+        --extension|--skill|--prompt-template|--theme|--export|--session-dir)
+            COMPREPLY=( $(compgen -f -- "$cur") )
+            return
+            ;;
+    esac
+
+    case "$sub" in
+        install|remove|uninstall|config|list)
+            COMPREPLY=( $(compgen -W '-l --local -a --approve -na --no-approve --help' -- "$cur") )
+            return
+            ;;
+        update)
+            COMPREPLY=( $(compgen -W 'self pi --self --extensions --models --all --extension --force -a --approve -na --no-approve --help' -- "$cur") )
+            return
+            ;;
+        auth)
+            if (( COMP_CWORD == 2 )); then
+                COMPREPLY=( $(compgen -W 'print-api-key print-bearer-token check' -- "$cur") )
+            else
+                COMPREPLY=( $(compgen -W '--provider --model --min-expiry --json --credentials --no-refresh --help' -- "$cur") )
+            fi
+            return
+            ;;
+    esac
+
+    if [[ $cur == @* ]]; then
+        COMPREPLY=( $(compgen -f -- "${cur#@}") )
+        COMPREPLY=( "${COMPREPLY[@]/#/@}" )
+        return
+    fi
+
+    COMPREPLY=( $(compgen -W 'install remove uninstall update list config auth --provider --model --api-key --system-prompt --append-system-prompt --mode --print -p --continue -c --resume -r --session --session-id --fork --session-dir --no-session --name -n --models --no-tools -nt --no-builtin-tools -nbt --tools -t --exclude-tools -xt --thinking --extension -e --no-extensions -ne --skill --no-skills -ns --prompt-template --no-prompt-templates -np --theme --use-theme --no-themes --no-context-files -nc --export --list-models --verbose --tui-mode --approve -a --no-approve -na --offline --help -h --version -v' -- "$cur") )
+}
+complete -o bashdefault -o default -o nosort -F _pi_completion pi

@@ -1,0 +1,13 @@
+_xelatex_completion()
+{
+    local cur
+    cur=${COMP_WORDS[COMP_CWORD]}
+    if [[ $cur == -* ]]; then
+        COMPREPLY=( $(compgen -W '-interaction=nonstopmode -interaction=batchmode -interaction=scrollmode -interaction=errorstopmode -halt-on-error -file-line-error -no-file-line-error -output-directory= -jobname= -draftmode -synctex=1 -shell-escape -no-shell-escape -version -help' -- "$cur") )
+    elif declare -F _filedir >/dev/null; then
+        _filedir tex
+    else
+        COMPREPLY=( $(compgen -f -- "$cur") )
+    fi
+}
+complete -o bashdefault -o default -F _xelatex_completion xelatex xetex

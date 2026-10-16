@@ -1,0 +1,8 @@
+# The system _pip file is a lazy-loader helper and cannot be sourced directly,
+# so ask each installed executable for its version-matched completion function.
+if command -v pip >/dev/null 2>&1; then
+    source <(pip completion --bash 2>/dev/null)
+fi
+if command -v pip3 >/dev/null 2>&1; then
+    source <(pip3 completion --bash 2>/dev/null)
+fi

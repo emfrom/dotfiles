@@ -1,3 +1,52 @@
-# There's so much junk in here that this is the only viable option
-# Use git add -f <file>
+# Ignore everything by default; explicitly include the directories and root files
+# maintained in this repository.
 /*
+!/bash/
+!/cron.15min/
+!/cron.daily/
+!/emacs/
+!/env/
+!/git/
+!/kmonad/
+!/readline/
+!/ripgrep/
+!/schemesh/
+!/vim/
+
+# Emacs-installed modules and generated runtime state
+/emacs/elpa/
+/emacs/straight/
+/emacs/eln-cache/
+/emacs/var/
+/emacs/auto-save-list/
+/emacs/auto-save-list/
+/emacs/history/
+/emacs/transient/
+
+# Local files not maintained in this repository
+/bash/.dir-locals.el
+/bash/aliases
+/bash/bash_history
+/bash/bash_logout
+/bash/bash_profile
+/bash/bashrc
+/bash/completions
+/bash/dircolours
+/bash/functions
+/bash/options
+/emacs/custom.el
+/emacs/desktop.el
+/emacs/early-init.el
+/emacs/etc/
+/emacs/exwm/
+/emacs/gnus/
+/emacs/init.el
+/emacs/org-roam.db
+/emacs/scratch
+/kmonad/.dir-locals.el
+/vim/viminfo
+!/.gitattributes
+!/.gitignore
+!/README.org
+!/tangle-all.sh
+!/user-dirs.dirs

@@ -1,0 +1,27 @@
+_stow_completion()
+{
+    local cur prev stow_dir i
+    cur=${COMP_WORDS[COMP_CWORD]}
+    prev=${COMP_WORDS[COMP_CWORD-1]}
+    stow_dir=$PWD
+
+    for ((i=1; i < COMP_CWORD; i++)); do
+        case "${COMP_WORDS[i]}" in
+            -d|--dir) ((i++)); stow_dir=${COMP_WORDS[i]} ;;
+            --dir=*) stow_dir=${COMP_WORDS[i]#--dir=} ;;
+        esac
+    done
+
+    case "$prev" in
+        -d|--dir|-t|--target) COMPREPLY=( $(compgen -d -- "$cur") ); return ;;
+        --ignore|--defer|--override) return ;;
+        --verbose) COMPREPLY=( $(compgen -W '0 1 2 3 4 5' -- "$cur") ); return ;;
+    esac
+
+    if [[ $cur == -* ]]; then
+        COMPREPLY=( $(compgen -W '-d --dir -t --target -S --stow -D --delete -R --restow --ignore --defer --override --adopt --dotfiles -p --compat -n --no --simulate -v --verbose -V --version -h --help' -- "$cur") )
+    elif [[ -d $stow_dir ]]; then
+        COMPREPLY=( $(compgen -W "$(find "$stow_dir" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null)" -- "$cur") )
+    fi
+}
+complete -o bashdefault -o default -F _stow_completion stow
