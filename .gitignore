@@ -23,6 +23,13 @@
 /emacs/history/
 /emacs/transient/
 
+# Org-tangle outputs
+/env/.dir-locals.el
+/kmonad/config.kbd
+/kmonad/.dir-locals.el
+/ripgrep/config
+/ripgrep/.dir-locals.el
+
 # Local files not maintained in this repository
 /bash/.dir-locals.el
 /bash/aliases
@@ -31,6 +38,7 @@
 /bash/bash_profile
 /bash/bashrc
 /bash/completions
+/bash/completions.d/*
 /bash/dircolours
 /bash/functions
 /bash/options

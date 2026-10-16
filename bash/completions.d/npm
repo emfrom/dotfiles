@@ -1,5 +1,0 @@
-if [[ -r /usr/share/bash-completion/completions/npm ]]; then
-    source /usr/share/bash-completion/completions/npm
-elif command -v npm >/dev/null 2>&1; then
-    source <(npm completion 2>/dev/null)
-fi
