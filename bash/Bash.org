@@ -217,6 +217,11 @@ This quits if the shell is not interactive
     return
   fi
 
+  # Disable terminal software flow control (Ctrl-S/Ctrl-Q remain available).
+  if [[ -t 0 ]]; then
+    stty -ixon
+  fi
+
 #+end_src
 *** XDG Directories
 #+begin_src shell :tangle ./bashrc :mkdirp yes
@@ -586,14 +591,22 @@ Prompt command function adds more glam
 
   # Set the prompt 
 
-  case $TERM in
-      xterm*)
-          export PS1='\[\033]0;term: \w\007\]\e[0m'
-          ;;
-      ,*)
-          export PS1='\e[0m'
-          ;;
-  esac
+  if [[ -n ${TMUX:-} ]] ; then
+      # Let tmux use the OSC title to rename its window.
+      export PS1='\[\033]0;term: \w\007\]\e[0m'
+  elif [[ -n ${STY:-} ]] ; then
+      # Preserve legacy GNU Screen title forwarding.
+      export PS1='\[\ekterm: \w\e\\\]\e[0m'
+  else
+      case $TERM in
+          xterm*)
+              export PS1='\[\033]0;term: \w\007\]\e[0m'
+              ;;
+          ,*)
+              export PS1='\e[0m'
+              ;;
+      esac
+  fi
 
   # HH:MM bright yellow 
   PS1=$PS1'\[\e[01;33m\]\A '
@@ -947,10 +960,10 @@ Prints a red heart by coloring the background differntly and printing spaces
   # Affirmations
   #
 
-  if [[ -f "${HOME}/share/affirmation/affirmations.txt" ]] ; then
+  if [[ -r "${HOME}/share/lolcow/quotes.txt" ]] ; then
       function affirmation ()
       {
-          shuf -n 1 ${HOME}/share/affirmation/affirmations.txt;
+          shuf -n 1 "${HOME}/share/lolcow/quotes.txt";
       }
       function affirmations ()
       {
@@ -1247,7 +1260,11 @@ Suitable for use in the prompt
 ** less
 #+begin_src shell :tangle ./functions :mkdirp yesj
 lesspipe() {
-    "$@" | less
+    if (( $# == 1 )) && ! command -v -- "$1" >/dev/null 2>&1 && [[ -r "$1" ]]; then
+        batcat -- "$1"
+    else
+        "$@" | less
+    fi
 }
 #+END_SRC
 ** guile_bg_repl
@@ -2061,7 +2078,7 @@ Colours are given as ansi colours. Extended and truecolour sequences works if yo
   #FILE 00 # regular file: use no color at all
   #FILE 01;31 # Simple test
   RESET 0 # reset to "normal" color
-  DIR 00;34 # directory
+  DIR 01;94 # directory (bright blue for better contrast on dark backgrounds)
   #DIR 01;37;44 # directory test
   LINK 01;36 # symbolic link. (If you set this to 'target' instead of a
   # numerical value, the color is as for the file pointed to.)
@@ -2244,6 +2261,32 @@ This needs to be at the very end so we dont clobber any guix variables
         hash -r
     fi
 
+#+end_src
+
+* Sudo askpass
+KeePassXC provides the Secret Service on this session. Store the sudo password there
+with attributes application=sudo and account=$USER. This helper asks for confirmation
+before returning the secret to sudo. Use sudo -A to invoke askpass when needed.
+
+#+begin_src shell :tangle ./bashrc :mkdirp yes
+  if [ -x "$HOME/bin/sudo-askpass" ]; then
+      export SUDO_ASKPASS="$HOME/bin/sudo-askpass"
+
+      # Automatically use the askpass helper when sudo needs authentication.
+      sudo() {
+          command sudo -A "$@"
+      }
+  fi
+#+end_src
+
+The helper source is kept here for reference, but is maintained as a standalone
+executable rather than tangled from this block.
+
+#+begin_src shell :tangle no
+#!/usr/bin/env bash
+set -euo pipefail
+
+exec secret-tool lookup application sudo account "$USER"
 #+end_src
 
 * PATH cleanup
